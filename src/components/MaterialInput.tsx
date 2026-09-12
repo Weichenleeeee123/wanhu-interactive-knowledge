@@ -1,0 +1,382 @@
+"use client";
+import { useId, useState } from "react";
+import {
+  LessonSchema,
+  SourceSchema,
+  type Lesson,
+  type Source,
+} from "@/lib/lesson";
+type Capabilities = { search: boolean; generation: boolean; provider: string };
+export function MaterialInput({
+  mode,
+  capabilities,
+  onGenerationStart,
+  onGenerated,
+  onExample,
+}: {
+  mode: "teach" | "learn";
+  capabilities: Capabilities | null;
+  onGenerationStart: () => number;
+  onGenerated: (lesson: Lesson, reason: string, revision: number) => void;
+  onExample: (type: "gradient-descent" | "monty-hall") => void;
+}) {
+  const id = useId();
+  const [question, setQuestion] = useState(""),
+    [query, setQuery] = useState(""),
+    [material, setMaterial] = useState("");
+  const [results, setResults] = useState<Source[]>([]),
+    [sources, setSources] = useState<Source[]>([]);
+  const [searching, setSearching] = useState(false),
+    [searched, setSearched] = useState(false),
+    [searchError, setSearchError] = useState("");
+  const [generating, setGenerating] = useState(false),
+    [error, setError] = useState(""),
+    [consent, setConsent] = useState(false);
+  const [sourceUrl, setSourceUrl] = useState(""),
+    [sourceTitle, setSourceTitle] = useState(""),
+    [sourceAuthor, setSourceAuthor] = useState("");
+  async function search() {
+    if (!query.trim()) return;
+    setSearching(true);
+    setSearchError("");
+    setSearched(false);
+    try {
+      const response = await fetch(
+        `/api/search?q=${encodeURIComponent(query.trim())}`,
+        { signal: AbortSignal.timeout(35000) },
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "知乎搜索暂不可用");
+      const parsed = SourceSchema.array().safeParse(data.items);
+      if (!parsed.success) throw new Error("搜索返回的内容格式无效");
+      setResults(parsed.data);
+      setSearched(true);
+    } catch (e) {
+      setSearchError(e instanceof Error ? e.message : "搜索失败，请稍后重试");
+    } finally {
+      setSearching(false);
+    }
+  }
+  function select(source: Source) {
+    setSources((previous) =>
+      previous.some((s) => s.id === source.id)
+        ? previous.filter((s) => s.id !== source.id)
+        : previous.length < 3
+          ? [...previous, source]
+          : previous,
+    );
+  }
+  async function generate() {
+    setError("");
+    if (material.length > 20000) {
+      setError("材料超过 20,000 字符，请选取关键段落后再生成。");
+      return;
+    }
+    if (!question.trim()) {
+      setError("先写下你想讲清楚或弄懂的问题。");
+      return;
+    }
+    if (!consent) {
+      setError("请先确认使用首版支持的标准教学模型。");
+      return;
+    }
+    let selected = [...sources];
+    if (sourceUrl.trim()) {
+      const own = SourceSchema.safeParse({
+        id: "user-material",
+        title: sourceTitle.trim() || "用户提供的材料",
+        author: sourceAuthor,
+        url: sourceUrl.trim(),
+        excerpt: material.slice(0, 1200),
+      });
+      if (!own.success) {
+        setError("请检查材料来源链接，只支持有效的 HTTP 或 HTTPS 链接。");
+        return;
+      }
+      selected = [...selected, own.data];
+    }
+    if (selected.length > 3) {
+      setError("最多选择 3 个来源，包含你手动填写的来源。");
+      return;
+    }
+    if (!material.trim() && !selected.length) {
+      setError("请先选择知乎摘要或粘贴讲解材料。");
+      return;
+    }
+    const generationRevision = onGenerationStart();
+    setGenerating(true);
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode,
+          question,
+          material,
+          sources: selected,
+          standardModel: consent,
+        }),
+        signal: AbortSignal.timeout(50000),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "生成失败，请稍后重试");
+      if (data.unsupported) {
+        setError(data.reason || "这份材料暂不适合首版实验。");
+        return;
+      }
+      const lesson = LessonSchema.safeParse(data.lesson);
+      if (!lesson.success) throw new Error("生成的作品格式无效，请重试");
+      onGenerated(
+        lesson.data,
+        data.reason || "草稿已生成，请核对讲解与实验。",
+        generationRevision,
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "生成失败，材料已保留");
+    } finally {
+      setGenerating(false);
+    }
+  }
+  return (
+    <div className="material-input">
+      <div className="editor-heading">
+        <span className="eyebrow">START WITH A QUESTION</span>
+        <h2>
+          {mode === "teach" ? "你想把什么讲清楚？" : "你卡在哪个知识点？"}
+        </h2>
+        <p>
+          {mode === "teach"
+            ? "选一份材料，做一个让人真正理解的实验。"
+            : "把不理解的地方告诉我们，带着问题动手试一试。"}
+        </p>
+      </div>
+      <fieldset className="generation-fields" disabled={generating}>
+        <div className="form-field">
+          <label htmlFor={`${id}-question`}>
+            {mode === "teach" ? "想讲清楚的问题" : "我不理解的地方"}
+            <span>{question.length}/200</span>
+          </label>
+          <textarea
+            id={`${id}-question`}
+            rows={3}
+            maxLength={200}
+            placeholder={
+              mode === "teach"
+                ? "例如：为什么学习率太大，反而离最低点越来越远？"
+                : "例如：三门问题还剩两扇门，为什么不是各占一半？"
+            }
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+          />
+        </div>
+        <div className="search-block">
+          <div className="section-line">
+            <h3>从知乎找一点线索</h3>
+            <span className="zhihu-badge">知</span>
+          </div>
+          <form
+            className="search-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void search();
+            }}
+          >
+            <label className="sr-only" htmlFor={`${id}-query`}>
+              知乎搜索关键词
+            </label>
+            <input
+              id={`${id}-query`}
+              value={query}
+              maxLength={200}
+              placeholder="试试「梯度下降 学习率」"
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button
+              className="button"
+              disabled={
+                searching || !query.trim() || capabilities?.search === false
+              }
+            >
+              {searching ? "搜索中…" : "搜索"}
+            </button>
+          </form>
+          {capabilities?.search === false && (
+            <p className="notice">
+              知乎检索暂未配置。你可以粘贴材料，或先编辑预置示例。
+            </p>
+          )}
+          {searchError && (
+            <p className="error-message" role="alert">
+              {searchError}
+            </p>
+          )}
+          {searched && !results.length && (
+            <p className="notice">没有找到相关内容，试试更短的关键词。</p>
+          )}
+          {results.length > 0 && (
+            <div className="search-results">
+              <p className="small muted">
+                返回的是摘要，可选最多 3 条。已选 {sources.length} 条。
+              </p>
+              {results.map((source) => (
+                <article
+                  className={`search-result ${sources.some((s) => s.id === source.id) ? "is-selected" : ""}`}
+                  key={source.id}
+                >
+                  <div className="result-title">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={sources.some((s) => s.id === source.id)}
+                        disabled={
+                          !sources.some((s) => s.id === source.id) &&
+                          sources.length >= 3
+                        }
+                        onChange={() => select(source)}
+                      />
+                      <strong>{source.title}</strong>
+                    </label>
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`阅读原文：${source.title}`}
+                    >
+                      ↗
+                    </a>
+                  </div>
+                  <span className="small muted">
+                    {source.author || "作者信息未提供"} · 摘要
+                  </span>
+                  <p>{source.excerpt}</p>
+                </article>
+              ))}
+            </div>
+          )}
+          {sources.length > 0 && (
+            <div className="selected-sources">
+              {sources.map((s) => (
+                <button
+                  key={s.id}
+                  className="source-chip"
+                  onClick={() => select(s)}
+                  title="取消选择"
+                >
+                  {s.title}
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="form-field">
+          <label htmlFor={`${id}-material`}>
+            补充你的讲解材料<span>{material.length}/20000</span>
+          </label>
+          <textarea
+            id={`${id}-material`}
+            rows={6}
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            placeholder="粘贴你想解释或理解的关键段落。若摘要缺少公式与条件，请在这里补充。"
+          />
+          {material.length > 20000 && (
+            <p className="error-message" role="alert">
+              材料超过 20,000 字符，请选取关键段落后再生成。
+            </p>
+          )}
+          <p className="field-note">
+            链接用于标注来源，不会自动读取全文。优先放入与目标问题有关的段落。
+          </p>
+        </div>
+        <details className="attribution-fields">
+          <summary>为粘贴材料添加来源（可选）</summary>
+          <div className="form-field">
+            <label htmlFor={`${id}-url`}>原文链接</label>
+            <input
+              id={`${id}-url`}
+              type="url"
+              value={sourceUrl}
+              onChange={(e) => setSourceUrl(e.target.value)}
+              maxLength={2048}
+              placeholder="https://…"
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor={`${id}-title`}>原文标题</label>
+            <input
+              id={`${id}-title`}
+              value={sourceTitle}
+              maxLength={200}
+              onChange={(e) => setSourceTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-field">
+            <label htmlFor={`${id}-author`}>原作者</label>
+            <input
+              id={`${id}-author`}
+              value={sourceAuthor}
+              maxLength={80}
+              onChange={(e) => setSourceAuthor(e.target.value)}
+            />
+          </div>
+        </details>
+        <label className="checkbox-label model-consent">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+          />
+          <span>
+            采用标准教学模型：梯度下降
+            f(x)=x²，或标准三门规则。生成后由我核对其与材料的关系。
+          </span>
+        </label>
+        {capabilities?.generation === false && (
+          <p className="notice">
+            AI 生成尚未配置。下方示例可以直接编辑，修改后同样能分享。
+          </p>
+        )}
+        <button
+          className="button primary full-width"
+          onClick={() => void generate()}
+          disabled={
+            generating ||
+            material.length > 20000 ||
+            capabilities?.generation === false
+          }
+        >
+          {generating
+            ? "正在构思实验与讲解…"
+            : mode === "teach"
+              ? "生成我的实验草稿 ↗"
+              : "把这个问题变成实验 ↗"}
+        </button>
+        <p className="field-note">
+          点击生成会将所选材料发送给配置的模型服务，结果仍需核对。
+        </p>
+        {error && (
+          <p className="error-message" role="alert">
+            {error}
+          </p>
+        )}
+      </fieldset>
+      <div className="template-start">
+        <span className="eyebrow">OR START WITH AN EXAMPLE</span>
+        <p>先改一份示例，看看作品怎么长出来。</p>
+        <div className="controls">
+          <button
+            className="button"
+            onClick={() => onExample("gradient-descent")}
+          >
+            梯度下降 →
+          </button>
+          <button className="button" onClick={() => onExample("monty-hall")}>
+            三门问题 →
+          </button>
+        </div>
+        <small>预置教学内容，不计作 AI 生成。</small>
+      </div>
+    </div>
+  );
+}
