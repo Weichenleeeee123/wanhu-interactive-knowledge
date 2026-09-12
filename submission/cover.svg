@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#f7f7ef"/>
+  <g font-family="Microsoft YaHei, sans-serif" fill="#193f40">
+    <rect x="100" y="90" width="68" height="68" rx="8" fill="#193f40"/>
+    <path d="M111 109 Q134 166 157 109" stroke="#f7f7ef" stroke-width="3" fill="none"/>
+    <circle cx="149" cy="127" r="5" fill="#df9c50"/>
+    <text x="187" y="131" font-size="37" font-weight="700">知玩</text>
+    <text x="100" y="230" font-size="21" fill="#39726d">从知乎的好问题出发</text>
+    <text x="92" y="363" font-size="100" font-weight="700">让知识，</text>
+    <text x="92" y="488" font-size="100" font-weight="700" fill="#2b706b">动起来。</text>
+    <path d="M103 520 Q290 489 501 519" stroke="#df9c50" stroke-width="5" fill="none"/>
+    <text x="100" y="594" font-size="27">把文字讲解，变成可以探索的互动实验。</text>
+    <text x="100" y="655" font-size="23" fill="#587c75">预测直觉　/　操作实验　/　验证理解　/　分享作品</text>
+    <text x="100" y="810" font-size="20" fill="#587c75">知乎黑客松 · 学习工具与知识生产</text>
+    <g transform="translate(845 133)">
+      <rect width="650" height="345" rx="20" fill="#fffefa" stroke="#dce2d7"/>
+      <text x="32" y="49" font-size="18" fill="#587c75">EXPERIMENT 01</text>
+      <text x="449" y="49" font-size="20">f(x) = x²</text>
+      <path d="M47 286 H610 M327 85 V305" stroke="#cad7cc" fill="none"/>
+      <path d="M75 94 Q327 478 579 94" stroke="#2b706b" stroke-width="5" fill="none"/>
+      <circle cx="514" cy="180" r="17" fill="#df9c50" opacity=".2"/><circle cx="514" cy="180" r="7" fill="#df9c50"/>
+      <path d="M507 186 Q459 252 400 270" stroke="#df9c50" stroke-width="3" stroke-dasharray="7 6" fill="none"/>
+      <text x="38" y="326" font-size="18">步子越大，下山越快吗？</text>
+    </g>
+    <g transform="translate(845 510)">
+      <rect width="650" height="259" rx="20" fill="#fffefa" stroke="#dce2d7"/>
+      <text x="32" y="47" font-size="18" fill="#587c75">EXPERIMENT 02</text>
+      <text x="32" y="89" font-size="26" font-weight="700">剩下两扇门，真的各有一半机会？</text>
+      <g fill="#e9eee3" stroke="#bacac0" stroke-width="2">
+        <rect x="58" y="118" width="115" height="106" rx="8"/>
+        <rect x="268" y="118" width="115" height="106" rx="8"/>
+        <rect x="478" y="118" width="115" height="106" rx="8"/>
+      </g>
+      <g font-size="33" text-anchor="middle"><text x="116" y="183">1</text><text x="326" y="183">2</text><text x="536" y="183">3</text></g>
+    </g>
+  </g>
+</svg>

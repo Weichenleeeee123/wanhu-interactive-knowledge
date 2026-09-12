@@ -41,6 +41,7 @@ export default function Home() {
                 我想弄懂一个问题 →
               </Link>
             </div>
+            <Link className="hero-demo-link" href="/view?example=monty-hall"><span>60 秒亲手体验</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
             <p className="hero-footnote">
               <span>01 / 理解</span>
               <span>02 / 探索</span>

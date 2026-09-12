@@ -9,6 +9,48 @@
   --white: #fffef9;
   --soft: #ebefe5;
 }
+.prediction-card { margin-top: 22px; padding: 24px; background: var(--soft); border-radius: 8px; }
+.prediction-card h3 { margin: 0 0 10px; font-size: 18px; }
+.prediction-options { display: grid; gap: 10px; margin-top: 18px; }
+.prediction-option { display: flex; align-items: center; gap: 12px; min-height: 48px; border: 1px solid #bacbc0; padding: 12px 16px; text-align: left; background: var(--white); border-radius: 5px; font-size: 15px; }
+.prediction-option span { font-family: Georgia,serif; font-style: italic; color: var(--muted); }
+.prediction-option.is-picked { background: var(--ink); color: var(--white); border-color: var(--ink); opacity: 1; }
+.prediction-option.is-picked span { color: var(--orange); }
+.prediction-option i { margin-left: auto; font-style: normal; font-size: 12px; }
+.prediction-confirmation { font-size: 14px; color: var(--teal); margin-bottom: 0; }
+.scenario-controls { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin-bottom: 22px; }
+.scenario-controls button { min-height: 56px; border: 1px solid var(--line); background: var(--paper); border-radius: 5px; padding: 8px 3px; font-size: 14px; }
+.scenario-controls small { display: block; font-family: Georgia,serif; margin-top: 5px; font-size: 12px; opacity: .8; }
+.scenario-controls button.active { background: var(--ink); border-color: var(--ink); color: var(--white); }
+.monty-proof { margin: 24px 0; padding: 20px; border: 1px solid var(--line); border-radius: 6px; font-size: 15px; }
+.monty-proof summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+.monty-proof p { line-height: 1.8; }
+.monty-proof table { border-collapse: collapse; width: 100%; }
+.monty-proof th,.monty-proof td { border-bottom: 1px solid var(--line); padding: 12px 8px; text-align: center; font-size: 14px; }
+.proof-win { color: var(--teal); background: var(--soft); font-weight: 700; }
+.learning-recap { margin: 38px 0; border: 1px solid #b7c8ba; border-radius: 8px; padding: 28px; background: var(--white); }
+.learning-recap.is-complete { border-top: 4px solid var(--teal); }
+.learning-recap h2 { font-size: 23px; margin: 10px 0 0; }
+.recap-count { font-family: Georgia,serif; font-size: 25px; color: var(--teal); white-space: nowrap; }
+.learning-recap ol { padding: 0; list-style: none; margin: 22px 0; }
+.learning-recap li { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding: 16px 0; }
+.learning-recap li span { font-size: 13px; color: var(--muted); }
+.learning-recap li strong { font-size: 16px; font-weight: 500; line-height: 1.7; }
+.recap-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.recap-footer p { font-size: 13px; line-height: 1.6; max-width: 220px; }
+.topic-starters { padding: 18px; background: var(--soft); border-radius: 6px; margin: 0 0 24px; }
+.topic-starters p { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+.topic-starters>div { display: flex; gap: 8px; flex-wrap: wrap; }
+.topic-starters button { background: var(--white); border: 1px solid #bacbc0; border-radius: 4px; padding: 10px; text-align: left; font-size: 14px; }
+.topic-starters small { display: block; margin-top: 12px; line-height: 1.7; color: var(--muted); font-size: 12px; }
+.generation-progress { display: flex; align-items: center; gap: 15px; padding: 18px; background: var(--soft); border-radius: 6px; margin-top: 16px; }
+.generation-progress strong { font-size: 14px; }.generation-progress p { font-size: 13px; line-height: 1.6; margin: 7px 0 0; }
+.generation-spinner { flex-shrink: 0; width: 22px; height: 22px; border: 2px solid #cbd8cc; border-top-color: var(--teal); border-radius: 50%; animation: spin 1.2s linear infinite; }
+.hero-demo-link { display: block; text-decoration: none; max-width: 390px; margin-top: 28px; line-height: 1.8; font-size: 15px; }
+.hero-demo-link span { display: block; font-size: 12px; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }.hero-demo-link b { color: var(--teal); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 500px) { .prediction-card,.learning-recap { padding: 18px; }.scenario-controls { grid-template-columns: repeat(2,minmax(0,1fr)); }.monty-proof { padding: 16px; } }
+@media (prefers-reduced-motion:reduce) { .generation-spinner { animation: none; } }
 * {
   box-sizing: border-box;
 }

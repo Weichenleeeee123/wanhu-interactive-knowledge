@@ -9,9 +9,14 @@
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:public": "node scripts/build-public.mjs",
+    "preview:public": "node scripts/preview-public.mjs",
+    "package:public": "node scripts/package-public.mjs",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.2",
     "next": "16.3.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -22,6 +27,8 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "drizzle-kit": "^0.31.10",
+    "esbuild": "^0.28.2",
     "typescript": "~5.9.3",
     "vitest": "5.0.0"
   }

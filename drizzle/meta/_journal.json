@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789219457280,
+      "tag": "0000_colossal_lady_ursula",
+      "breakpoints": true
+    }
+  ]
+}

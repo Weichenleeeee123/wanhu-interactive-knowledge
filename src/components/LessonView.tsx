@@ -1,7 +1,9 @@
 "use client";
+import { useCallback, useState } from 'react';
 import { type Lesson, experimentNames } from "@/lib/lesson";
 import { GradientExperiment } from "./GradientExperiment";
 import { MontyExperiment } from "./MontyExperiment";
+import { LearningRecap, PredictionCard, type LearningSession } from './LearningProgress';
 export function LessonView({
   lesson,
   preview = false,
@@ -9,6 +11,12 @@ export function LessonView({
   lesson: Lesson;
   preview?: boolean;
 }) {
+  return <LessonExperience key={JSON.stringify(lesson)} lesson={lesson} preview={preview} />;
+}
+function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
+  const [session,setSession]=useState<LearningSession>({prediction:null,activity:'',verified:null});
+  const activity=useCallback((value:string)=>setSession(s=>({...s,activity:value})),[]);
+  const challenge=useCallback((value:boolean|null)=>setSession(s=>({...s,verified:value})),[]);
   return (
     <article className={`lesson ${preview ? "lesson-preview" : ""}`}>
       <div className="lesson-label">
@@ -32,6 +40,7 @@ export function LessonView({
           <span>01</span>先做一个预测
         </div>
         <p>{lesson.prediction}</p>
+        <PredictionCard experiment={lesson.experiment} value={session.prediction} onSelect={value=>setSession(s=>s.prediction===null?{...s,prediction:value}:s)} />
       </section>
       <section className="lesson-section">
         <div className="step-kicker">
@@ -42,9 +51,11 @@ export function LessonView({
           <GradientExperiment
             initialX={lesson.experiment.initialX}
             learningRate={lesson.experiment.learningRate}
+            onActivity={activity}
+            onChallenge={challenge}
           />
         ) : (
-          <MontyExperiment trials={lesson.experiment.trials} />
+          <MontyExperiment trials={lesson.experiment.trials} onActivity={activity} onChallenge={challenge} />
         )}
       </section>
       <section className="lesson-section explanation">
@@ -95,6 +106,7 @@ export function LessonView({
         <span className="eyebrow">TAKE IT WITH YOU</span>
         <p>{lesson.challenge}</p>
       </aside>
+      <LearningRecap lesson={lesson} session={session} />
       <section className="source-section">
         <div className="section-line">
           <h2>理解，有迹可循</h2>

@@ -284,7 +284,7 @@ describe("generation adapter", () => {
     expect(prompt).toContain("不可信证据开始");
     expect(prompt).toContain('"sourceIds":["42"]');
     expect(prompt).toContain(
-      '"experiment":{"type":"gradient-descent","initialX":0,"learningRate":0.2}',
+      '"experiment":{"type":"gradient-descent","initialX":8,"learningRate":0.2}',
     );
     expect(prompt).toContain(
       '"experiment":{"type":"monty-hall","trials":1000}',

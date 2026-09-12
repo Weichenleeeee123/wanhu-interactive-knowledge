@@ -1,6 +1,7 @@
 import { isAbsolute } from "node:path";
 import { stat } from "node:fs/promises";
-import { SourceSchema, type Source } from "../lesson";
+import { type Source } from "../lesson";
+import { parseSearchPayload } from "../search-results";
 import { readBoundedText } from "./bounded-response";
 import { defaultExecFile, isVerifiedZhihuCli, type ExecFile } from "./cli";
 import { ServerError } from "./errors";
@@ -22,32 +23,6 @@ const defaults: SearchDependencies = {
   env: process.env,
   execFile: defaultExecFile,
 };
-
-function parseSearchPayload(raw: unknown): Source[] {
-  if (!raw || typeof raw !== "object")
-    throw new ServerError("UPSTREAM_FAILURE", "知乎搜索返回格式异常");
-  const envelope = raw as { Code?: unknown; Data?: { Items?: unknown } };
-  if (envelope.Code !== 0 || !Array.isArray(envelope.Data?.Items)) {
-    throw new ServerError("UPSTREAM_FAILURE", "知乎搜索暂时不可用");
-  }
-  const mapped: Source[] = [];
-  for (const item of envelope.Data.Items.slice(0, 10)) {
-    if (!item || typeof item !== "object") continue;
-    const record = item as Record<string, unknown>;
-    const candidate = {
-      id: String(record.ContentID ?? "").trim(),
-      title: String(record.Title ?? "").trim(),
-      author: String(record.AuthorName ?? "")
-        .trim()
-        .slice(0, 80),
-      url: String(record.Url ?? "").trim(),
-      excerpt: String(record.ContentText ?? "").slice(0, 1200),
-    };
-    const parsed = SourceSchema.safeParse(candidate);
-    if (parsed.success) mapped.push(parsed.data);
-  }
-  return mapped;
-}
 
 function parseJson(text: string): unknown {
   try {

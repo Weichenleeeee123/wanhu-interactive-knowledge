@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { revealDoor, simulateMonty, switchDoor } from "@/lib/experiments";
-export function MontyExperiment({ trials = 1000 }: { trials: 100 | 1000 }) {
+export function MontyExperiment({ trials = 1000, onActivity, onChallenge }: { trials: 100 | 1000; onActivity?:(summary:string)=>void;onChallenge?:(correct:boolean|null)=>void }) {
   const [round, setRound] = useState<{
     prize: number;
     choice: number;
@@ -27,6 +27,7 @@ export function MontyExperiment({ trials = 1000 }: { trials: 100 | 1000 }) {
     if (!round || round.final !== null) return;
     const final = change ? switchDoor(round.choice, round.host) : round.choice;
     setRound({ ...round, final });
+    onActivity?.(`完成一轮${change?'换门':'坚持'}实验：${final===round.prize?'赢得奖品':'未获奖品'}`);
     setTally((t) => ({
       played: t.played + 1,
       won: t.won + Number(final === round.prize),
@@ -135,7 +136,7 @@ export function MontyExperiment({ trials = 1000 }: { trials: 100 | 1000 }) {
           </p>
           <button
             className="button primary"
-            onClick={() => setBatch(simulateMonty(count))}
+            onClick={() => {const result=simulateMonty(count);setBatch(result);onActivity?.(`模拟 ${count} 次：换门赢 ${result.switchWins} 次，坚持赢 ${result.stayWins} 次`);}}
           >
             运行 {count} 次
           </button>
@@ -172,6 +173,14 @@ export function MontyExperiment({ trials = 1000 }: { trials: 100 | 1000 }) {
             </div>
           )}
         </div>
+        <details className="monty-proof">
+          <summary>为什么会这样？把三种情况摆出来</summary>
+          <p>假设你先选 1 号门。奖品位置等概率，下面三行各占 1/3。</p>
+          <table><thead><tr><th>奖品在哪</th><th>坚持</th><th>换门</th></tr></thead><tbody>
+            {[0,1,2].map(prize=><tr key={prize}><th>{prize+1} 号门</th><td>{prize===0?'赢':'输'}</td><td className={prize!==0?'proof-win':''}>{prize!==0?'赢':'输'}</td></tr>)}
+          </tbody></table>
+          <p>换门在初选错误的两行获胜。主持人知道奖品位置、始终排除未选中的空门，且始终让你换门，这是结论的前提。</p>
+        </details>
         <div className="challenge">
           <span className="eyebrow">CHECK YOUR UNDERSTANDING</span>
           <h3>标准规则下，换门的理论胜率是？</h3>
@@ -180,7 +189,7 @@ export function MontyExperiment({ trials = 1000 }: { trials: 100 | 1000 }) {
               <button
                 className={`button ${answer === a ? "selected" : ""}`}
                 key={a}
-                onClick={() => setAnswer(a)}
+                onClick={() => {setAnswer(a);onChallenge?.(a==='2/3');}}
               >
                 {a}
               </button>

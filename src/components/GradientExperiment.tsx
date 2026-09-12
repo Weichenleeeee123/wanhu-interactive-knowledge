@@ -8,10 +8,14 @@ export function GradientExperiment({
   initialX = 8,
   learningRate = 0.2,
   compact = false,
+  onActivity,
+  onChallenge,
 }: {
   initialX?: number;
   learningRate?: number;
   compact?: boolean;
+  onActivity?: (summary:string)=>void;
+  onChallenge?: (correct:boolean|null)=>void;
 }) {
   const id = useId();
   const [start, setStart] = useState(initialX),
@@ -28,6 +32,7 @@ export function GradientExperiment({
     setHistory([x]);
     setAnswer("");
     setFeedback("");
+    onChallenge?.(null);
   }
   useEffect(() => {
     setStart(initialX);
@@ -53,6 +58,9 @@ export function GradientExperiment({
   useEffect(() => {
     if (status !== "running") setPlaying(false);
   }, [status]);
+  useEffect(()=>{
+    if(steps>0) onActivity?.(`学习率 ${rate}，已运行 ${steps} 步，x = ${number(current)}`);
+  },[steps,rate,current,onActivity]);
   const domain = Math.max(
     10,
     Math.min(1e6, Math.max(...history.map(Math.abs)) * 1.12),
@@ -156,6 +164,10 @@ export function GradientExperiment({
         <span className="plot-note">调一调，知识就有了形状。</span>
       </div>
       <div className="experiment-body">
+        <div className="scenario-controls" aria-label="学习率情景">
+          {[{label:'稳稳下山',rate:0.2},{label:'一步到谷底',rate:0.5},{label:'来回震荡',rate:1},{label:'越走越远',rate:1.2}].map(s=><button key={s.rate} aria-label={s.label} className={rate===s.rate?'active':''} aria-pressed={rate===s.rate} onClick={()=>{setRate(s.rate);setStart(8);reset(8);}}>{s.label}<small>η = {s.rate}</small></button>)}
+        </div>
+        {!compact && <p className="small muted">切换情景会从 x = 8 重新开始，方便比较学习率。</p>}
         <div className="readouts">
           <div>
             <span>当前位置 x</span>
@@ -296,19 +308,20 @@ export function GradientExperiment({
                 onChange={(e) => {
                   setAnswer(e.target.value);
                   setFeedback("");
+                  onChallenge?.(null);
                 }}
               />
               <button
                 className="button"
-                onClick={() =>
+                onClick={() => {
+                  const correct=!!answer.trim() && Math.abs(Number(answer)-gradientStep(start,rate))<1e-6;
+                  onChallenge?.(correct);
                   setFeedback(
-                    answer.trim() &&
-                      Math.abs(Number(answer) - gradientStep(start, rate)) <
-                        1e-6
+                    correct
                       ? "回答正确！你已经掌握了单步更新。"
                       : `再试一次：${String(start)} − ${String(rate)} × 2 × ${String(start)}。`,
-                  )
-                }
+                  );
+                }}
               >
                 验证答案
               </button>

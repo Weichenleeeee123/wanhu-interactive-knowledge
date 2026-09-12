@@ -1,0 +1,18 @@
+import { build } from "esbuild";
+import { readFile, mkdir, writeFile, cp } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { resolve } from "node:path";
+const client = await build({entryPoints:["src/edge/client.tsx"],bundle:true,minify:true,write:false,outdir:"dist/client",platform:"browser",target:"es2022",jsx:"automatic",define:{"process.env.NODE_ENV":'"production"'},alias:{"next/link":resolve("src/edge/link.tsx")}});
+const js = client.outputFiles.find(f=>f.path.endsWith(".js"))?.text;
+const css = client.outputFiles.find(f=>f.path.endsWith(".css"))?.text;
+if(!js || !css) throw new Error("Missing client assets");
+const icon = await readFile("src/app/icon.svg","utf8");
+const id = createHash("sha256").update(js).update(css).digest("hex").slice(0,16);
+await mkdir("dist/server",{recursive:true});
+await build({entryPoints:["src/edge/worker.ts"],bundle:true,minify:true,platform:"browser",format:"esm",target:"es2022",outfile:"dist/server/index.js",define:{__APP_JS__:JSON.stringify(js),__APP_CSS__:JSON.stringify(css),__ICON__:JSON.stringify(icon),__ASSET_ID__:JSON.stringify(id)}});
+const manifest = JSON.parse(await readFile(".openai/hosting.json","utf8"));
+if (manifest.d1 !== "DB" || !manifest.project_id) throw new Error("Missing Site project or DB binding");
+await mkdir("dist/.openai",{recursive:true});
+await writeFile("dist/.openai/hosting.json",JSON.stringify(manifest,null,2)+"\n");
+await cp("drizzle","dist/.openai/drizzle",{recursive:true});
+console.log(`Public Worker built. Client JS ${Math.ceil(Buffer.byteLength(js)/1024)} KiB; CSS ${Math.ceil(Buffer.byteLength(css)/1024)} KiB. Assets ${id}.`);
