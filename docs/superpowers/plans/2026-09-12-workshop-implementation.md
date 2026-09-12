@@ -93,7 +93,9 @@ Files: `README.md`, `.env.example`, `docs/demo-script.md`, `docs/validation.md`,
 - [x] Exercise one live search through the application server using the configured official CLI; record only status/count and source metadata as needed, not secrets or complete responses.
 - [x] If model credentials are supplied, generate both supported types and one unsupported case through the real adapter. If unavailable, clearly report this remaining integration dependency rather than mark AI generation complete.
 - [x] Start preview locally and open it for the user. Update plan checks and validation evidence. Keep public deployment separate until a provider/environment is available; do not claim localhost is publicly shared.
-- [ ] Review final changes, commit explicit project files, integrate the implementation branch into the original checkout without deleting the worktree or any files.
+- [x] Review final changes, commit explicit project files, integrate the implementation branch into the original checkout without deleting the worktree or any files.
+
+Implementation committed as `2c8b260` and fast-forwarded into `master`. Root checkout dependencies are installed; its unit tests and typecheck pass. The running user preview is `http://localhost:3000`, with real Zhihu search and generation configured through the authenticated official CLI. See `docs/validation.md` for test and live-call evidence. Public deployment remains the next environment-dependent stage.
 
 ## Plan self-review
 
