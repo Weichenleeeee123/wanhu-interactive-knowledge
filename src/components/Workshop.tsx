@@ -8,9 +8,11 @@ import { SharePanel, exportLesson, exportWriting } from "./SharePanel";
 import { LessonSchema, type Lesson, type ExperimentType } from "@/lib/lesson";
 import { getExample } from "@/lib/examples";
 import { readDraft, saveDraft } from "@/lib/drafts";
-import { parseLessonFile } from "@/lib/share";
+import { encodeLesson, parseLessonFile } from "@/lib/share";
 export function Workshop() {
   const revision = useRef(0);
+  const inputPanel = useRef<HTMLElement>(null);
+  const [readingLink, setReadingLink] = useState<{lesson:Lesson;url:string} | null>(null);
   const [mode, setMode] = useState<"teach" | "learn">("teach"),
     [lesson, setLesson] = useState<Lesson | null>(null);
   const [tab, setTab] = useState<"material" | "editor">("material"),
@@ -68,6 +70,20 @@ export function Workshop() {
     }, 400);
     return () => clearTimeout(timer);
   }, [lesson, dirty]);
+  useEffect(() => {
+    let active = true;
+    const current = lesson && LessonSchema.safeParse(lesson);
+    if (current?.success && lesson) {
+      const snapshot = lesson;
+      encodeLesson(current.data).then(payload => {
+        if (active) setReadingLink({lesson:snapshot,url:`${window.location.origin}/view#${payload}`});
+      }).catch(() => { if(active) setReadingLink(null); });
+    } else setReadingLink(null);
+    return () => { active = false; };
+  }, [lesson]);
+  useEffect(() => {
+    if (tab === "editor" && inputPanel.current) inputPanel.current.scrollTop = 0;
+  }, [tab]);
   function edit(next: Lesson) {
     revision.current += 1;
     setLesson(next);
@@ -165,6 +181,11 @@ export function Workshop() {
             <span className="save-status" role="status">
               {saveStatus}
             </span>
+            {readingLink?.lesson === lesson && readingLink && valid && (
+              <a className="button reader-preview-link" href={readingLink.url} target="_blank" rel="noreferrer">
+                {mode === "learn" ? "开始阅读" : "用读者视角打开"} ↗
+              </a>
+            )}
             <label className="text-button file-label">
               导入作品
               <input
@@ -242,7 +263,7 @@ export function Workshop() {
         <div
           className={`workspace-grid ${mobilePreview ? "show-mobile-preview" : ""}`}
         >
-          <aside className="input-panel">
+          <aside className="input-panel" ref={inputPanel}>
             <div hidden={tab !== "material"}>
               <MaterialInput
                 mode={mode}
@@ -255,7 +276,8 @@ export function Workshop() {
                   }
                   edit(next);
                   setTab("editor");
-                  setNotice(reason);
+                  setMobilePreview(mode === "learn");
+                  setNotice(mode === "learn" ? "互动讲解已生成。可以开始阅读、操作实验，也可以继续调整讲解。" : reason);
                 }}
                 onExample={example}
               />

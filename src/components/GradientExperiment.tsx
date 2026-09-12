@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useState } from "react";
 import { gradientStep, gradientStatus } from "@/lib/experiments";
+import { GradientCompare } from "./GradientCompare";
 
 const number = (x: number) =>
   Math.abs(x) > 9999 ? x.toExponential(2) : Number(x.toFixed(4)).toString();
@@ -331,6 +332,7 @@ export function GradientExperiment({
             </p>
           </div>
         )}
+        {!compact && <GradientCompare onActivity={onActivity} />}
       </div>
     </section>
   );

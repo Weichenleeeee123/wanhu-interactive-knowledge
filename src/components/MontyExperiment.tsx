@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { revealDoor, simulateMonty, switchDoor } from "@/lib/experiments";
+import { HostRuleLab } from "./HostRuleLab";
 export function MontyExperiment({ trials = 1000, onActivity, onChallenge }: { trials: 100 | 1000; onActivity?:(summary:string)=>void;onChallenge?:(correct:boolean|null)=>void }) {
   const [round, setRound] = useState<{
     prize: number;
@@ -203,6 +204,7 @@ export function MontyExperiment({ trials = 1000, onActivity, onChallenge }: { tr
               : ""}
           </p>
         </div>
+        <HostRuleLab onActivity={onActivity} />
       </div>
     </section>
   );

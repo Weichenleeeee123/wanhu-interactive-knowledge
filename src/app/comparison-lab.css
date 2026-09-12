@@ -1,0 +1,52 @@
+.comparison-lab { margin-top: 30px; border: 1px solid #cbd9cf; border-radius: 12px; background: #f5f7ed; overflow: hidden; }
+.comparison-lab > summary { display: flex; align-items: center; gap: 12px; padding: 20px; cursor: pointer; list-style: none; }
+.comparison-lab > summary::-webkit-details-marker { display: none; }
+.comparison-lab > summary strong { flex: 1; line-height: 1.7; }
+.comparison-lab > summary > span:last-child { font-size: 20px; }
+.comparison-lab[open] > summary { border-bottom: 1px solid #dbe3d6; }
+.comparison-lab[open] > summary > span:last-child { transform: rotate(45deg); }
+.lab-tag { border: 1px solid #bdcdc2; border-radius: 4px; padding: 4px 7px; font-size: 11px; white-space: nowrap; color: #476b61; }
+.lab-body { padding: 22px; }
+.lab-intro { margin: 0 0 22px; line-height: 1.9; }
+.rule-cards, .rule-results { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.rule-cards article, .rule-results article { padding: 19px; background: #fffef9; border: 1px solid #dde3d6; border-radius: 8px; }
+.rule-cards h4, .rule-results h4 { margin: 10px 0; font-size: 16px; line-height: 1.7; }
+.rule-cards p, .rule-results p { line-height: 1.8; margin: 8px 0 0; font-size: 13px; }
+.lab-prediction { border: 0; padding: 0; margin: 26px 0 20px; min-width: 0; }
+.lab-prediction legend { font-weight: 600; margin-bottom: 12px; line-height: 1.8; }
+.lab-prediction .controls { margin-top: 0; flex-wrap: wrap; }
+.lab-prediction .button.selected { opacity: 1; }
+.rule-comparison-result { margin-top: 22px; }
+.rule-rate { margin: 15px 0; font-size: 34px; font-family: Georgia, serif; font-variant-numeric: tabular-nums; }
+.rule-rate > span { display: block; margin-top: 3px; font-family: inherit; font-size: 11px; line-height: 1.6; color: var(--muted); }
+.rule-results .bar-track { height: 9px; }
+.rule-results .bar-track > div { height: 100%; }
+.sample-note { padding: 16px; margin-top: 16px; border-left: 3px solid var(--orange); font-size: 13px; line-height: 1.9; background: #fcf4e8; }
+.sample-note > strong { display: block; margin-bottom: 4px; }
+.lab-proof { margin: 20px 0; }
+.lab-proof > summary { cursor: pointer; font-weight: 600; line-height: 1.8; }
+.lab-proof p { font-size: 13px; line-height: 1.9; }
+.lab-proof table, .gradient-comparison-table { width: 100%; border-collapse: collapse; margin: 16px 0; background: #fffef9; font-size: 13px; font-variant-numeric: tabular-nums; }
+.lab-proof td, .lab-proof th, .gradient-comparison-table td, .gradient-comparison-table th { padding: 11px 8px; border-bottom: 1px solid #dfe6da; text-align: center; line-height: 1.7; }
+.lab-proof .excluded-sample { background: #f0eee6; color: #6a7269; }
+.lab-takeaway { margin: 20px 0 12px; line-height: 1.9; font-size: 14px; }
+.lab-footnote { margin: 24px 0 0; }
+.comparison-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 12px; }
+.comparison-legend span { display: flex; align-items: center; gap: 7px; }
+.comparison-legend i { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.loss-comparison-chart { display: block; width: 100%; height: auto; background: #fffef9; border-radius: 6px; }
+.loss-comparison-chart text { font-size: 11px; fill: #61776b; font-family: Arial, "Microsoft YaHei", sans-serif; }
+.compare-step-control { display: flex; gap: 13px; align-items: center; flex-wrap: wrap; margin: 20px 0; }
+.compare-step-control label { font-size: 13px; white-space: nowrap; }
+.compare-step-control input { flex: 1; min-width: 100px; accent-color: var(--teal); }
+.compare-step-control .button { font-size: 12px; padding: 10px 13px; }
+@media(max-width: 560px) {
+  .comparison-lab > summary { flex-wrap: wrap; gap: 8px; padding: 16px; }
+  .comparison-lab > summary strong { min-width: 170px; font-size: 14px; }
+  .lab-body { padding: 15px; }
+  .rule-cards, .rule-results { grid-template-columns: 1fr; }
+  .rule-cards article, .rule-results article { padding: 15px; }
+  .rule-rate { font-size: 31px; }
+  .lab-proof td, .lab-proof th { font-size: 11px; padding: 8px 3px; }
+  .comparison-legend { font-size: 11px; }
+}

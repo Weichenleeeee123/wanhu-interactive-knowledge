@@ -66,7 +66,7 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
         <p className="small muted">
           {lesson.experiment.type === "gradient-descent"
             ? "模型说明：本实验固定采用 f(x) = x²，不代表所有损失函数。"
-            : "模型说明：采用标准主持人规则，不包含其他开门策略。"}
+            : "模型说明：主实验采用标准主持人规则；延伸实验单独对照随机开门，不混用样本与结论。"}
         </p>
         {lesson.sourceIds.length > 0 && (
           <div className="inline-sources">

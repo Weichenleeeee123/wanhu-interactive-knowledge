@@ -41,7 +41,9 @@
     ".next-polish-dev/types/**/*.ts",
     ".next-polish-dev/dev/types/**/*.ts",
     ".next-release-polish-20260912/types/**/*.ts",
-    ".next-release-polish-20260912/dev/types/**/*.ts"
+    ".next-release-polish-20260912/dev/types/**/*.ts",
+    ".next-product-depth-20260912/types/**/*.ts",
+    ".next-product-depth-20260912/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
