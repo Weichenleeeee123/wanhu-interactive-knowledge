@@ -14,7 +14,7 @@ export default {
     if (path === `/assets/app-${__ASSET_ID__}.js`) return respond(__APP_JS__,"application/javascript; charset=utf-8",true);
     if (path === `/assets/app-${__ASSET_ID__}.css`) return respond(__APP_CSS__,"text/css; charset=utf-8",true);
     if (path === "/icon.svg" || path === "/favicon.ico") return respond(__ICON__,"image/svg+xml");
-    if (["/","/create","/view"].includes(path)) {
+    if (["/","/create","/view","/library"].includes(path)) {
       const response = respond(shell,"text/html; charset=utf-8");
       response.headers.set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'");
       return response;

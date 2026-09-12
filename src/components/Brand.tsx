@@ -24,6 +24,7 @@ export function Header({ workshop = false }: { workshop?: boolean }) {
     <header className="site-header">
       <Brand />
       <nav aria-label="主导航">
+        <Link href="/library">我的作品</Link>
         <Link href="/#experiments">
           探索实验 <span aria-hidden="true">↗</span>
         </Link>

@@ -1,4 +1,5 @@
 @import "./comparison-lab.css";
+@import "./workflow.css";
 
 :root {
   color-scheme: light;
@@ -1066,8 +1067,9 @@ input[type="range"] {
 }
 @media (max-width: 760px) {
   .site-header {
-    height: 80px;
-    padding: 0 6%;
+    height: auto;
+    min-height: 92px;
+    padding: 18px 6%;
   }
   .brand {
     font-size: 23px;
@@ -1876,7 +1878,7 @@ input[type="range"] {
     gap: 12px;
   }
   .save-status {
-    display: none;
+    display: block;
   }
   .workspace-tabs button {
     padding: 10px;

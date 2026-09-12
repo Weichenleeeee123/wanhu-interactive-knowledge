@@ -35,7 +35,6 @@ test("creator edits a snapshot that opens in a fresh browser context", async ({
     reader.getByRole("heading", { name: "我的学习率实验", exact: true }),
   ).toBeVisible();
   await page.reload();
-  await page.getByRole("button", { name: "恢复本地草稿" }).click();
   await expect(page.getByLabel("作品标题")).toHaveValue("我的学习率实验");
   await context.close();
 });

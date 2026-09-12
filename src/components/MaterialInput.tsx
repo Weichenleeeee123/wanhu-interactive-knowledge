@@ -6,10 +6,21 @@ import {
   type Lesson,
   type Source,
 } from "@/lib/lesson";
+import type { Material } from "@/lib/works";
 type Capabilities = { search: boolean; generation: boolean; provider: string };
 const starters = {
-  'gradient-descent': {label:'学习率为什么不能太大？',query:'梯度下降 学习率',material:'我想用标准模型 f(x)=x² 解释梯度下降。每一步按 x_next = x − 学习率 × 2x 更新，初始 x=8。请引导读者比较学习率 0.2、0.5、1 和 1.2 的变化，区分收敛、震荡与发散。'},
-  'monty-hall':{label:'剩两扇门真的五五开？',query:'三门问题 换门',material:'三扇门后等概率放置一个奖品。我先选一扇，主持人知道奖品位置，始终打开未选中的空门并提供换门机会。我想弄懂：为什么换门的胜率是 2/3，而不是 1/2？请使用标准三门规则。'},
+  "gradient-descent": {
+    label: "学习率为什么不能太大？",
+    query: "梯度下降 学习率",
+    material:
+      "我想用标准模型 f(x)=x² 解释梯度下降。每一步按 x_next = x − 学习率 × 2x 更新，初始 x=8。请引导读者比较学习率 0.2、0.5、1 和 1.2 的变化，区分收敛、震荡与发散。",
+  },
+  "monty-hall": {
+    label: "剩两扇门真的五五开？",
+    query: "三门问题 换门",
+    material:
+      "三扇门后等概率放置一个奖品。我先选一扇，主持人知道奖品位置，始终打开未选中的空门并提供换门机会。我想弄懂：为什么换门的胜率是 2/3，而不是 1/2？请使用标准三门规则。",
+  },
 };
 export function MaterialInput({
   mode,
@@ -17,46 +28,69 @@ export function MaterialInput({
   onGenerationStart,
   onGenerated,
   onExample,
+  value,
+  onChange,
 }: {
   mode: "teach" | "learn";
   capabilities: Capabilities | null;
   onGenerationStart: () => number;
   onGenerated: (lesson: Lesson, reason: string, revision: number) => void;
   onExample: (type: "gradient-descent" | "monty-hall") => void;
+  value: Material;
+  onChange: (value: Material) => void;
 }) {
   const id = useId();
-  const [question, setQuestion] = useState(""),
-    [query, setQuery] = useState(""),
-    [material, setMaterial] = useState("");
-  const [results, setResults] = useState<Source[]>([]),
-    [sources, setSources] = useState<Source[]>([]);
+  const {
+    question,
+    query,
+    material,
+    sources,
+    sourceUrl,
+    sourceTitle,
+    sourceAuthor,
+    consent,
+  } = value;
+  function setField<K extends keyof Material>(key: K, next: Material[K]) {
+    onChange({ ...value, [key]: next });
+  }
+  const [results, setResults] = useState<Source[]>([]);
   const [searching, setSearching] = useState(false),
     [searched, setSearched] = useState(false),
     [searchError, setSearchError] = useState("");
   const [generating, setGenerating] = useState(false),
-    [error, setError] = useState(""),
-    [consent, setConsent] = useState(false);
-  const [sourceUrl, setSourceUrl] = useState(""),
-    [sourceTitle, setSourceTitle] = useState(""),
-    [sourceAuthor, setSourceAuthor] = useState("");
-  const [elapsed,setElapsed]=useState(0);
-  const [starterNotice,setStarterNotice]=useState('');
-  function useStarter(type:keyof typeof starters) {
-    const starter=starters[type];setQuestion(starter.label);setQuery(starter.query);
-    setMaterial(current=>current.trim()?current:starter.material);
-    setStarterNotice(material.trim() || sources.length ? '已切换问题；保留了已有材料和来源，请核对是否与新问题相关。' : '已填入原创起步材料，你可以修改或补充知乎来源。');
-    setError('');
+    [error, setError] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [starterNotice, setStarterNotice] = useState("");
+  function useStarter(type: keyof typeof starters) {
+    const starter = starters[type];
+    onChange({
+      ...value,
+      question: starter.label,
+      query: starter.query,
+      material: material.trim() ? material : starter.material,
+    });
+    setStarterNotice(
+      material.trim() || sources.length
+        ? "已切换问题；保留了已有材料和来源，请核对是否与新问题相关。"
+        : "已填入原创起步材料，你可以修改或补充知乎来源。",
+    );
+    setError("");
   }
-  useEffect(()=>{
-    const topic=new URLSearchParams(window.location.search).get('topic');
-    if(topic==='gradient-descent'||topic==='monty-hall') useStarter(topic);
-  },[]);
-  useEffect(()=>{
-    if(!generating) return;
-    const started=Date.now();setElapsed(0);
-    const timer=setInterval(()=>setElapsed(Math.floor((Date.now()-started)/1000)),1000);
-    return()=>clearInterval(timer);
-  },[generating]);
+  useEffect(() => {
+    const topic = new URLSearchParams(window.location.search).get("topic");
+    if (topic === "gradient-descent" || topic === "monty-hall")
+      useStarter(topic);
+  }, []);
+  useEffect(() => {
+    if (!generating) return;
+    const started = Date.now();
+    setElapsed(0);
+    const timer = setInterval(
+      () => setElapsed(Math.floor((Date.now() - started) / 1000)),
+      1000,
+    );
+    return () => clearInterval(timer);
+  }, [generating]);
   async function search() {
     if (!query.trim()) return;
     setSearching(true);
@@ -80,12 +114,13 @@ export function MaterialInput({
     }
   }
   function select(source: Source) {
-    setSources((previous) =>
-      previous.some((s) => s.id === source.id)
-        ? previous.filter((s) => s.id !== source.id)
-        : previous.length < 3
-          ? [...previous, source]
-          : previous,
+    setField(
+      "sources",
+      sources.some((s) => s.id === source.id)
+        ? sources.filter((s) => s.id !== source.id)
+        : sources.length + (sourceUrl.trim() ? 1 : 0) < 3
+          ? [...sources, source]
+          : sources,
     );
   }
   async function generate() {
@@ -173,7 +208,30 @@ export function MaterialInput({
         </p>
       </div>
       <fieldset className="generation-fields" disabled={generating}>
-        <div className="topic-starters"><p>从一个具体问题开始</p><div>{(Object.keys(starters) as (keyof typeof starters)[]).map(type=><button key={type} type="button" onClick={()=>useStarter(type)}>{starters[type].label}</button>)}</div><small>填入原创教学提示；已有材料会保留。你也可以继续检索知乎来源。</small>{starterNotice && <p className="small" role="status">{starterNotice}</p>}</div>
+        <div className="topic-starters">
+          <p>从一个具体问题开始</p>
+          <div>
+            {(Object.keys(starters) as (keyof typeof starters)[]).map(
+              (type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => useStarter(type)}
+                >
+                  {starters[type].label}
+                </button>
+              ),
+            )}
+          </div>
+          <small>
+            填入原创教学提示；已有材料会保留。你也可以继续检索知乎来源。
+          </small>
+          {starterNotice && (
+            <p className="small" role="status">
+              {starterNotice}
+            </p>
+          )}
+        </div>
         <div className="form-field">
           <label htmlFor={`${id}-question`}>
             {mode === "teach" ? "想讲清楚的问题" : "我不理解的地方"}
@@ -189,7 +247,7 @@ export function MaterialInput({
                 : "例如：三门问题还剩两扇门，为什么不是各占一半？"
             }
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+            onChange={(e) => setField("question", e.target.value)}
           />
         </div>
         <div className="search-block">
@@ -212,7 +270,7 @@ export function MaterialInput({
               value={query}
               maxLength={200}
               placeholder="试试「梯度下降 学习率」"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => setField("query", e.target.value)}
             />
             <button
               className="button"
@@ -239,7 +297,9 @@ export function MaterialInput({
           {results.length > 0 && (
             <div className="search-results">
               <p className="small muted">
-                返回的是摘要，可选最多 3 条。已选 {sources.length} 条。
+                返回的是摘要。已选 {sources.length} 条
+                {sourceUrl.trim() ? "，另有 1 个手动来源" : ""}，合计最多 3
+                个来源。
               </p>
               {results.map((source) => (
                 <article
@@ -253,7 +313,7 @@ export function MaterialInput({
                         checked={sources.some((s) => s.id === source.id)}
                         disabled={
                           !sources.some((s) => s.id === source.id) &&
-                          sources.length >= 3
+                          sources.length + (sourceUrl.trim() ? 1 : 0) >= 3
                         }
                         onChange={() => select(source)}
                       />
@@ -300,7 +360,8 @@ export function MaterialInput({
             id={`${id}-material`}
             rows={6}
             value={material}
-            onChange={(e) => setMaterial(e.target.value)}
+            maxLength={200000}
+            onChange={(e) => setField("material", e.target.value)}
             placeholder="粘贴你想解释或理解的关键段落。若摘要缺少公式与条件，请在这里补充。"
           />
           {material.length > 20000 && (
@@ -320,7 +381,7 @@ export function MaterialInput({
               id={`${id}-url`}
               type="url"
               value={sourceUrl}
-              onChange={(e) => setSourceUrl(e.target.value)}
+              onChange={(e) => setField("sourceUrl", e.target.value)}
               maxLength={2048}
               placeholder="https://…"
             />
@@ -331,7 +392,7 @@ export function MaterialInput({
               id={`${id}-title`}
               value={sourceTitle}
               maxLength={200}
-              onChange={(e) => setSourceTitle(e.target.value)}
+              onChange={(e) => setField("sourceTitle", e.target.value)}
             />
           </div>
           <div className="form-field">
@@ -340,15 +401,20 @@ export function MaterialInput({
               id={`${id}-author`}
               value={sourceAuthor}
               maxLength={80}
-              onChange={(e) => setSourceAuthor(e.target.value)}
+              onChange={(e) => setField("sourceAuthor", e.target.value)}
             />
           </div>
         </details>
+        {sources.length + (sourceUrl.trim() ? 1 : 0) > 3 && (
+          <p className="error-message" role="alert">
+            来源超过 3 个，请取消一条搜索结果或清空手动来源链接。
+          </p>
+        )}
         <label className="checkbox-label model-consent">
           <input
             type="checkbox"
             checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
+            onChange={(e) => setField("consent", e.target.checked)}
           />
           <span>
             采用标准教学模型：梯度下降
@@ -366,6 +432,7 @@ export function MaterialInput({
           disabled={
             generating ||
             material.length > 20000 ||
+            sources.length + (sourceUrl.trim() ? 1 : 0) > 3 ||
             capabilities?.generation === false
           }
         >
@@ -378,7 +445,15 @@ export function MaterialInput({
         <p className="field-note">
           点击生成会将所选材料发送给配置的模型服务，结果仍需核对。
         </p>
-        {generating && <div className="generation-progress"><span className="generation-spinner" aria-hidden="true"/><div><strong>正在组织预测、实验和解释</strong><p>已等待 {elapsed} 秒。通常需要十几秒，材料会一直保留。</p></div></div>}
+        {generating && (
+          <div className="generation-progress">
+            <span className="generation-spinner" aria-hidden="true" />
+            <div>
+              <strong>正在组织预测、实验和解释</strong>
+              <p>已等待 {elapsed} 秒。通常需要十几秒，材料会一直保留。</p>
+            </div>
+          </div>
+        )}
         {error && (
           <p className="error-message" role="alert">
             {error}

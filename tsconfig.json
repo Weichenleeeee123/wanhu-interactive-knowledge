@@ -43,7 +43,13 @@
     ".next-release-polish-20260912/types/**/*.ts",
     ".next-release-polish-20260912/dev/types/**/*.ts",
     ".next-product-depth-20260912/types/**/*.ts",
-    ".next-product-depth-20260912/dev/types/**/*.ts"
+    ".next-product-depth-20260912/dev/types/**/*.ts",
+    ".next-product-depth-save-20260912/types/**/*.ts",
+    ".next-product-depth-save-20260912/dev/types/**/*.ts",
+    ".next-product-workflow-20260912/types/**/*.ts",
+    ".next-product-workflow-20260912/dev/types/**/*.ts",
+    ".next-product-workflow-final-20260912/types/**/*.ts",
+    ".next-product-workflow-final-20260912/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
