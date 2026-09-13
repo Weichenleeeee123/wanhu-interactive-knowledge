@@ -33,16 +33,13 @@ export default function Home() {
               <br />
               从知乎文章出发，把文字变成可以参与的互动讲解。
             </p>
-            <div className="hero-actions">
-              <Link className="button primary large" href="/create?mode=teach">
-                开始创作 <span aria-hidden="true">↗</span>
-              </Link>
-              <Link className="text-link" href="/create?mode=learn">
-                我想弄懂一个问题 →
-              </Link>
+            <div className="entry-heading"><span>你想从哪里开始？</span><small>先进入产品，插件随时可以补上。</small></div>
+            <div className="entry-grid" aria-label="选择你的开始方式">
+              <Link className="entry-card entry-card-primary" href="/create?mode=teach"><span className="entry-kicker">我是创作者</span><strong>制作一个互动演示</strong><small>导入知乎文章，把一个观点变成读者能亲手验证的体验。</small><b>开始制作 →</b></Link>
+              <Link className="entry-card" href="/create?mode=learn"><span className="entry-kicker">我是读者</span><strong>理解一段看不懂的内容</strong><small>粘贴文章或段落，获得解释、例子和可以操作的理解。</small><b>开始理解 →</b></Link>
             </div>
-            <Link className="extension-entry" href="/extension">安装玩乎插件，在知乎文章里直接使用 →</Link>
-            <Link className="hero-demo-link" href="/view?example=monty-hall"><span>60 秒亲手体验</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
+            <Link className="extension-entry" href="/extension">我正在知乎里：安装玩乎插件 →</Link>
+            <Link className="hero-demo-link" href="/view?example=monty-hall"><span>还不确定？先体验 60 秒</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
             <p className="hero-footnote">
               <span>01 / 理解</span>
               <span>02 / 探索</span>
@@ -82,14 +79,14 @@ export default function Home() {
             </p>
           </div>
         </section>
-        <section className="experiments-section" id="experiments">
+        <section className="experiments-section" id="examples">
           <div className="section-heading">
             <div>
               <span className="eyebrow">THE EXPLORABLE COLLECTION</span>
-              <h2>从这两个问题，开始探索。</h2>
+              <h2>先看看别人做出的作品。</h2>
             </div>
             <p>
-              也可以先体验两类标准模型实验。
+              这里是玩乎的示例作品。
               <br />
               每一份示例，都能成为你的创作起点。
             </p>

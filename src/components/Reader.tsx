@@ -81,7 +81,7 @@ export function Reader() {
         ) : lesson ? (
           <>
             <div className="reader-topline">
-              <Link href="/#experiments">← 返回实验集</Link>
+              <Link href="/#examples">← 返回示例作品</Link>
               {savedCopy?.lesson === lesson ? (
                 <Link
                   className="text-button"
