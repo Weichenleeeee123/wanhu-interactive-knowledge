@@ -8,6 +8,7 @@ export async function GET(request:Request){
  if(!code||!state||!session||session.createdAt<Date.now()-10*60_000||state!==session.state||!sessionId)return NextResponse.json({error:"OAuth 回调无效或已过期"},{status:400});
  // Consume state before the upstream exchange: a replay must fail even if the first exchange is still in flight.
  oauthSessions.delete(sessionId);
+ session.state="__consumed__";
  const appId=process.env.ZHIHU_OAUTH_APP_ID,appKey=process.env.ZHIHU_OAUTH_APP_KEY,redirect=process.env.ZHIHU_OAUTH_REDIRECT_URI;
  if(!appId||!appKey||!redirect)return NextResponse.json({error:"OAuth 服务端凭证未配置"},{status:503});
  const body=new URLSearchParams({app_id:appId,app_key:appKey,grant_type:"authorization_code",redirect_uri:redirect,code});
