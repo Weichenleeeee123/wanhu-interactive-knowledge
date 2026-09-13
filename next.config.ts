@@ -6,6 +6,18 @@ const config: NextConfig = {
   async headers() {
     return [
       {
+        source: "/",
+        headers: [{ key: "Cache-Control", value: "public, max-age=300, s-maxage=300, stale-while-revalidate=86400" }],
+      },
+      {
+        source: "/extension",
+        headers: [{ key: "Cache-Control", value: "public, max-age=300, s-maxage=300, stale-while-revalidate=86400" }],
+      },
+      {
+        source: "/view",
+        headers: [{ key: "Cache-Control", value: "public, max-age=300, s-maxage=300, stale-while-revalidate=86400" }],
+      },
+      {
         source: "/downloads/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, immutable" }],
       },
