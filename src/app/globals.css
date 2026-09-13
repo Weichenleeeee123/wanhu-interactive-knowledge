@@ -2085,6 +2085,7 @@ input[type="range"] {
   --mint: #18b9ad;
   --orange: #ffb52e;
 }
+.experiment-loading { min-height: 330px; display:grid; place-content:center; gap:15px; color:var(--muted); text-align:center; box-shadow:none; }.experiment-loading p{font-size:12px;margin:0}.experiment-loading-bar{width:120px;height:4px;border-radius:5px;background:linear-gradient(90deg,var(--brand-soft),var(--brand),var(--brand-soft));background-size:200% 100%;animation:loading-shimmer 1.4s ease-in-out infinite}@keyframes loading-shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
 body {
   background: radial-gradient(circle at 80% -10%, #e7f2ff 0, transparent 36%), var(--paper);
   letter-spacing: .01em;

@@ -11,7 +11,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <body>{children}<div className="kanshan-assistant" aria-label="刘看山助手"><img src="/mascot/liu-kanshan-idle.gif" alt="刘看山"/><span>刘看山在旁边，随时帮你把知识变好玩。</span></div></body>
+      <body>{children}<div className="kanshan-assistant" aria-label="刘看山助手"><img src="/mascot/liu-kanshan-idle.gif" alt="刘看山" loading="lazy" decoding="async" fetchPriority="low"/><span>刘看山在旁边，随时帮你把知识变好玩。</span></div></body>
     </html>
   );
 }

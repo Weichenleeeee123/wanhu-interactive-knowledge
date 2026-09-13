@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/Brand";
-import { GradientExperiment } from "@/components/GradientExperiment";
+import { HomeExperiment } from "@/components/HomeExperiment";
 export default function Home() {
   return (
     <>
@@ -52,7 +52,7 @@ export default function Home() {
               <span>学习率，真的越大越好吗？</span>
               <span aria-hidden="true">↘</span>
             </div>
-            <GradientExperiment compact />
+            <HomeExperiment />
             <div className="handwritten">拖动学习率，看看小球怎么走。</div>
           </div>
         </section>
