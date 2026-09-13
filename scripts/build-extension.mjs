@@ -1,9 +1,10 @@
 import {build} from 'esbuild';
 import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
 import path from 'node:path';
-const backend=new URL(process.env.WANHU_BACKEND_URL||'http://localhost:3003');
+const publicBuild=process.argv.includes('--public');
+const backend=new URL(process.env.WANHU_BACKEND_URL||(publicBuild?'https://wanhu.asia':'http://localhost:3003'));
 if(backend.pathname!=='/'||backend.search||backend.hash||backend.username||backend.password||!['http:','https:'].includes(backend.protocol))throw new Error('Backend must be an http(s) origin');
-const out=path.resolve(process.env.EXTENSION_OUT_DIR||'dist/extension');
+const out=path.resolve(process.env.EXTENSION_OUT_DIR||(publicBuild?'dist/extension-public':'dist/extension'));
 if(!out.startsWith(process.cwd()+path.sep))throw new Error('Output must be inside this workspace');
 await mkdir(out,{recursive:true});
 const brandIcon='data:image/png;base64,'+(await readFile('public/brand/wanhu-icon-128.png')).toString('base64');
