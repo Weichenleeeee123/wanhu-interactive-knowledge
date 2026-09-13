@@ -1,6 +1,7 @@
 "use client";
 import { LessonSchema, type Lesson } from "@/lib/lesson";
 import { AddSource } from "./AddSource";
+import { ReadingCardsEditor } from "./ReadingCardsEditor";
 export function LessonEditor({
   lesson,
   onChange,
@@ -95,9 +96,15 @@ export function LessonEditor({
       ))}
       <div className="editor-divider">
         <span className="eyebrow">EXPERIMENT SETTINGS</span>
-        <h3>实验的初始状态</h3>
+        <h3>
+          {lesson.experiment.type === "article-exploration"
+            ? "互动阅读的情境与原句"
+            : "实验的初始状态"}
+        </h3>
       </div>
-      {lesson.experiment.type === "gradient-descent" ? (
+      {lesson.experiment.type === "article-exploration" ? (
+        <ReadingCardsEditor lesson={lesson} onChange={onChange} />
+      ) : lesson.experiment.type === "gradient-descent" ? (
         <div className="two-fields">
           <div className="form-field">
             <label htmlFor="edit-initial">默认初始位置</label>
@@ -175,7 +182,9 @@ export function LessonEditor({
         </div>
       )}
       <p className="small muted">
-        计算与挑战判分采用标准规则，讲解和初始参数由你决定。
+        {lesson.experiment.type === "article-exploration"
+          ? "可以修改每个情境、选项和反馈。修改引用后，请核对原句确实出自选中的材料。"
+          : "计算与挑战判分采用标准规则，讲解和初始参数由你决定。"}
       </p>
       <div className="editor-divider">
         <span className="eyebrow">SOURCE NOTES</span>
@@ -230,6 +239,20 @@ export function LessonEditor({
           </a>
           <button
             className="text-button source-remove"
+            disabled={
+              lesson.experiment.type === "article-exploration" &&
+              lesson.experiment.cards.some(
+                (card) => card.evidence.sourceId === source.id,
+              )
+            }
+            title={
+              lesson.experiment.type === "article-exploration" &&
+              lesson.experiment.cards.some(
+                (card) => card.evidence.sourceId === source.id,
+              )
+                ? "此来源被阅读卡片引用，请先调整卡片的引用"
+                : undefined
+            }
             onClick={() =>
               onChange({
                 ...lesson,
@@ -241,6 +264,14 @@ export function LessonEditor({
           >
             移出当前作品
           </button>
+          {lesson.experiment.type === "article-exploration" &&
+            lesson.experiment.cards.some(
+              (card) => card.evidence.sourceId === source.id,
+            ) && (
+              <p className="field-note">
+                此来源被阅读卡片引用；先调整卡片引用后，即可移出。
+              </p>
+            )}
         </div>
       ))}
       {!lesson.sources.length && (

@@ -34,8 +34,8 @@ test("an old generation response cannot replace newer author edits", async ({
   await page
     .getByLabel("补充你的讲解材料")
     .fill("梯度下降按负梯度更新，学习率影响更新幅度。");
-  await page.getByRole("checkbox", { name: /采用标准教学模型/ }).check();
-  await page.getByRole("button", { name: "生成我的实验草稿 ↗" }).click();
+  await page.getByRole("checkbox", { name: /生成后由我核对/ }).check();
+  await page.getByRole("button", { name: "生成我的互动草稿 ↗" }).click();
   await began;
   await page.getByRole("button", { name: "三门问题 →", exact: true }).click();
   await page.getByLabel("作品标题").fill("请保留我的新编辑");
@@ -60,7 +60,7 @@ test("long pasted material is preserved and blocked with an explicit message", a
   );
   await expect(page.getByText(/材料超过 20,000/)).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "生成我的实验草稿 ↗" }),
+    page.getByRole("button", { name: "生成我的互动草稿 ↗" }),
   ).toBeDisabled();
 });
 test("gradient rate uses the same precision in inputs, question and grading", async ({

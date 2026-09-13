@@ -1,9 +1,16 @@
 import { z } from "zod";
-import { LessonSchema, SourceSchema, type Lesson } from "./lesson";
+import {
+  ArticleExplorationSchema,
+  ReadingCardSchema,
+  LessonSchema,
+  SourceSchema,
+  SourceMaterialsSchema,
+  type Lesson,
+} from "./lesson";
 import { readDraft } from "./drafts";
 
-const PREFIX = "zhiwan.work.v1.";
-const RECOVERY_PREFIX = "zhiwan.recovery.v1.";
+const PREFIX = "wanhu.work.v1.";
+const RECOVERY_PREFIX = "wanhu.recovery.v1.";
 let writerId: string | undefined;
 const MAX_RECORD = 1024 * 1024;
 type Storage = Pick<
@@ -16,6 +23,7 @@ export const MaterialSchema = z
     query: z.string().max(200),
     material: z.string().max(200000),
     sources: SourceSchema.array().max(3),
+    sourceMaterials: SourceMaterialsSchema.optional(),
     sourceUrl: z.string().max(2048),
     sourceTitle: z.string().max(200),
     sourceAuthor: z.string().max(80),
@@ -47,6 +55,32 @@ const DraftLessonSchema = z
     explanation: z.string().max(800),
     challenge: z.string().max(800),
     experiment: z.discriminatedUnion("type", [
+      ArticleExplorationSchema.extend({
+        cards: ReadingCardSchema.extend({
+          concept: z.string().max(80),
+          explanation: z.string().max(500),
+          question: z.string().max(300),
+          options: z
+            .array(
+              z
+                .object({
+                  label: z.string().max(180),
+                  feedback: z.string().max(360),
+                })
+                .strict(),
+            )
+            .length(3),
+          evidence: z
+            .object({
+              quote: z.string().max(160),
+              sourceId: z.string().max(100),
+            })
+            .strict(),
+        })
+          .array()
+          .min(2)
+          .max(4),
+      }),
       z
         .object({
           type: z.literal("gradient-descent"),
@@ -268,7 +302,7 @@ export function workStatus(work: Work) {
 }
 export function backupWork(work: Work) {
   return JSON.stringify(
-    { format: "zhiwan-workspace-v1", work: WorkSchema.parse(work) },
+    { format: "wanhu-workspace-v1", work: WorkSchema.parse(work) },
     null,
     2,
   );
@@ -276,7 +310,7 @@ export function backupWork(work: Work) {
 export function parseWorkBackup(raw: string): Work {
   if (raw.length > MAX_RECORD) throw new Error("备份文件过大，最多 1 MiB");
   const parsed = z
-    .object({ format: z.literal("zhiwan-workspace-v1"), work: WorkSchema })
+    .object({ format: z.literal("wanhu-workspace-v1"), work: WorkSchema })
     .strict()
     .parse(JSON.parse(raw));
   return createWork({

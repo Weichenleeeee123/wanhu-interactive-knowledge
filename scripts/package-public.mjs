@@ -3,7 +3,7 @@ import { resolve, relative, join } from "node:path";
 import { spawnSync } from "node:child_process";
 // The bundled Sites packager removes staging. This equivalent retains all files per AGENTS.md.
 const root=process.cwd(); const stamp=Date.now();
-const stage=resolve(".artifacts",`package-${stamp}`); const archive=resolve(".artifacts",`zhiwan-${stamp}.tgz`);
+const stage=resolve(".artifacts",`package-${stamp}`); const archive=resolve(".artifacts",`wanhu-${stamp}.tgz`);
 async function verify(dir) { for(const name of await readdir(dir)) {
   const file=join(dir,name); const info=await lstat(file);
   if(info.isSymbolicLink() || relative(root,file).startsWith("..")) throw new Error("Unsafe package path");

@@ -11,20 +11,41 @@ function download(content: string, name: string, type: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export function exportLesson(lesson: Lesson) {
-  download(lessonJson(lesson), "知玩-互动作品.json", "application/json");
+  download(lessonJson(lesson), "玩乎-互动作品.json", "application/json");
 }
 export function exportWriting(lesson: Lesson) {
   const content = [
     `# ${lesson.title}`,
     lesson.intro,
     `## 学习目标\n${lesson.goal}`,
-    `## 先做预测\n${lesson.prediction}`,
-    `## 动手观察\n${lesson.observation}`,
+    `## ${lesson.experiment.type === "article-exploration" ? "阅读起点" : "先做预测"}\n${lesson.prediction}`,
+    `## ${lesson.experiment.type === "article-exploration" ? "参与情境" : "动手观察"}\n${lesson.observation}`,
+    ...(lesson.experiment.type === "article-exploration"
+      ? lesson.experiment.cards.map((card, index) => {
+          const source = lesson.sources.find(
+            (source) => source.id === card.evidence.sourceId,
+          );
+          return [
+            `## 情境 ${index + 1}：${card.concept}`,
+            card.question,
+            ...card.options.map(
+              (option, i) =>
+                `${String.fromCharCode(65 + i)}. ${option.label}\n   反馈：${option.feedback}`,
+            ),
+            `本文更贴近的选择：${String.fromCharCode(65 + card.correctIndex)}`,
+            card.explanation,
+            `> ${card.evidence.quote}`,
+            source
+              ? `出处：${source.title} / ${source.author || "作者信息未提供"}\n${source.url}`
+              : "出处：本次提交的正文材料",
+          ].join("\n\n");
+        })
+      : []),
     `## 结果讲解\n${lesson.explanation}`,
     `## 带走一个理解\n${lesson.challenge}`,
     `## 参考来源\n${lesson.sources.map((s) => `- ${s.title} — ${s.author || "作者信息未提供"}\n  ${s.url}`).join("\n")}`,
   ].join("\n\n");
-  download(content, "知玩-讲解文案.md", "text/markdown;charset=utf-8");
+  download(content, "玩乎-讲解文案.md", "text/markdown;charset=utf-8");
 }
 export function SharePanel({
   lesson,
@@ -125,7 +146,7 @@ export function SharePanel({
         </button>
       </div>
       <p className="small muted">
-        链接包含作品讲解、实验参数和来源，拿到链接的人均可阅读。
+        链接包含讲解、互动内容和引用来源，拿到链接的人均可阅读。
       </p>
     </dialog>
   );

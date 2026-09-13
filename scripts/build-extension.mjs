@@ -1,0 +1,20 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile,copyFile} from 'node:fs/promises';
+import path from 'node:path';
+const backend=new URL(process.env.WANHU_BACKEND_URL||'http://localhost:3003');
+if(backend.pathname!=='/'||backend.search||backend.hash||backend.username||backend.password||!['http:','https:'].includes(backend.protocol))throw new Error('Backend must be an http(s) origin');
+const out=path.resolve(process.env.EXTENSION_OUT_DIR||'dist/extension');
+if(!out.startsWith(process.cwd()+path.sep))throw new Error('Output must be inside this workspace');
+await mkdir(out,{recursive:true});
+const brandIcon='data:image/png;base64,'+(await readFile('public/brand/wanhu-icon-128.png')).toString('base64');
+const icons={};
+await mkdir(path.join(out,'icons'),{recursive:true});
+for(const size of [16,32,48,128]){icons[size]=`icons/wanhu-${size}.png`;await copyFile(`public/brand/wanhu-icon-${size}.png`,path.join(out,icons[size]));}
+const css=await build({entryPoints:['src/app/globals.css'],bundle:true,minify:true,write:false});
+const styles=css.outputFiles[0].text.replaceAll(':root',':host')+'\n'+await readFile('src/extension/extension.css','utf8');
+await build({entryPoints:{content:'src/extension/content.tsx',background:'src/extension/background.ts'},outdir:out,bundle:true,minify:true,format:'iife',target:'chrome120',platform:'browser',define:{'process.env.NODE_ENV':'"production"',__BACKEND_URL__:JSON.stringify(backend.origin),__EXTENSION_CSS__:JSON.stringify(styles),__BRAND_ICON__:JSON.stringify(brandIcon)},logLevel:'warning'});
+const matches=['https://www.zhihu.com/*','https://zhihu.com/*','https://zhuanlan.zhihu.com/*'];
+const manifest={manifest_version:3,icons,name:'玩乎 · 把知乎知识试明白',version:'0.2.0',description:'在知乎文章、回答和写作页面选段生成互动演示，原位探索、核对来源，并分享给读者。',permissions:['storage'],host_permissions:[...matches,backend.protocol+'//'+backend.hostname+'/*'],background:{service_worker:'background.js'},action:{default_icon:icons,default_title:'玩乎 · 打开知识工作区'},content_scripts:[{matches,js:['content.js'],run_at:'document_idle',all_frames:false}],content_security_policy:{extension_pages:"script-src 'self'; object-src 'self'"}};
+await writeFile(path.join(out,'manifest.json'),JSON.stringify(manifest,null,2));
+await writeFile(path.join(out,'安装说明.txt'),`玩乎浏览器扩展 0.2.0\n\n1. 保持生成服务 ${backend.origin} 运行。\n2. 打开 Chrome 的 chrome://extensions 或 Edge 的 edge://extensions，开启开发者模式。\n3. 选择“加载已解压的扩展程序”，选择本目录。\n4. 刷新已打开的知乎页面，在文章或写作编辑器中选段，点击右下角“玩乎”。\n5. 核对上方文字并生成，然后点击“插入正文，开始互动”。\n\n演示只插入当前浏览器，不会发布或更改知乎文章。分享链接中的材料摘录可以被收件人读取。\n模型服务不可用时，已保存的演示仍可打开。其他读者通过分享链接或同样安装本扩展体验。\n\n本地验证版，尚未发布扩展商店。`);
+console.log(`Extension built: ${out}\nBackend: ${backend.origin}`);

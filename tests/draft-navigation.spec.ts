@@ -12,7 +12,7 @@ test("leaving before the autosave delay still persists the latest valid edit", a
   const saved = await page.evaluate(() =>
     JSON.parse(
       localStorage.getItem(
-        `zhiwan.work.v1.${new URL(location.href).searchParams.get("work")}`,
+        `wanhu.work.v1.${new URL(location.href).searchParams.get("work")}`,
       ) ?? "null",
     ),
   );
@@ -29,13 +29,13 @@ test("client navigation flushes the pending draft before the editor unmounts", a
   await page.getByLabel("作品标题").fill("返回首页也不能丢的修改");
   const workId = new URL(page.url()).searchParams.get("work");
   await page
-    .getByRole("link", { name: "知玩首页", exact: true })
+    .getByRole("link", { name: "玩乎首页", exact: true })
     .click({ force: true });
   await expect(
     page.getByRole("heading", { name: "让知识， 动起来。" }),
   ).toBeVisible();
   const saved = await page.evaluate(
-    (id) => JSON.parse(localStorage.getItem(`zhiwan.work.v1.${id}`) ?? "null"),
+    (id) => JSON.parse(localStorage.getItem(`wanhu.work.v1.${id}`) ?? "null"),
     workId,
   );
   expect(saved?.lesson.title).toBe("返回首页也不能丢的修改");

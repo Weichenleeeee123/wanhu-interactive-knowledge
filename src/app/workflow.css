@@ -98,8 +98,8 @@
   min-width: 0;
 }
 .work-card:hover {
-  border-color: #b0c3b6;
-  box-shadow: 0 4px 20px #193c4008;
+  border-color: var(--line-strong);
+  box-shadow: 0 4px 20px #0c2b5308;
 }
 .work-card-top {
   display: flex;
@@ -199,7 +199,7 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 6px;
-  box-shadow: 0 8px 22px #193c4020;
+  box-shadow: 0 8px 22px #0c2b5320;
   z-index: 3;
 }
 .work-more button {
@@ -216,9 +216,9 @@
 .library-empty {
   padding: 54px 20px 70px;
   text-align: center;
-  border: 1px dashed #b9c8bb;
+  border: 1px dashed var(--line-strong);
   border-radius: 8px;
-  background: #fffef970;
+  background: #ffffff70;
 }
 .library-empty .empty-mark {
   display: block;

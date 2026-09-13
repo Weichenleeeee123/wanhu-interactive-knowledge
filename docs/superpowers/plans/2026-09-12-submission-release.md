@@ -1,4 +1,4 @@
-# 知玩 Submission Release Plan
+# 玩乎 Submission Release Plan
 
 > **For agentic workers:** Use subagent-driven-development for independent submission assets and read-only release reviews. Only the root Site owner changes application source, calls Sites, or publishes. Never delete files; preserve every build/archive.
 

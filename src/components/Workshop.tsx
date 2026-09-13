@@ -91,7 +91,7 @@ export function Workshop() {
       if (file.size > 1024 * 1024) throw new Error("文件过大，最多 1 MiB");
       const raw = await file.text();
       const next =
-        JSON.parse(raw)?.format === "zhiwan-workspace-v1"
+        JSON.parse(raw)?.format === "wanhu-workspace-v1"
           ? parseWorkBackup(raw)
           : createWork({ lesson: parseLessonFile(raw), mode });
       if (importingRevision !== revision.current) return;
@@ -347,7 +347,7 @@ export function Workshop() {
                   setMobilePreview(mode === "learn");
                   setNotice(
                     mode === "learn"
-                      ? "互动讲解已生成。可以开始阅读、操作实验，也可以继续调整讲解。"
+                      ? "互动讲解已生成。可以开始阅读、参与互动，也可以继续调整讲解。"
                       : reason,
                   );
                 }}
@@ -401,7 +401,7 @@ export function Workshop() {
                 <div className="placeholder-steps">
                   <span>预测</span>
                   <i>→</i>
-                  <span>实验</span>
+                  <span>互动形式</span>
                   <i>→</i>
                   <span>理解</span>
                 </div>
@@ -421,7 +421,7 @@ export function Workshop() {
       )}
       <footer className="footer">
         <span>素材与作品保存在当前浏览器 · 可从「我的作品」继续</span>
-        <span>知玩 / KNOWLEDGE IN MOTION</span>
+        <span>玩乎 / KNOWLEDGE IN MOTION</span>
       </footer>
     </>
   );

@@ -1,0 +1,19 @@
+/* Shared by the website and the extension's Shadow DOM. */
+:root {
+  color-scheme: light;
+  --brand: #0866ed;
+  --brand-hover: #004ac2;
+  --brand-soft: #edf5ff;
+  --mint: #00bdb0;
+  --mint-ink: #007c77;
+  --mint-soft: #e7faf6;
+  --paper: #f6f9ff;
+  --ink: #0c2b53;
+  --muted: #586c88;
+  --line: #d6e3f3;
+  --line-strong: #b3c9e5;
+  --teal: var(--brand);
+  --orange: #ffac24;
+  --white: #ffffff;
+  --soft: var(--brand-soft);
+}

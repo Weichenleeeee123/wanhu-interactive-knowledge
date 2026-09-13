@@ -14,14 +14,14 @@ export async function POST(request: Request) {
   try {
     if (!limiter.take(requestIdentity(request)))
       throw new ServerError("RATE_LIMITED", "生成请求过于频繁");
-    const body = await readJsonBody(request, undefined, deadline);
+    const body = await readJsonBody(request, 256 * 1024, deadline);
     const parsed = GenerateInputSchema.safeParse(body);
     if (!parsed.success)
       throw new ServerError("BAD_REQUEST", "生成请求格式无效");
     if (!parsed.data.standardModel) {
       return NextResponse.json({
         unsupported: true,
-        reason: "需要明确同意使用标准模型后才能生成",
+        reason: "请先确认生成后核对讲解、原句与材料的关系",
       });
     }
     const provider = await createGenerationProvider(

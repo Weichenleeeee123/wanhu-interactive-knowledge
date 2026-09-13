@@ -41,7 +41,7 @@ export function GradientCompare({ onActivity }: { onActivity?: (value: string) =
           {paths.map((path,index) => <tr key={path.rate}><th><span style={{color:colors[index]}}>η = {path.rate}</span></th><td>{display(path.values[step])}</td><td>{display(path.values[step]**2)}</td></tr>)}
         </tbody></table>
         <p className="lab-takeaway">{step === 0 ? "先往前走几步，观察哪条线降低、哪条保持不变、哪条升高。" : <>更大的学习率不保证更快接近谷底。η = 0.5 一步到达；η = 1 的位置左右跳动，损失却不下降。<strong>判断学习是否进步，要看目标值怎样变化。</strong></>}</p>
-        <p className="small muted">知玩扩展实验 · 固定 f(x) = x² 与共同初值 x = 8。对数刻度用于容纳数量级差异，表格保留实际数值；结果不推广到所有损失函数。</p>
+        <p className="small muted">玩乎扩展实验 · 固定 f(x) = x² 与共同初值 x = 8。对数刻度用于容纳数量级差异，表格保留实际数值；结果不推广到所有损失函数。</p>
       </div>
     </details>
   );

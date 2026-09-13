@@ -14,7 +14,7 @@ test("browser Back retains unsaved content as a recoverable session copy", async
   await page.evaluate(() => {
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = function (key, value) {
-      if (key.startsWith("zhiwan."))
+      if (key.startsWith("wanhu."))
         throw new DOMException("容量已满", "QuotaExceededError");
       original.call(this, key, value);
     };
@@ -82,7 +82,7 @@ test("unavailable storage keeps edits in memory, offers a backup and guards leav
   await page.addInitScript(() => {
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = function (key, value) {
-      if (key.startsWith("zhiwan."))
+      if (key.startsWith("wanhu."))
         throw new DOMException("本机容量已满", "QuotaExceededError");
       original.call(this, key, value);
     };

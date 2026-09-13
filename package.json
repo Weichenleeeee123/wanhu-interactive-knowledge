@@ -1,5 +1,5 @@
 {
-  "name": "zhiwan-workshop",
+  "name": "wanhu-workshop",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
+    "test:extension": "playwright test --config playwright.extension.config.ts",
     "build:public": "node scripts/build-public.mjs",
+    "build:extension": "node scripts/build-extension.mjs",
     "preview:public": "node scripts/preview-public.mjs",
     "package:public": "node scripts/package-public.mjs",
     "db:generate": "drizzle-kit generate --config drizzle.config.ts"

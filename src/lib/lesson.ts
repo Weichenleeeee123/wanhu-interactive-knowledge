@@ -21,10 +21,44 @@ export const SourceSchema = z
     author: z.string().trim().max(80),
     url: SafeUrlSchema,
     excerpt: z.string().max(1200),
+    provenance: z.enum(["zhihu-knowledge", "zhihu-search", "user"]).optional(),
+    contentScope: z
+      .enum(["official-body", "search-excerpt", "link-only"])
+      .optional(),
   })
   .strict();
 export type Source = z.infer<typeof SourceSchema>;
+export const SourceMaterialsSchema = z
+  .array(
+    z.object({ sourceId: text(100), text: z.string().max(20000) }).strict(),
+  )
+  .max(3)
+  .superRefine((items, ctx) => {
+    if (items.reduce((sum, item) => sum + item.text.length, 0) > 20000)
+      ctx.addIssue({ code: "custom", message: "来源正文合计最多 20,000 字符" });
+    if (new Set(items.map((item) => item.sourceId)).size !== items.length)
+      ctx.addIssue({ code: "custom", message: "来源正文标识不能重复" });
+  });
+export const ReadingCardSchema = z
+  .object({
+    concept: text(80),
+    explanation: text(500),
+    question: text(300),
+    options: z
+      .array(z.object({ label: text(180), feedback: text(360) }).strict())
+      .length(3),
+    correctIndex: z.number().int().min(0).max(2),
+    evidence: z.object({ quote: text(160), sourceId: text(100) }).strict(),
+  })
+  .strict();
+export const ArticleExplorationSchema = z
+  .object({
+    type: z.literal("article-exploration"),
+    cards: z.array(ReadingCardSchema).min(2).max(4),
+  })
+  .strict();
 export const ExperimentSchema = z.discriminatedUnion("type", [
+  ArticleExplorationSchema,
   z
     .object({
       type: z.literal("gradient-descent"),
@@ -78,6 +112,19 @@ export const LessonSchema = z
         path: ["sourceIds"],
         message: "讲解引用了不存在或重复的来源",
       });
+    if (lesson.experiment.type === "article-exploration") {
+      for (const [index, card] of lesson.experiment.cards.entries()) {
+        if (
+          card.evidence.sourceId !== "material" &&
+          !ids.has(card.evidence.sourceId)
+        )
+          ctx.addIssue({
+            code: "custom",
+            path: ["experiment", "cards", index, "evidence", "sourceId"],
+            message: "原句引用了不存在的来源",
+          });
+      }
+    }
   });
 export type Lesson = z.infer<typeof LessonSchema>;
 export function lessonError(value: unknown): string | null {
@@ -87,6 +134,7 @@ export function lessonError(value: unknown): string | null {
     : parsed.error.issues.map((i) => i.message).join("；");
 }
 export const experimentNames: Record<ExperimentType, string> = {
+  "article-exploration": "原文互动阅读",
   "gradient-descent": "梯度下降",
   "monty-hall": "三门问题",
 };

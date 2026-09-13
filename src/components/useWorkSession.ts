@@ -15,6 +15,7 @@ import {
 import { getExample } from "@/lib/examples";
 import type { Lesson } from "@/lib/lesson";
 import { newHistory, recordEdit, redoEdit, undoEdit } from "@/lib/edit-history";
+import { decodeLesson } from "@/lib/share";
 
 export function useWorkSession() {
   const current = useRef<Work | null>(null),
@@ -61,6 +62,21 @@ export function useWorkSession() {
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
+    if (window.location.hash.startsWith('#v1.')) {
+      void decodeLesson(window.location.hash.slice(1)).then(lesson => {
+        const imported = persist(createWork({lesson,mode:'teach'}));
+        history.current = newHistory(imported.lesson);
+        setHistoryState(history.current);
+        if (!unsaved.current) {
+          const url = new URL(window.location.href);
+          url.hash = '';
+          window.history.replaceState(window.history.state, '', url);
+          setSaveStatus('已从分享链接保存为独立作品');
+        }
+      }).catch(error => setLoadError(error instanceof Error ? error.message : '分享作品无法读取'))
+        .finally(() => setReady(true));
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const id = params.get("work");
     let initial: Work;

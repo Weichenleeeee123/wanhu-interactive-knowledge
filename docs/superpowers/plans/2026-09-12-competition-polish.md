@@ -1,4 +1,4 @@
-# 知玩参赛打磨 Implementation Plan
+# 玩乎参赛打磨 Implementation Plan
 
 > Use bounded asset/research subagents and read-only reviews. Only the root Site owner edits application source, calls Sites, commits or publishes. Never delete files.
 

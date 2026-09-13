@@ -4,7 +4,7 @@ declare const __APP_CSS__: string;
 declare const __ICON__: string;
 declare const __ASSET_ID__: string;
 const baseHeaders = { "X-Content-Type-Options":"nosniff", "Referrer-Policy":"strict-origin-when-cross-origin" };
-const shell = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>知玩 · 可交互知识工坊</title><meta name="description" content="把知乎的好问题，变成可以预测、操作、验证的互动知识作品。"><meta name="theme-color" content="#273e34"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app-${__ASSET_ID__}.css"><script type="module" src="/assets/app-${__ASSET_ID__}.js"></script></head><body><div id="root"><p style="padding:48px;font-family:system-ui">知玩 · 正在打开知识工坊…</p></div><noscript>请启用 JavaScript，体验可以操作的知识实验。</noscript></body></html>`;
+const shell = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>玩乎 · 可交互知识工坊</title><meta name="description" content="把知乎的好问题，变成可以预测、操作、验证的互动知识作品。"><meta name="theme-color" content="#0866ed"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app-${__ASSET_ID__}.css"><script type="module" src="/assets/app-${__ASSET_ID__}.js"></script></head><body><div id="root"><p style="padding:48px;font-family:system-ui">玩乎 · 正在打开知识工坊…</p></div><noscript>请启用 JavaScript，体验可以操作的知识实验。</noscript></body></html>`;
 export default {
   async fetch(request: Request, env: Environment): Promise<Response> {
     const path = new URL(request.url).pathname;

@@ -49,7 +49,11 @@
     ".next-product-workflow-20260912/types/**/*.ts",
     ".next-product-workflow-20260912/dev/types/**/*.ts",
     ".next-product-workflow-final-20260912/types/**/*.ts",
-    ".next-product-workflow-final-20260912/dev/types/**/*.ts"
+    ".next-product-workflow-final-20260912/dev/types/**/*.ts",
+    ".next-zhihu-article-20260912-2238/types/**/*.ts",
+    ".next-zhihu-article-20260912-2238/dev/types/**/*.ts",
+    ".next-article-verified-20260913/types/**/*.ts",
+    ".next-article-verified-20260913/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

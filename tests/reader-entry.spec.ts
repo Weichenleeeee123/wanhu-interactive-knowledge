@@ -6,7 +6,7 @@ test("a learner opens the generated snapshot directly and edited links cannot re
   await page.route("**/api/generate",route=>route.fulfill({json:{lesson:{...getExample("monty-hall"),origin:"ai",title:"我自己的三门讲解"},reason:""}}));
   await page.goto("/create?mode=learn&topic=monty-hall");
   await page.getByRole("checkbox").check();
-  await page.getByRole("button",{name:"把这个问题变成实验 ↗",exact:true}).click();
+  await page.getByRole("button",{name:"生成我的互动阅读 ↗",exact:true}).click();
   const read=page.getByRole("link",{name:"开始阅读 ↗",exact:true});
   await expect(read).toBeVisible();
   const first=await read.getAttribute("href");

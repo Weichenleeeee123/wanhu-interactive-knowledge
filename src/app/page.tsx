@@ -31,7 +31,7 @@ export default function Home() {
             <p className="hero-description">
               有些道理，亲手试一次就懂了。
               <br />
-              把文字讲解，变成可以探索的互动实验。
+              从知乎文章出发，把文字变成可以参与的互动讲解。
             </p>
             <div className="hero-actions">
               <Link className="button primary large" href="/create?mode=teach">
@@ -63,21 +63,21 @@ export default function Home() {
             <span className="process-number">01</span>
             <p>
               <strong>带着一个好问题</strong>
-              <span>检索知乎，或放入你的讲解材料</span>
+              <span>导入知乎知识内容、链接摘要或原文段落</span>
             </p>
           </div>
           <div>
             <span className="process-number">02</span>
             <p>
               <strong>给知识一个可玩的形状</strong>
-              <span>组织讲解，调整实验与观察提示</span>
+              <span>提炼关键观点，编辑情境题、反馈与原句</span>
             </p>
           </div>
           <div>
             <span className="process-number">03</span>
             <p>
               <strong>分享一次真正的理解</strong>
-              <span>一份讲解，一场实验，一个链接</span>
+              <span>读者参与互动，带着理解回到原文</span>
             </p>
           </div>
         </section>
@@ -88,7 +88,7 @@ export default function Home() {
               <h2>从这两个问题，开始探索。</h2>
             </div>
             <p>
-              首版支持两类实验。
+              也可以先体验两类标准模型实验。
               <br />
               每一份示例，都能成为你的创作起点。
             </p>
@@ -173,7 +173,7 @@ export default function Home() {
           <p>
             好的讲解，让人点头。
             <br />
-            <strong>好的实验，让人真的明白。</strong>
+            <strong>参与其中，让理解更进一步。</strong>
           </p>
           <Link className="text-link" href="/create">
             去工坊，做一个 →
@@ -181,7 +181,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="footer">
-        <span>知玩 · 可交互知识工坊</span>
+        <span>玩乎 · 可交互知识工坊</span>
         <span>知乎黑客松 / 学习工具与知识生产</span>
       </footer>
     </>

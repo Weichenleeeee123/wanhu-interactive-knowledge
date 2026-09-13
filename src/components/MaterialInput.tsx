@@ -7,6 +7,8 @@ import {
   type Source,
 } from "@/lib/lesson";
 import type { Material } from "@/lib/works";
+import { ArticleImport } from "./ArticleImport";
+import { selectSourcesForMaterial } from "@/lib/source-materials";
 type Capabilities = { search: boolean; generation: boolean; provider: string };
 const starters = {
   "gradient-descent": {
@@ -134,7 +136,7 @@ export function MaterialInput({
       return;
     }
     if (!consent) {
-      setError("请先确认使用首版支持的标准教学模型。");
+      setError("请先确认生成后核对讲解、原句与材料的关系。");
       return;
     }
     let selected = [...sources];
@@ -170,7 +172,11 @@ export function MaterialInput({
           mode,
           question,
           material,
-          sources: selected,
+          ...selectSourcesForMaterial(
+            material,
+            selected,
+            value.sourceMaterials,
+          ),
           standardModel: consent,
         }),
         signal: AbortSignal.timeout(50000),
@@ -178,14 +184,14 @@ export function MaterialInput({
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "生成失败，请稍后重试");
       if (data.unsupported) {
-        setError(data.reason || "这份材料暂不适合首版实验。");
+        setError(data.reason || "材料还不足以支持互动讲解，请补充具体段落。");
         return;
       }
       const lesson = LessonSchema.safeParse(data.lesson);
       if (!lesson.success) throw new Error("生成的作品格式无效，请重试");
       onGenerated(
         lesson.data,
-        data.reason || "草稿已生成，请核对讲解与实验。",
+        data.reason || "草稿已生成，请核对讲解与引用。",
         generationRevision,
       );
     } catch (e) {
@@ -203,13 +209,14 @@ export function MaterialInput({
         </h2>
         <p>
           {mode === "teach"
-            ? "选一份材料，做一个让人真正理解的实验。"
+            ? "导入一篇知乎内容，把关键观点变成可互动的讲解。"
             : "把不理解的地方告诉我们，带着问题动手试一试。"}
         </p>
       </div>
+      <ArticleImport value={value} onChange={onChange} disabled={generating} />
       <fieldset className="generation-fields" disabled={generating}>
-        <div className="topic-starters">
-          <p>从一个具体问题开始</p>
+        <details className="topic-starters">
+          <summary>或从一个标准模型问题开始</summary>
           <div>
             {(Object.keys(starters) as (keyof typeof starters)[]).map(
               (type) => (
@@ -231,7 +238,7 @@ export function MaterialInput({
               {starterNotice}
             </p>
           )}
-        </div>
+        </details>
         <div className="form-field">
           <label htmlFor={`${id}-question`}>
             {mode === "teach" ? "想讲清楚的问题" : "我不理解的地方"}
@@ -243,8 +250,8 @@ export function MaterialInput({
             maxLength={200}
             placeholder={
               mode === "teach"
-                ? "例如：为什么学习率太大，反而离最低点越来越远？"
-                : "例如：三门问题还剩两扇门，为什么不是各占一半？"
+                ? "例如：怎样用文章里的方法，把大目标变成今天能开始的一步？"
+                : "例如：我总是被琐事打断，文章里的建议应该怎么用？"
             }
             value={question}
             onChange={(e) => setField("question", e.target.value)}
@@ -370,7 +377,7 @@ export function MaterialInput({
             </p>
           )}
           <p className="field-note">
-            链接用于标注来源，不会自动读取全文。优先放入与目标问题有关的段落。
+            已导入的内容会出现在这里。优先保留与目标问题有关的段落，可以补充上下文。
           </p>
         </div>
         <details className="attribution-fields">
@@ -417,8 +424,7 @@ export function MaterialInput({
             onChange={(e) => setField("consent", e.target.checked)}
           />
           <span>
-            采用标准教学模型：梯度下降
-            f(x)=x²，或标准三门规则。生成后由我核对其与材料的关系。
+            根据材料生成互动阅读或标准模型实验。生成后由我核对讲解、原句与材料的关系。
           </span>
         </label>
         {capabilities?.generation === false && (
@@ -437,10 +443,10 @@ export function MaterialInput({
           }
         >
           {generating
-            ? "正在构思实验与讲解…"
+            ? "正在构思互动讲解…"
             : mode === "teach"
-              ? "生成我的实验草稿 ↗"
-              : "把这个问题变成实验 ↗"}
+              ? "生成我的互动草稿 ↗"
+              : "生成我的互动阅读 ↗"}
         </button>
         <p className="field-note">
           点击生成会将所选材料发送给配置的模型服务，结果仍需核对。
@@ -449,7 +455,7 @@ export function MaterialInput({
           <div className="generation-progress">
             <span className="generation-spinner" aria-hidden="true" />
             <div>
-              <strong>正在组织预测、实验和解释</strong>
+              <strong>正在提炼要点、组织互动与核对引句</strong>
               <p>已等待 {elapsed} 秒。通常需要十几秒，材料会一直保留。</p>
             </div>
           </div>

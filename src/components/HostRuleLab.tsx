@@ -52,7 +52,7 @@ export function HostRuleLab({ onActivity }: { onActivity?: (value: string) => vo
           </details>
           <p className="lab-takeaway">带走这个追问：<strong>结论相同的表象背后，产生信息的规则相同吗？</strong></p>
         </div>}
-        <p className="small muted lab-footnote">知玩扩展实验 · 与上方标准三门实验分开统计。模拟频率会波动，理论结果来自所列规则与等可能情况。</p>
+        <p className="small muted lab-footnote">玩乎扩展实验 · 与上方标准三门实验分开统计。模拟频率会波动，理论结果来自所列规则与等可能情况。</p>
       </div>
     </details>
   );

@@ -1,9 +1,14 @@
 "use client";
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 import { type Lesson, experimentNames } from "@/lib/lesson";
 import { GradientExperiment } from "./GradientExperiment";
 import { MontyExperiment } from "./MontyExperiment";
-import { LearningRecap, PredictionCard, type LearningSession } from './LearningProgress';
+import { ArticleExploration } from "./ArticleExploration";
+import {
+  LearningRecap,
+  PredictionCard,
+  type LearningSession,
+} from "./LearningProgress";
 export function LessonView({
   lesson,
   preview = false,
@@ -11,12 +16,34 @@ export function LessonView({
   lesson: Lesson;
   preview?: boolean;
 }) {
-  return <LessonExperience key={JSON.stringify(lesson)} lesson={lesson} preview={preview} />;
+  return (
+    <LessonExperience
+      key={JSON.stringify(lesson)}
+      lesson={lesson}
+      preview={preview}
+    />
+  );
 }
-function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
-  const [session,setSession]=useState<LearningSession>({prediction:null,activity:'',verified:null});
-  const activity=useCallback((value:string)=>setSession(s=>({...s,activity:value})),[]);
-  const challenge=useCallback((value:boolean|null)=>setSession(s=>({...s,verified:value})),[]);
+function LessonExperience({
+  lesson,
+  preview,
+}: {
+  lesson: Lesson;
+  preview: boolean;
+}) {
+  const [session, setSession] = useState<LearningSession>({
+    prediction: null,
+    activity: "",
+    verified: null,
+  });
+  const activity = useCallback(
+    (value: string) => setSession((s) => ({ ...s, activity: value })),
+    [],
+  );
+  const challenge = useCallback(
+    (value: boolean | null) => setSession((s) => ({ ...s, verified: value })),
+    [],
+  );
   return (
     <article className={`lesson ${preview ? "lesson-preview" : ""}`}>
       <div className="lesson-label">
@@ -37,17 +64,35 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
       </div>
       <section className="lesson-section">
         <div className="step-kicker">
-          <span>01</span>先做一个预测
+          <span>01</span>
+          {lesson.experiment.type === "article-exploration"
+            ? "带着问题开始阅读"
+            : "先做一个预测"}
         </div>
         <p>{lesson.prediction}</p>
-        <PredictionCard experiment={lesson.experiment} value={session.prediction} onSelect={value=>setSession(s=>s.prediction===null?{...s,prediction:value}:s)} />
+        <PredictionCard
+          experiment={lesson.experiment}
+          value={session.prediction}
+          onSelect={(value) =>
+            setSession((s) =>
+              s.prediction === null ? { ...s, prediction: value } : s,
+            )
+          }
+        />
       </section>
       <section className="lesson-section">
         <div className="step-kicker">
           <span>02</span>现在，动手试一试
         </div>
         <p className="observation-note">{lesson.observation}</p>
-        {lesson.experiment.type === "gradient-descent" ? (
+        {lesson.experiment.type === "article-exploration" ? (
+          <ArticleExploration
+            experiment={lesson.experiment}
+            sources={lesson.sources}
+            onActivity={activity}
+            onChallenge={challenge}
+          />
+        ) : lesson.experiment.type === "gradient-descent" ? (
           <GradientExperiment
             initialX={lesson.experiment.initialX}
             learningRate={lesson.experiment.learningRate}
@@ -55,7 +100,11 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
             onChallenge={challenge}
           />
         ) : (
-          <MontyExperiment trials={lesson.experiment.trials} onActivity={activity} onChallenge={challenge} />
+          <MontyExperiment
+            trials={lesson.experiment.trials}
+            onActivity={activity}
+            onChallenge={challenge}
+          />
         )}
       </section>
       <section className="lesson-section explanation">
@@ -64,9 +113,11 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
         </div>
         <p>{lesson.explanation}</p>
         <p className="small muted">
-          {lesson.experiment.type === "gradient-descent"
-            ? "模型说明：本实验固定采用 f(x) = x²，不代表所有损失函数。"
-            : "模型说明：主实验采用标准主持人规则；延伸实验单独对照随机开门，不混用样本与结论。"}
+          {lesson.experiment.type === "article-exploration"
+            ? "阅读说明：情境题用于理解本次材料的表达。引句可核对，生成的解释仍需作者审阅。"
+            : lesson.experiment.type === "gradient-descent"
+              ? "模型说明：本实验固定采用 f(x) = x²，不代表所有损失函数。"
+              : "模型说明：主实验采用标准主持人规则；延伸实验单独对照随机开门，不混用样本与结论。"}
         </p>
         {lesson.sourceIds.length > 0 && (
           <div className="inline-sources">
@@ -77,8 +128,9 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
                 <button
                   className="citation-link"
                   key={id}
-                  onClick={() => {
-                    const target = document.getElementById(`source-${id}`);
+                  onClick={(event) => {
+                    const root = event.currentTarget.getRootNode() as Document | ShadowRoot;
+                    const target = root.getElementById(`source-${id}`);
                     if (target instanceof HTMLDetailsElement) {
                       target.open = true;
                       target.scrollIntoView({
@@ -132,10 +184,12 @@ function LessonExperience({lesson,preview}:{lesson:Lesson;preview:boolean}) {
                 rel="noreferrer"
                 className="text-link"
               >
-                {new URL(s.url).hostname === "zhihu.com" ||
-                new URL(s.url).hostname.endsWith(".zhihu.com")
-                  ? "回知乎读完整解释"
-                  : "阅读来源原文"}{" "}
+                {s.provenance === "zhihu-knowledge"
+                  ? "核对知乎官方内容"
+                  : new URL(s.url).hostname === "zhihu.com" ||
+                      new URL(s.url).hostname.endsWith(".zhihu.com")
+                    ? "回知乎读完整解释"
+                    : "阅读来源原文"}{" "}
                 ↗
               </a>
             </details>

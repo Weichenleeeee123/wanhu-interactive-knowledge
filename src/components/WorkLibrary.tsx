@@ -24,7 +24,7 @@ export function exportWork(work: Work) {
   );
   const link = document.createElement("a");
   link.href = url;
-  link.download = `知玩-素材与作品-${work.id.slice(0, 8)}.json`;
+  link.download = `玩乎-素材与作品-${work.id.slice(0, 8)}.json`;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -118,7 +118,7 @@ export function WorkLibrary() {
             <p>
               不用一次做完。写下问题、放入材料，
               <br />
-              知玩会自动保存，下次从这里接着做。
+              玩乎会自动保存，下次从这里接着做。
             </p>
             <div className="controls">
               <a className="button primary" href="/create">
@@ -306,7 +306,7 @@ export function WorkLibrary() {
         )}
       </main>
       <footer className="footer">
-        <span>知玩 · 让每次理解留下痕迹</span>
+        <span>玩乎 · 让每次理解留下痕迹</span>
         <span>本机作品集</span>
       </footer>
       {sharing && (

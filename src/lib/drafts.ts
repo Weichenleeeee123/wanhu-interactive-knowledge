@@ -1,5 +1,5 @@
 import { LessonSchema, type Lesson } from "./lesson";
-const DRAFT_KEY = "zhiwan.draft.v1";
+const DRAFT_KEY = "wanhu.draft.v1";
 type Storage = Pick<globalThis.Storage, "getItem" | "setItem">;
 export function saveDraft(storage: Storage, lesson: Lesson) {
   const valid = LessonSchema.parse(lesson);

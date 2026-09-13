@@ -1,6 +1,9 @@
 import { LessonSchema, type Lesson, type ExperimentType } from "./lesson";
 
-export const examples: Record<ExperimentType, Lesson> = {
+export const examples: Record<
+  Exclude<ExperimentType, "article-exploration">,
+  Lesson
+> = {
   "gradient-descent": LessonSchema.parse({
     version: 1,
     origin: "example",

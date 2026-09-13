@@ -133,7 +133,7 @@ export function Reader() {
         )}
       </main>
       <footer className="footer">
-        <span>知玩 · 让知识动起来</span>
+        <span>玩乎 · 让知识动起来</span>
         <span>理解，始于亲自试一试。</span>
       </footer>
     </>
