@@ -33,12 +33,12 @@ export default function Home() {
               <br />
               从知乎文章出发，把文字变成可以参与的互动讲解。
             </p>
-            <div className="entry-heading"><span>你想从哪里开始？</span><small>先进入产品，插件随时可以补上。</small></div>
+            <div className="entry-heading"><span>选择你的使用方式</span><small>两种入口，共享同一套互动作品。</small></div>
             <div className="entry-grid" aria-label="选择你的开始方式">
-              <Link className="entry-card entry-card-primary" href="/create?mode=teach"><span className="entry-kicker">我是创作者</span><strong>制作一个互动演示</strong><small>导入知乎文章，把一个观点变成读者能亲手验证的体验。</small><b>开始制作 →</b></Link>
-              <Link className="entry-card" href="/create?mode=learn"><span className="entry-kicker">我是读者</span><strong>理解一段看不懂的内容</strong><small>粘贴文章或段落，获得解释、例子和可以操作的理解。</small><b>开始理解 →</b></Link>
+              <Link className="entry-card entry-card-primary" href="/extension"><span className="entry-kicker">核心入口 · 深度融入知乎</span><strong>在知乎使用玩乎</strong><small>读文章时直接理解，写作时生成演示，分享链接后自动出现在正文旁边。</small><b>安装插件 →</b></Link>
+              <Link className="entry-card" href="/create?mode=teach"><span className="entry-kicker">完整创作工作台</span><strong>在网页使用玩乎</strong><small>导入知乎内容，在工坊里制作、编辑、预览并分享互动作品。</small><b>进入网页工坊 →</b></Link>
             </div>
-            <Link className="extension-entry" href="/extension">我正在知乎里：安装玩乎插件 →</Link>
+            <p className="entry-followup">进入后可以选择自己的角色：<Link href="/create?mode=teach">我是创作者</Link> · <Link href="/create?mode=learn">我是读者</Link></p>
             <Link className="hero-demo-link" href="/view?example=monty-hall"><span>还不确定？先体验 60 秒</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
             <p className="hero-footnote">
               <span>01 / 理解</span>
