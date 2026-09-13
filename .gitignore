@@ -15,3 +15,5 @@ tmp-*-response.json
 deploy.zip
 2026-09-13-b2734bbe/
 public/brand/*.png
+
+.tmp/

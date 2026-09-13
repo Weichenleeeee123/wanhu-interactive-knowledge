@@ -174,6 +174,13 @@ export function Workshop() {
             </button>
           </div>
         </div>
+        <div className="journey-strip" aria-label="创作进度">
+          <div className={tab === "material" ? "journey-step active" : "journey-step done"}><span>01</span><div><strong>{mode === "teach" ? "准备写作素材" : "准备阅读材料"}</strong><small>导入知乎文章或粘贴关键段落</small></div></div>
+          <div className="journey-arrow" aria-hidden="true">→</div>
+          <div className={tab === "editor" ? "journey-step active" : "journey-step"}><span>02</span><div><strong>编辑互动</strong><small>把讲解变成可操作的体验</small></div></div>
+          <div className="journey-arrow" aria-hidden="true">→</div>
+          <div className={valid ? "journey-step ready" : "journey-step"}><span>03</span><div><strong>预览分享</strong><small>{valid ? "打开读者视角并生成链接" : "完成作品后解锁"}</small></div></div>
+        </div>
         <div className="work-identity">
           <div>
             <a href="/library">我的作品</a>
@@ -277,7 +284,7 @@ export function Workshop() {
                 if (valid) setSharing(valid);
               }}
             >
-              生成分享链接
+              发布到知乎文章
             </button>
           </div>
         </div>
@@ -348,7 +355,7 @@ export function Workshop() {
                   setNotice(
                     mode === "learn"
                       ? "互动讲解已生成。可以开始阅读、参与互动，也可以继续调整讲解。"
-                      : reason,
+                      : "互动演示已生成。请在右侧用读者视角检查，再发布分享链接到知乎文章。",
                   );
                 }}
                 onExample={example}

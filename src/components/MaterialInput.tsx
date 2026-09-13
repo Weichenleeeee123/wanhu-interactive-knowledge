@@ -214,6 +214,7 @@ export function MaterialInput({
         </p>
       </div>
       <ArticleImport value={value} onChange={onChange} disabled={generating} />
+      <div className="quick-start-hint"><span className="live-dot" /><div><strong>最省力的用法</strong><p>先从上面导入知乎文章，或直接粘贴一段文字；下面的问题只需要写一句你真正想弄懂的事。</p></div></div>
       <fieldset className="generation-fields" disabled={generating}>
         <details className="topic-starters">
           <summary>或从一个标准模型问题开始</summary>
@@ -257,6 +258,8 @@ export function MaterialInput({
             onChange={(e) => setField("question", e.target.value)}
           />
         </div>
+        <details className="advanced-material">
+          <summary>补充知乎来源与原文材料 <span>可选</span></summary>
         <div className="search-block">
           <div className="section-line">
             <h3>从知乎找一点线索</h3>
@@ -411,6 +414,7 @@ export function MaterialInput({
               onChange={(e) => setField("sourceAuthor", e.target.value)}
             />
           </div>
+        </details>
         </details>
         {sources.length + (sourceUrl.trim() ? 1 : 0) > 3 && (
           <p className="error-message" role="alert">

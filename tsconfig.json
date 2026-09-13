@@ -53,7 +53,9 @@
     ".next-zhihu-article-20260912-2238/types/**/*.ts",
     ".next-zhihu-article-20260912-2238/dev/types/**/*.ts",
     ".next-article-verified-20260913/types/**/*.ts",
-    ".next-article-verified-20260913/dev/types/**/*.ts"
+    ".next-article-verified-20260913/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

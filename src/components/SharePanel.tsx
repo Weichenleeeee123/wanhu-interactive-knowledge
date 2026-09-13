@@ -106,7 +106,7 @@ export function SharePanel({
       ) : url ? (
         <>
           <label htmlFor="share-url" className="small">
-            作品分享链接
+            发布到知乎文章的分享链接
           </label>
           <input
             ref={input}
@@ -117,7 +117,7 @@ export function SharePanel({
           />
           <div className="controls">
             <button className="button primary" onClick={() => void copy()}>
-              复制链接
+              复制分享链接
             </button>
             <a className="button" href={url} target="_blank" rel="noreferrer">
               打开作品 ↗
@@ -146,7 +146,7 @@ export function SharePanel({
         </button>
       </div>
       <p className="small muted">
-        链接包含讲解、互动内容和引用来源，拿到链接的人均可阅读。
+        将它作为普通链接粘贴进知乎文章。安装玩乎的读者会在链接附近自动展开互动卡片；其他读者仍可点击链接打开完整阅读页。
       </p>
     </dialog>
   );
