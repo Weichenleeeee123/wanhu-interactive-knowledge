@@ -240,7 +240,7 @@ export function createKnowledgeClient(
         author_name: z.string().max(80).optional(),
         content: z.string().max(200000),
       })
-      .parse(await json(encodeURIComponent(id)));
+      .parse(await json(`story/${encodeURIComponent(id)}`));
     if (raw.work_id !== id)
       throw new ServerError("UPSTREAM_FAILURE", "知乎返回的内容标识不匹配");
     const text = plainText(raw.content);
@@ -251,7 +251,7 @@ export function createKnowledgeClient(
         id: `knowledge-${id}`,
         title: raw.chapter_name || item.title,
         author: raw.author_name ?? "",
-        url: `${BASE}/${id}`,
+        url: `${BASE}/story/${id}`,
         excerpt: text.slice(0, 1200),
         provenance: "zhihu-knowledge",
         contentScope: "official-body",
