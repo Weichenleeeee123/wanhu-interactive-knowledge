@@ -42,10 +42,26 @@
 .generation-progress strong { font-size: 14px; }.generation-progress p { font-size: 13px; line-height: 1.6; margin: 7px 0 0; }
 .generation-spinner { flex-shrink: 0; width: 22px; height: 22px; border: 2px solid var(--line); border-top-color: var(--teal); border-radius: 50%; animation: spin 1.2s linear infinite; }
 .hero-demo-link { display: block; text-decoration: none; max-width: 390px; margin-top: 28px; line-height: 1.8; font-size: 15px; }
+.extension-entry { display: inline-block; margin-top: 18px; color: var(--teal); font-size: 13px; text-underline-offset: 4px; }
 .hero-demo-link span { display: block; font-size: 12px; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }.hero-demo-link b { color: var(--teal); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 500px) { .prediction-card,.learning-recap { padding: 18px; }.scenario-controls { grid-template-columns: repeat(2,minmax(0,1fr)); }.monty-proof { padding: 16px; } }
 @media (prefers-reduced-motion:reduce) { .generation-spinner { animation: none; } }
+
+.extension-page { max-width: 1240px; margin: 0 auto; padding: 70px 5% 100px; }
+.extension-hero { display:grid; grid-template-columns:minmax(0,1fr) minmax(360px, .9fr); gap:70px; align-items:center; padding:20px 0 80px; }
+.extension-hero h1 { font:500 clamp(42px,6vw,76px)/1.15 "Songti SC","SimSun",serif; margin:18px 0; letter-spacing:-2px; }
+.extension-hero p { color:var(--muted); line-height:2; max-width:600px; font-size:16px; }
+.extension-actions { display:flex; gap:22px; align-items:center; flex-wrap:wrap; margin:30px 0 16px; }
+.extension-meta { font-size:12px!important; margin-top:18px; }
+.extension-preview { min-height:330px; border:1px solid var(--line-strong); border-radius:14px; background:var(--white); box-shadow:0 15px 40px #0c2b5312; overflow:hidden; transform:rotate(1deg); }
+.extension-preview-bar { padding:18px 20px; border-bottom:1px solid var(--line); font-size:12px; color:var(--muted); }
+.extension-preview-body { padding:28px; background:linear-gradient(135deg,var(--paper),var(--brand-soft)); min-height:270px; position:relative; }
+.preview-lines { display:grid; gap:16px; opacity:.55; padding:15px 25px; }.preview-lines i,.preview-lines b { display:block; height:9px; border-radius:9px; background:var(--line-strong); }.preview-lines i:nth-child(2){width:75%}.preview-lines i:nth-child(3){width:88%}.preview-lines i:nth-child(4){width:60%}.preview-lines i:nth-child(5){width:82%}.preview-lines b{width:45%;background:var(--brand)}
+.preview-card { position:absolute; left:30px; right:30px; bottom:25px; border:1px solid var(--line-strong); border-top:3px solid var(--mint); border-radius:10px; background:var(--white); padding:18px 20px; display:grid; gap:5px; box-shadow:0 10px 28px #0c2b5318; }.preview-card strong{font-size:16px}.preview-card span{font-size:12px;color:var(--muted)}.preview-card em{font-style:normal;color:var(--mint-ink);font-size:12px;margin-top:8px}
+.extension-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; border-top:1px solid var(--line); padding-top:35px; }.extension-steps>div{padding:24px;background:var(--white);border:1px solid var(--line);border-radius:9px}.extension-steps span{font:italic 26px Georgia,serif;color:var(--brand)}.extension-steps h2{font-size:19px;margin:12px 0 7px}.extension-steps p{color:var(--muted);font-size:13px;line-height:1.9;margin:0}.extension-steps code{font-size:11px;background:var(--brand-soft);padding:2px 5px;border-radius:3px}
+.extension-note { margin-top:24px; padding:24px 28px; border-left:3px solid var(--orange); background:var(--white); }.extension-note strong{font-size:16px}.extension-note p{color:var(--muted);line-height:1.9;margin:8px 0 0}
+@media(max-width:760px){.extension-hero{grid-template-columns:1fr;gap:30px;padding-bottom:55px}.extension-preview{transform:none}.extension-steps{grid-template-columns:1fr}.extension-page{padding-top:38px}}
 * {
   box-sizing: border-box;
 }

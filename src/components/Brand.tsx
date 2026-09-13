@@ -17,6 +17,7 @@ export function Header({ workshop = false }: { workshop?: boolean }) {
       <Brand />
       <nav aria-label="主导航">
         <Link href="/library">我的作品</Link>
+        <Link href="/extension">安装插件</Link>
         <a href="/api/auth/zhihu/start">知乎登录</a>
         <Link href="/#experiments">
           探索实验 <span aria-hidden="true">↗</span>

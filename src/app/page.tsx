@@ -41,6 +41,7 @@ export default function Home() {
                 我想弄懂一个问题 →
               </Link>
             </div>
+            <Link className="extension-entry" href="/extension">安装玩乎插件，在知乎文章里直接使用 →</Link>
             <Link className="hero-demo-link" href="/view?example=monty-hall"><span>60 秒亲手体验</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
             <p className="hero-footnote">
               <span>01 / 理解</span>
