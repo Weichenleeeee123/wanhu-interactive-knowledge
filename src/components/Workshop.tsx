@@ -189,7 +189,7 @@ export function Workshop() {
             <strong>{workTitle(work)}</strong>
           </div>
           <div className="work-management">
-            <a href="/create">＋ 新建作品</a>
+            <a href={`/create?mode=${mode}`}>＋ 新建作品</a>
             <button
               onClick={() => {
                 revision.current++;
@@ -321,13 +321,13 @@ export function Workshop() {
             className={!mobilePreview ? "active" : ""}
             onClick={() => setMobilePreview(false)}
           >
-            编辑
+            {mode === "learn" ? "原文与提问" : "编辑"}
           </button>
           <button
             className={mobilePreview ? "active" : ""}
             onClick={() => setMobilePreview(true)}
           >
-            作品预览
+            {mode === "learn" ? "动手理解" : "作品预览"}
           </button>
         </div>
         <div
@@ -356,7 +356,7 @@ export function Workshop() {
                   setNotice(
                     mode === "learn"
                       ? "互动讲解已生成。可以开始阅读、参与互动，也可以继续调整讲解。"
-                      : "互动演示已生成。请在右侧用读者视角检查，再发布分享链接到知乎文章。",
+                      : "互动演示已生成。请打开作品预览检查，再将分享链接贴进知乎文章。",
                   );
                 }}
                 onExample={example}
@@ -366,7 +366,7 @@ export function Workshop() {
               <>
                 {mode==='teach'?<LessonEditor lesson={lesson} onChange={edit}/>:<div className="reader-context-panel">
                   <span className="eyebrow">围绕原文继续理解</span><h2>{lesson.title}</h2>
-                  <p>先在右侧动手试一试。如果仍有疑问，可以直接围绕这段提问。</p>
+                  <p>先在演示区动手试一试。如果仍有疑问，可以直接围绕这段提问。</p>
                   {lesson.sources.map(source=><blockquote key={source.id}><p>{source.excerpt}</p><a href={source.url} target="_blank" rel="noreferrer">返回《{source.title}》 ↗</a></blockquote>)}
                   <ThinkingAssist key={work.id} mode="learn" material={work.material.material || lesson.sources.map(source=>source.excerpt).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
                 </div>}

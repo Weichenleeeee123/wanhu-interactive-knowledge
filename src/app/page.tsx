@@ -39,7 +39,7 @@ export default function Home() {
               <Link className="entry-card" href="/create?mode=teach"><span className="entry-kicker">完整创作工作台</span><strong>在网页使用玩乎</strong><small>导入知乎内容，在工坊里制作、编辑、预览并分享互动作品。</small><b>进入网页工坊 →</b></Link>
             </div>
             <p className="entry-followup">进入后可以选择自己的角色：<Link href="/create?mode=teach">我是创作者</Link> · <Link href="/create?mode=learn">我是读者</Link></p>
-            <Link className="hero-demo-link" href="/view?example=monty-hall"><span>还不确定？先体验 60 秒</span>剩下两扇门，真的各占一半吗？ <b>→</b></Link>
+            <Link className="hero-demo-link" href="/showcase"><span>先看看效果 · 10 篇真实知乎文章</span>发一次握手、冲一杯咖啡，亲手把知识试明白 <b>→</b></Link>
             <p className="hero-footnote">
               <span>01 / 理解</span>
               <span>02 / 探索</span>
@@ -68,7 +68,7 @@ export default function Home() {
             <span className="process-number">02</span>
             <p>
               <strong>给知识一个可玩的形状</strong>
-              <span>提炼关键观点，编辑情境题、反馈与原句</span>
+              <span>用动画、步骤推演与互动实验讲清关键观点</span>
             </p>
           </div>
           <div>
