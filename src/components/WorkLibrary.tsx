@@ -184,7 +184,7 @@ export function WorkLibrary() {
                         <span className="work-kind">
                           {work.mode === "teach" ? "创作" : "学习"}
                           {work.lesson
-                            ? ` / ${experimentNames[work.lesson.experiment.type]}`
+                            ? ` / ${experimentNames[work.lesson.experiment.type as keyof typeof experimentNames]}`
                             : " / 素材草稿"}
                         </span>
                         <span
