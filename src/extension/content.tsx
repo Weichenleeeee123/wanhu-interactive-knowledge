@@ -122,10 +122,16 @@ function App() {
       const selection=window.getSelection();
       if(!selection?.toString().trim()||selection.anchorNode?.getRootNode()!==document)return;
       window.clearTimeout(timer);
+      // Read the range while it still belongs to the article. Focusing the
+      // sidebar can clear it before the debounce fires; rereading then would
+      // accidentally capture the entire article instead of the selected text.
+      let captured:ReturnType<typeof contextFromPage>;
+      try {captured=contextFromPage(true);}
+      catch(error){setContext(null);setConsent(false);setError(errorText(error));return;}
       timer=window.setTimeout(()=>{
         try {
-          const next=contextFromPage(true);
-          if(!next.context.selection)return;
+          const next=captured;
+          if(!next.context.selection||next.context.pageUrl!==pageIdentity(location.href))return;
           anchor.current=next.anchor;
           if(context?.text===next.context.text&&context.source.url===next.context.source.url)return;
           setContext(next.context);setDetectedMode(next.context.mode);setConsent(false);setError('');
@@ -254,7 +260,7 @@ function App() {
         {error&&<p className="zw-error" role="alert">{error}</p>}
         {notice&&<p className="zw-notice" role="status">{notice}</p>}
         {current&&<section className="zw-result" aria-label="生成结果"><span className="zw-result-label">{demoLabel(current)} / {experimentNames[current.lesson.experiment.type]}</span><h2>{current.lesson.title}</h2><p>{current.lesson.goal}</p>{tab==='saved'&&<ThinkingAssist mode={detectedMode} material={current.lesson.sources.map(source=>source.excerpt).join('\n\n')||current.lesson.intro} request={requestAssistance}/>}<button className="zw-primary" onClick={()=>embed(current)}>插入正文，开始互动 ↓</button><small className="zw-hint">这一步只是在当前知乎页面预览，原文不会被改写。</small><button className="zw-secondary" onClick={()=>void openWorkshop()}>{(context?.mode??detectedMode)==='teach'?'到工坊修改讲解与演示 ↗':'到网页继续理解 ↗'}</button>{share&&<><label className="zw-label" htmlFor="zw-share">发布到知乎文章</label><input id="zw-share" readOnly value={share} onFocus={event=>event.target.select()}/><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(share).then(()=>setNotice('分享链接已复制。请在知乎编辑器中作为普通链接粘贴；安装玩乎的读者会自动展开演示。')).catch(()=>setError('复制受限，请选中上方链接手动复制。'))}>复制分享链接 ↗</button><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(`[${current.lesson.title}](${share})`).then(()=>setNotice('带标题链接已复制，可直接粘贴到支持 Markdown 的编辑器。')).catch(()=>setError('复制受限，请手动复制上方链接。'))}>复制带标题链接</button><small className="zw-hint">要让读者看到，请把上方分享链接贴进知乎文章。未安装插件的读者仍可点击链接打开完整网页。</small></>}</section>}
-        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><small>插件版本 0.4.1 · <a href={__BACKEND_URL__+"/extension"} target="_blank" rel="noreferrer">更新与安装说明 ↗</a></small><p>作者在写作时生成互动演示，把分享链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
+        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><small>插件版本 0.4.2 · <a href={__BACKEND_URL__+"/extension"} target="_blank" rel="noreferrer">更新与安装说明 ↗</a></small><p>作者在写作时生成互动演示，把分享链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
       </div>
     </aside>}
   </div>;

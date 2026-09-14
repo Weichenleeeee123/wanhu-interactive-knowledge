@@ -49,6 +49,17 @@ test.beforeAll(async()=>{
 test.afterAll(async()=>{await browser?.close();await new Promise<void>(resolve=>server?.close(()=>resolve()));});
 test.beforeEach(()=>{requests=[];fail=false;delay=0;assistance=[];});
 
+test('moving focus to the sidebar during selection debounce preserves the chosen paragraph',async()=>{
+  const page=await browser.newPage();await open(page);
+  await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
+  await select(page,'#p2');
+  await page.waitForTimeout(40);
+  await page.evaluate(()=>window.getSelection()!.removeAllRanges());
+  await expect(page.getByLabel('将用于生成的文字')).toHaveValue(articleText.split('\n\n')[1]);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.close();
+});
+
 test('published Zhihu redirect links embed without moving the reader and appear in the sidebar',async()=>{
   const payload=await encodeLesson(articleLesson);
   const wrapped='https://link.zhihu.com/?target='+encodeURIComponent('http://localhost:3015/view#'+payload);
@@ -90,7 +101,7 @@ test('latest extension embeds the demo in the actual public Zhihu article',async
   await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
   await page.getByRole('button',{name:'本页演示 1',exact:true}).click();
   await expect(page.locator('.zw-saved')).toContainText('预制示例');
-  await expect(page.locator('.zw-footer')).toContainText('0.4.1');
+  await expect(page.locator('.zw-footer')).toContainText('0.4.2');
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.screenshot({path:path.join(output,'real-zhihu-latest.png')});
   await page.close();
