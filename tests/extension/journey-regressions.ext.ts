@@ -60,6 +60,28 @@ test('moving focus to the sidebar during selection debounce preserves the chosen
   await page.close();
 });
 
+for(const mode of ['learn','teach'] as const)test(`${mode}: editing and selecting the sidebar question preserves article material`,async()=>{
+  const page=await browser.newPage();
+  const html=mode==='teach'?fixture.replace('<div class="RichText">','<div contenteditable="true" class="RichText">'):fixture;
+  await open(page,mode==='teach'?'https://zhuanlan.zhihu.com/p/123456/edit':'https://www.zhihu.com/question/41/answer/42',html);
+  await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
+  await select(page,'#p2');
+  const material=page.getByLabel('将用于生成的文字');
+  await expect(material).toHaveValue(articleText.split('\n\n')[1]);
+  const question=page.locator('#zw-question');
+  await question.fill('请用逐步动画说明这段文字');
+  await question.selectText();
+  await page.waitForTimeout(250);
+  await expect(material).toHaveValue(articleText.split('\n\n')[1]);
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await page.locator('.zw-consent input').check();
+  await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
+  await expect(page.getByRole('region',{name:'生成结果'})).toBeVisible();
+  expect(requests[0].mode).toBe(mode);
+  await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(1);
+  await page.close();
+});
+
 test('published Zhihu redirect links embed without moving the reader and appear in the sidebar',async()=>{
   const payload=await encodeLesson(articleLesson);
   const wrapped='https://link.zhihu.com/?target='+encodeURIComponent('http://localhost:3015/view#'+payload);

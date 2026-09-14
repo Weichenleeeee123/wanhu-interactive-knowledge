@@ -119,6 +119,9 @@ function App() {
     if(!open)return;
     let timer:number|undefined;
     const onSelection=()=>{
+      // Textarea selections can be retargeted to the shadow host by Chromium.
+      // Editing a sidebar field must never replace the captured article range.
+      if(shadow.activeElement?.matches('input, textarea, [contenteditable="true"]'))return;
       const selection=window.getSelection();
       if(!selection?.toString().trim()||selection.anchorNode?.getRootNode()!==document)return;
       window.clearTimeout(timer);
