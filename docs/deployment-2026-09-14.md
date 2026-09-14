@@ -49,3 +49,15 @@
 - 下载 `/downloads/wanhu-extension.zip?v=0.4.2` 为 1,414,129 字节，SHA-256 `c984245f46d9bdde8eadaa01ea9ec11b28ed15ce8c080db29ee8efbf7a2fde5e`，与本地发布包一致。
 - 本地线上服务插件目录 `D:/Projects/zhihu/dist/extension-public` 已更新；需在扩展管理页重新加载，并刷新知乎，确认底部版本 0.4.2。
 - 原始线上结果：`.artifacts/journey-production-check-20260914.json`。文档后续提交与应用构建版本分别记录。
+
+
+## 顺手体验与 OAuth 配置更正（0.4.3）
+
+- 当前应用提交 `65fded7000fa8ce772b92bbcfa328264aebca8a2`，目录 `/opt/wanhu/releases/20260914-214807-65fded7`。上一版及所有配置备份保留。Linux 编译、类型检查、23 页生成成功，服务 active。
+- 首屏操作减负、生成停止等待与迟到结果隔离、结果自动展示、阅读快捷互动与提问、按角色分享、插件已插入状态与继续选段。详情见 [体验记录](ux-refinement-2026-09-14.md)。
+- OAuth 凭证原本已存在本地；此前新 VPS 漏配 App ID / App Key，现已同步服务端配置并备份原环境。授权入口 HTTP 307，官方授权端点继续跳转知乎登录。真实用户同意授权与资料回调未代用户完成，不宣称完整登录实测通过。
+- 本地 114 项单元、52 项网页、16 项插件测试通过，类型检查通过；最后的互动定位调整另跑 5 项通过。
+- 在线 ZIP 0.4.3 为 1,415,882 字节，与本地一致，SHA-256 `96c3ff30a17107301c6f6b7d9b57e3297b5389367edcb02364a5d62bbaa64804`。原始结果 `.artifacts/ux-production-check-20260914.json`。
+- 线上服务版目录 `D:/Projects/zhihu/dist/extension-public` 已更新至 0.4.3，浏览器需重新加载扩展并刷新知乎。
+
+正式域名执行本轮 5 项体验回归全部通过（17.7 秒）：空白手机工坊、停止生成、阅读快捷入口、读者分享与登录返回任务。
