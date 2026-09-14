@@ -18,5 +18,8 @@ export async function GET(request:Request){
  const profile=await profileResponse.json() as {uid?:number|string;hash_id?:string;fullname?:string;avatar_path?:string;headline?:string;description?:string;url?:string};
  if(!profileResponse.ok||profile.uid===undefined)return NextResponse.json({error:"知乎用户信息读取失败，请重试"},{status:502});
  session.accessToken=data.access_token;session.expiresAt=Date.now()+(data.expires_in||7200)*1000;session.profile={uid:String(profile.uid),hashId:profile.hash_id,fullname:profile.fullname,avatarPath:profile.avatar_path,headline:profile.headline,description:profile.description,url:profile.url};oauthSessions.set(sessionId,session);
- const response=NextResponse.redirect(new URL(session.returnTo||"/create?oauth=success",request.url));response.headers.append("Set-Cookie",cookie("wanhu_oauth",sessionId,60*60*24*7,new URL(request.url).protocol==='https:'));return response;
+ // The app runs behind Caddy/Cloudflare. Never derive the post-login origin
+ // from the internal request URL, which can be localhost in a reverse proxy.
+ const publicOrigin=process.env.WANHU_PUBLIC_ORIGIN||"https://wanhu.asia";
+ const response=NextResponse.redirect(new URL(session.returnTo||"/create?oauth=success",publicOrigin));response.headers.append("Set-Cookie",cookie("wanhu_oauth",sessionId,60*60*24*7,true));return response;
 }
