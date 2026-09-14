@@ -43,6 +43,7 @@ test('readers can jump to interaction or focus a question without hunting throug
   await page.goto('/view?example=monty-hall');
   await page.getByRole('button',{name:'直接动手试试 ↓'}).click();
   await expect(page.locator('[data-wanhu-interaction] button').first()).toBeFocused();
+  await expect(page.locator('[data-wanhu-interaction] button').first()).toBeInViewport();
   await page.getByRole('button',{name:'我有个问题',exact:true}).click();
   await expect(page.locator('.thinking-assist')).toHaveAttribute('open','');
   await expect(page.locator('.assist-question textarea')).toBeFocused();

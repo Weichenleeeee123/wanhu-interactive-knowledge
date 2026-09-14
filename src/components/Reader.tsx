@@ -12,8 +12,9 @@ export function Reader() {
   const reading=useRef<HTMLDivElement>(null),assistance=useRef<HTMLDivElement>(null);
   function jumpToInteraction(){
     const target=reading.current?.querySelector<HTMLElement>('[data-wanhu-interaction], .curated');
-    target?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
-    target?.querySelector<HTMLElement>('button, input, select')?.focus({preventScroll:true});
+    const control=target?.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled)');
+    (control??target)?.scrollIntoView({block:control?'center':'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    control?.focus({preventScroll:true});
   }
   function askNow(){const details=assistance.current?.querySelector('details');if(details)details.open=true;assistance.current?.scrollIntoView({block:'center',behavior:'instant'});assistance.current?.querySelector('textarea')?.focus({preventScroll:true});}
   const [lesson, setLesson] = useState<Lesson | null>(null),
