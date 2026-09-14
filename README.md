@@ -209,3 +209,8 @@ OAuth 只在赛事后台发放 App ID / App Key 后做真实联调。当前代�
 ![知乎原文内的专用互动演示](public/submission-assets/current/curated-zhihu-tcp.png)
 
 *真实知乎原文 + 本地新版插件的自动嵌入截图。*
+
+
+### 2026-09-14 提交前流程修正（插件 0.4.1）
+
+修复动画播放、真实知乎链接导入、知乎包装外链自动嵌入和读者角色接续。完整 [两端两用户验收](docs/journey-audit-2026-09-14.md)。已解压安装的插件不会随网页更新：重新加载 `dist/extension-public`，然后刷新知乎，确认侧栏底部为 0.4.1。
