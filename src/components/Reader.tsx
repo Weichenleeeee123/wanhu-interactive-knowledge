@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Lesson } from "@/lib/lesson";
 import { getExample } from "@/lib/examples";
@@ -9,6 +9,13 @@ import { ThinkingAssist } from "./ThinkingAssist";
 import { Header } from "./Brand";
 import { createWork, saveWork } from "@/lib/works";
 export function Reader() {
+  const reading=useRef<HTMLDivElement>(null),assistance=useRef<HTMLDivElement>(null);
+  function jumpToInteraction(){
+    const target=reading.current?.querySelector<HTMLElement>('[data-wanhu-interaction], .curated');
+    target?.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    target?.querySelector<HTMLElement>('button, input, select')?.focus({preventScroll:true});
+  }
+  function askNow(){const details=assistance.current?.querySelector('details');if(details)details.open=true;assistance.current?.scrollIntoView({block:'center',behavior:'instant'});assistance.current?.querySelector('textarea')?.focus({preventScroll:true});}
   const [lesson, setLesson] = useState<Lesson | null>(null),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -101,9 +108,11 @@ export function Reader() {
                 {saveError}
               </p>
             )}
-            <div className="reader-guide"><strong>先想一想 → 动手试一试 → 回到原文核对</strong><p>三个区域按顺序展开理解。不确定的地方，可以在下方直接提问。</p></div>
-            <LessonView lesson={lesson} />
+            <div className="reader-guide"><div><strong>亲手试一次，再回到原文。</strong><p>可以先动手，也可以带着疑问开始。</p></div><div className="reader-quick-actions"><button className="button primary" onClick={jumpToInteraction}>直接动手试试 ↓</button><button className="button" onClick={askNow}>我有个问题</button></div></div>
+            <div ref={reading}><LessonView lesson={lesson} /></div>
+            <div ref={assistance}>
             <ThinkingAssist key={JSON.stringify(lesson)} mode="learn" material={lesson.sources.map(source=>source.excerpt).filter(Boolean).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
+            </div>
 
             <div className="reader-bottom">
               <span>试过之后，回到原文看看是否有新的理解。</span>

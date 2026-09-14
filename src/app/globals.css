@@ -2254,3 +2254,43 @@ body {
 @container(max-width:600px){.curated button{font-size:12px}.curated .curated-primary{font-size:12px}.coffee-note p{font-size:11px}.curated-source,.curated-evidence{font-size:11px}.curated .notes-toolbar>button{font-size:10px}.curated .causal-mode button{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.curated .espresso-flow{animation:none}}
 .showcase-preview{display:block;margin:-24px -24px 22px;height:230px;overflow:hidden;background:#f5f5ec;border-radius:18px 18px 0 0;border-bottom:1px solid #e2e8dd}.showcase-preview img{display:block;width:100%;height:auto;transition:transform .4s}.showcase-preview:hover img{transform:scale(1.025)}.showcase-grid article:has(.showcase-preview){overflow:hidden}
+/* Keep the first task visible; secondary tools stay within reach. */
+.workshop-shell [hidden] { display: none !important; }
+.workshop-start .workshop-heading { margin-bottom: 22px; }
+.workshop-start .work-identity { margin-bottom: 24px; }
+.workshop-start .material-input > .editor-heading { display: none; }
+.workshop-start .material-input > .editor-heading + .material-step-label { margin-top: 0; padding-top: 0; border-top: 0; }
+.work-more, .account-menu { position: relative; }
+.work-more[open] { z-index: 30; }
+.work-more > summary, .account-menu > summary { cursor: pointer; list-style: none; white-space: nowrap; }
+.work-more > summary::after { content: ' ▾'; }
+.work-more-menu, .account-menu > div { position: absolute; right: 0; top: calc(100% + 10px); z-index: 45; min-width: 210px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 12px 36px #132e551a; }
+.work-more-menu { display: grid; gap: 4px; }
+.work-more-menu button, .work-more-menu label { padding: 10px; text-align: left; border-radius: 8px; }
+.work-more-menu button:hover, .work-more-menu label:hover { background: #edf5ff; }
+.account-login { border: 1px solid var(--line); background: white; color: var(--ink); font: inherit; border-radius: 20px; padding: 8px 13px; cursor: pointer; white-space: nowrap; }
+.account-menu > div { width: 240px; font-size: 13px; line-height: 1.7; }
+.account-menu p { margin: 8px 0; color: var(--muted); }
+.account-menu button { border: 0; background: #edf5ff; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.material-step-label { display: flex; align-items: center; gap: 12px; margin: 24px 0 16px; padding-top: 18px; border-top: 1px solid var(--line); font-weight: 650; }
+.material-step-label b { display: grid; place-items: center; flex: 0 0 32px; height: 32px; border-radius: 50%; background: #eaf3ff; color: #0867d9; font-size: 12px; }
+.material-step-label small { display: block; color: var(--muted); margin-top: 3px; font-size: 12px; font-weight: 400; }
+.material-input .generation-progress { margin-top: 14px; }
+.reader-guide { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.reader-quick-actions { display: flex; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+.reader-quick-actions .button { font-size: 13px; padding: 11px 17px; }
+[data-wanhu-interaction], .preview-panel { scroll-margin-top: 100px; }
+.preview-panel:focus { outline: none; }
+body:has(.reader-shell, .workshop-shell) .kanshan-assistant { position: static; min-height: 128px; margin: 0 auto 18px; max-width: 1220px; padding: 0 24px; justify-content: flex-end; animation: none; }
+@media(max-width:760px) {
+  .workshop-start .workshop-heading h1 { font-size: 26px; }
+  .workshop-start .work-identity { gap: 12px; }
+  .workshop-start .preview-panel { display: none; }
+  .reader-guide { align-items: flex-start; flex-direction: column; }
+  .reader-quick-actions { width: 100%; }
+  .reader-quick-actions .button { flex: 1; }
+  [data-wanhu-interaction], .preview-panel { scroll-margin-top: 18px; }
+  .account-login { font-size: 12px; padding: 7px 10px; }
+  .kanshan-assistant { position: static; height: 112px; margin: 0 20px 12px; justify-content: flex-end; animation: none; }
+  .kanshan-assistant img { width: 112px; height: 112px; }
+}

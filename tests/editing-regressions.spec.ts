@@ -37,14 +37,11 @@ test("an old generation response cannot replace newer author edits", async ({
   await page.getByRole("checkbox", { name: /生成后由我核对/ }).check();
   await page.getByRole("button", { name: "生成我的互动草稿 ↗" }).click();
   await began;
+  const abandoned=page.waitForEvent('requestfailed',request=>request.url().endsWith('/api/generate'));
   await page.getByRole("button", { name: "三门问题 →", exact: true }).click();
   await page.getByLabel("作品标题").fill("请保留我的新编辑");
-  const response = page.waitForResponse("**/api/generate");
   release();
-  await response;
-  await expect(
-    page.getByText("已保留当前编辑，较早的生成结果未覆盖作品。"),
-  ).toBeVisible();
+  await abandoned;
   await expect(page.getByLabel("作品标题")).toHaveValue("请保留我的新编辑");
 });
 test("long pasted material is preserved and blocked with an explicit message", async ({

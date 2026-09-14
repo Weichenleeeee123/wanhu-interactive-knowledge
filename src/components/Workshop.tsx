@@ -19,6 +19,7 @@ export function Workshop() {
     mode = work?.mode ?? "teach";
   const revision = useRef(0);
   const inputPanel = useRef<HTMLElement>(null);
+  const previewPanel = useRef<HTMLElement>(null);
   const [readingLink, setReadingLink] = useState<{
     lesson: Lesson;
     url: string;
@@ -144,7 +145,7 @@ export function Workshop() {
   return (
     <>
       <Header workshop />
-      <main className="workshop-shell">
+      <main className={`workshop-shell ${!lesson?"workshop-start":""}`}>
         <div className="workshop-heading">
           <div>
             <span className="eyebrow">YOUR KNOWLEDGE WORKSHOP</span>
@@ -175,7 +176,7 @@ export function Workshop() {
             </button>
           </div>
         </div>
-        <div className="journey-strip" aria-label="创作进度">
+        <div className="journey-strip" aria-label="创作进度" hidden={!lesson}>
           <div className={tab === "material" ? "journey-step active" : "journey-step done"}><span>01</span><div><strong>{mode === "teach" ? "准备写作素材" : "准备阅读材料"}</strong><small>导入知乎文章或粘贴关键段落</small></div></div>
           <div className="journey-arrow" aria-hidden="true">→</div>
           <div className={tab === "editor" ? "journey-step active" : "journey-step"}><span>02</span><div><strong>{mode==='teach'?'调整演示':'动手理解'}</strong><small>{mode==='teach'?'核对讲解，按需调整':'预测、操作，再核对解释'}</small></div></div>
@@ -186,10 +187,23 @@ export function Workshop() {
           <div>
             <a href="/library">我的作品</a>
             <span aria-hidden="true"> / </span>
-            <strong>{workTitle(work)}</strong>
+            <strong>{workTitle(work)}</strong>{!lesson&&<span className="save-status" role="status"> · {saveStatus}</span>}
           </div>
           <div className="work-management">
             <a href={`/create?mode=${mode}`}>＋ 新建作品</a>
+            <details className="work-more" onKeyDown={event=>{if(event.key==='Escape'){event.currentTarget.open=false;event.currentTarget.querySelector('summary')?.focus();}}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))event.currentTarget.open=false;}} onClick={event=>{if((event.target as HTMLElement).closest('button'))event.currentTarget.open=false;}}><summary>更多操作</summary><div className="work-more-menu">
+            <label className="text-button file-label">
+              导入作品
+              <input
+                aria-label="导入 JSON 作品"
+                type="file"
+                accept=".json,application/json"
+                onChange={(e) => {
+                  void importFile(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </label>
             <button
               onClick={() => {
                 revision.current++;
@@ -199,10 +213,10 @@ export function Workshop() {
             >
               另存副本
             </button>
-            <button onClick={() => exportWork(work)}>备份素材与作品 ↓</button>
+            <button onClick={() => exportWork(work)}>备份素材与作品 ↓</button></div></details>
           </div>
         </div>
-        <div className="workspace-toolbar">
+        <div className="workspace-toolbar" hidden={!lesson}>
           <div className="workspace-tabs">
             <button
               className={tab === "material" ? "active" : ""}
@@ -266,18 +280,7 @@ export function Workshop() {
                 {mode === "learn" ? "开始阅读" : "用读者视角打开"} ↗
               </a>
             )}
-            <label className="text-button file-label">
-              导入作品
-              <input
-                aria-label="导入 JSON 作品"
-                type="file"
-                accept=".json,application/json"
-                onChange={(e) => {
-                  void importFile(e.target.files?.[0]);
-                  e.target.value = "";
-                }}
-              />
-            </label>
+
             <button
               className="button primary"
               disabled={!valid}
@@ -316,7 +319,7 @@ export function Workshop() {
             {invalid}。未完成的编辑也会保存在本机；填写完整后即可预览和分享。
           </p>
         )}
-        <div className="mobile-preview-tabs">
+        <div className="mobile-preview-tabs" hidden={!lesson}>
           <button
             className={!mobilePreview ? "active" : ""}
             onClick={() => setMobilePreview(false)}
@@ -352,10 +355,11 @@ export function Workshop() {
                   }
                   edit(next);
                   setTab("editor");
-                  setMobilePreview(mode === "learn");
+                  setMobilePreview(true);
+                  requestAnimationFrame(()=>{previewPanel.current?.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});previewPanel.current?.focus({preventScroll:true});});
                   setNotice(
                     mode === "learn"
-                      ? "互动讲解已生成。可以开始阅读、参与互动，也可以继续调整讲解。"
+                      ? "演示已经准备好。先动手试试，有疑问再回到左侧追问。"
                       : "互动演示已生成。请打开作品预览检查，再将分享链接贴进知乎文章。",
                   );
                 }}
@@ -389,7 +393,7 @@ export function Workshop() {
               </>
             )}
           </aside>
-          <section className="preview-panel" aria-label="作品预览">
+          <section className="preview-panel" aria-label="作品预览" ref={previewPanel} tabIndex={-1}>
             <div className="preview-heading">
               <span>
                 <span className="live-dot" /> {mode==='teach'?'作品预览':'动手理解'}
@@ -430,7 +434,7 @@ export function Workshop() {
         </div>
       </main>
       {sharing && (
-        <SharePanel lesson={sharing} onClose={() => setSharing(null)} />
+        <SharePanel lesson={sharing} mode={mode} onClose={() => setSharing(null)} />
       )}
       <footer className="footer">
         <span>素材与作品保存在当前浏览器 · 可从「我的作品」继续</span>

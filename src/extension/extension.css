@@ -50,3 +50,6 @@
 .zw-launcher:hover{background:#eaf6ff}.zw-launcher i{color:var(--muted);letter-spacing:0}
 .zw-launcher .zw-launcher-mascot{width:68px;height:68px;object-fit:contain;border-radius:0}
 .zw-panel .thinking-assist{padding:12px;margin:16px 0;background:var(--white)}
+.zw-waiting { margin-top: 12px; padding: 14px; border-radius: 12px; background: #eef6ff; color: #163b65; font-size: 12px; }
+.zw-waiting p { margin: 6px 0; }
+.zw-result:focus { outline: none; }

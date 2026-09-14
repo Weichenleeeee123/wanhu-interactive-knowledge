@@ -82,6 +82,23 @@ for(const mode of ['learn','teach'] as const)test(`${mode}: editing and selectin
   await page.close();
 });
 
+test('stopping an extension request keeps material and ignores its late result',async()=>{
+  const page=await browser.newPage();await open(page,'https://www.zhihu.com/question/51/answer/52');
+  await select(page);await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
+  await page.locator('.zw-consent input').check();delay=1200;
+  await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
+  await expect.poll(()=>requests.length).toBe(1);
+  await page.getByRole('button',{name:'停止等待，保留选段'}).click();
+  await expect(page.getByLabel('将用于生成的文字')).toHaveValue(articleText.split('\n\n')[0]);
+  await page.waitForTimeout(1400);
+  await expect(page.getByRole('region',{name:'生成结果'})).toHaveCount(0);
+  await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(0);
+  delay=0;await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
+  await expect(page.getByRole('button',{name:'查看正文中的演示 ↓'})).toBeVisible();
+  await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(1);
+  await page.close();
+});
+
 test('published Zhihu redirect links embed without moving the reader and appear in the sidebar',async()=>{
   const payload=await encodeLesson(articleLesson);
   const wrapped='https://link.zhihu.com/?target='+encodeURIComponent('http://localhost:3015/view#'+payload);
@@ -123,7 +140,7 @@ test('latest extension embeds the demo in the actual public Zhihu article',async
   await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
   await page.getByRole('button',{name:'本页演示 1',exact:true}).click();
   await expect(page.locator('.zw-saved')).toContainText('预制示例');
-  await expect(page.locator('.zw-footer')).toContainText('0.4.2');
+  await expect(page.locator('.zw-footer')).toContainText('0.4.3');
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.screenshot({path:path.join(output,'real-zhihu-latest.png')});
   await page.close();

@@ -84,7 +84,7 @@ function LessonExperience({
           }
         />
       </section>
-      <section className="lesson-section">
+      <section className="lesson-section" data-wanhu-interaction>
         <div className="step-kicker">
           <span>02</span>现在，动手试一试
         </div>

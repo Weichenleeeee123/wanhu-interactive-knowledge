@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountMenu } from "./AccountMenu";
 export function Brand() {
   return (
     <Link className="brand" href="/" aria-label="玩乎首页">
@@ -16,6 +17,7 @@ export function Header({ workshop = false }: { workshop?: boolean }) {
     <header className="site-header">
       <Brand />
       <nav aria-label="主导航">
+        <AccountMenu />
         <Link href="/showcase">真实文章演示</Link>
         <Link href="/extension">安装插件</Link>
         <Link href="/library">我的作品</Link>

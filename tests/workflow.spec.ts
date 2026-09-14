@@ -192,6 +192,7 @@ test("undo, redo, incomplete draft recovery and independent copies", async ({
   ).toBeDisabled();
   await page.getByLabel("作品标题").fill("原作品");
   const original = page.url();
+  await page.locator(".work-more:not([open]) summary").click();
   await page.getByRole("button", { name: "另存副本", exact: true }).click();
   await expect(page.getByLabel("作品标题")).toHaveValue("原作品 · 副本");
   await page.getByLabel("作品标题").fill("独立编辑的副本");
@@ -209,6 +210,7 @@ test("workspace backups restore original materials to a new work", async ({
     .fill("需要跨设备继续整理的原始材料");
   const original = page.url();
   const pending = page.waitForEvent("download");
+  if(!await page.locator(".work-more").getAttribute("open").then(v=>v!==null))await page.locator(".work-more summary").click();
   await page.getByRole("button", { name: "备份素材与作品 ↓" }).click();
   const download = await pending;
   const path = testInfo.outputPath("workspace-backup.json");
@@ -257,6 +259,7 @@ test("a stale tab cannot silently replace another tab; duplicate recovers its ed
   await expect(
     other.getByRole("alert").filter({ hasText: "其他标签页" }),
   ).toBeVisible();
+  await other.locator(".work-more:not([open]) summary").click();
   await other.getByRole("button", { name: "另存副本", exact: true }).click();
   await expect(other.getByLabel("作品标题")).toHaveValue(
     "第二标签页的修改 · 副本",

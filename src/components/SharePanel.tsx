@@ -50,9 +50,11 @@ export function exportWriting(lesson: Lesson) {
 export function SharePanel({
   lesson,
   onClose,
+  mode = 'teach',
 }: {
   lesson: Lesson;
   onClose: () => void;
+  mode?: 'teach'|'learn';
 }) {
   const [url, setUrl] = useState(""),
     [error, setError] = useState(""),
@@ -97,7 +99,7 @@ export function SharePanel({
       <span className="share-symbol" aria-hidden="true">
         ↗
       </span>
-      <h2>让这次理解，走得更远。</h2>
+      <h2>{mode==='teach'?'把演示放进你的知乎文章。':'把这次理解，分享给朋友。'}</h2>
       <p>这是当前作品的快照。后续编辑不会改变这个链接里的内容。</p>
       {error ? (
         <p className="error-message" role="alert">
@@ -106,7 +108,7 @@ export function SharePanel({
       ) : url ? (
         <>
           <label htmlFor="share-url" className="small">
-            发布到知乎文章的分享链接
+            {mode==='teach'?'发布到知乎文章的分享链接':'分享这份互动阅读的链接'}
           </label>
           <input
             ref={input}
@@ -146,7 +148,7 @@ export function SharePanel({
         </button>
       </div>
       <p className="small muted">
-        将它作为普通链接粘贴进知乎文章。安装玩乎的读者会在链接附近自动展开互动卡片；其他读者仍可点击链接打开完整阅读页。
+        {mode==='teach'?'复制链接 → 粘贴到知乎文章中合适的段落后 → 发布文章。安装玩乎的读者会在链接附近看到演示；其他读者可以点击打开网页。':'朋友无需安装插件，就能打开链接动手体验。你分享的是自己的互动理解，原文出处会一同保留。'}
       </p>
     </dialog>
   );

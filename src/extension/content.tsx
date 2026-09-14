@@ -96,7 +96,12 @@ function App() {
   const [detectedMode,setDetectedMode]=useState(pageMode);
   const [question,setQuestion]=useState(''),[consent,setConsent]=useState(false);
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const [elapsed,setElapsed]=useState(0);
+  const generationId=useRef(0),resultPanel=useRef<HTMLElement>(null);
+  useEffect(()=>{if(!busy)return;const start=Date.now();setElapsed(0);const timer=setInterval(()=>setElapsed(Math.floor((Date.now()-start)/1000)),1000);return()=>clearInterval(timer);},[busy]);
+
   const [demos,setDemos]=useState<SavedDemo[]>([]),[current,setCurrent]=useState<SavedDemo|null>(null);
+  useEffect(()=>{if(current)resultPanel.current?.scrollIntoView({block:'nearest',behavior:'instant'});},[current?.id]);
   const [tab,setTab]=useState<'create'|'saved'>('create');
   const [share,setShare]=useState(''),[incoming,setIncoming]=useState('');
   const [generation,setGeneration]=useState<boolean|null>(null);
@@ -137,7 +142,7 @@ function App() {
           if(!next.context.selection||next.context.pageUrl!==pageIdentity(location.href))return;
           anchor.current=next.anchor;
           if(context?.text===next.context.text&&context.source.url===next.context.source.url)return;
-          setContext(next.context);setDetectedMode(next.context.mode);setConsent(false);setError('');
+          setContext(next.context);setDetectedMode(next.context.mode);setConsent(false);setError('');setTab('create');
           setQuestion(prev=>prev||(next.context.mode==='teach'?'怎样用互动演示，把这段内容讲清楚？':'这段话是什么意思？用具体情境帮我理解。'));
         } catch(error) {setContext(null);setConsent(false);setError(errorText(error));}
       },160);
@@ -197,20 +202,22 @@ function App() {
   }
   async function generate() {
     if(!context||busy||!consent)return;
+    const requestId=++generationId.current;
     const snapshot=structuredClone(context),requestPage=pageIdentity(location.href),requestAnchor=anchor.current;
     const anchorText=anchor.current instanceof HTMLElement?anchor.current.innerText.trim().slice(0,2000):undefined;
     setBusy(true);pending.current=true;setError('');setNotice('');
     try {
       const {lesson}=await extensionRequest<{lesson:Lesson}>({type:'generate',context:snapshot,question,consent:true});
+      if(requestId!==generationId.current)return;
       if(pageIdentity(location.href)!==requestPage)throw new Error('生成期间页面发生了变化，请回到原文章重新生成');
       const demo:SavedDemo={origin:'personal',mode:snapshot.mode,id:crypto.randomUUID(),pageUrl:requestPage,lesson,createdAt:new Date().toISOString(),anchorText,anchorSourceUrl:snapshot.source.url};
       generatedAnchors.current.set(demo.id,requestAnchor);
-      await save(demo);
+      await save(demo);setTab('saved');
       // Generation is the author's primary action: place the preview immediately.
       try { insertDemo(demo,requestAnchor); setNotice('互动演示已生成，并已自动插入所选段落之后。'); }
       catch { setNotice('互动演示已生成，暂未找到可插入位置，可在结果区手动插入。'); }
-    }catch(error){setError(errorText(error));}
-    finally {setBusy(false);pending.current=false;}
+    }catch(error){if(requestId===generationId.current)setError(errorText(error));}
+    finally {if(requestId===generationId.current){setBusy(false);pending.current=false;}}
   }
   function embed(demo:SavedDemo) {
     try {
@@ -251,7 +258,7 @@ function App() {
             <label className="zw-label" htmlFor="zw-question">02 / {context.mode==='teach'?'想把哪一点讲清楚？':'这次想弄明白什么？'}</label><textarea id="zw-question" rows={2} maxLength={200} disabled={busy} value={question} onChange={event=>setQuestion(event.target.value)}/><div className="zw-prompts" aria-label="常用提问"><button disabled={busy} onClick={()=>setQuestion(context.mode==='teach'?'这段内容最容易被误解的地方是什么？':'请用一个真实生活中的例子解释这段话。')}>举个例子</button><button disabled={busy} onClick={()=>setQuestion(context.mode==='teach'?'怎样把这段拆成读者能记住的 3 个关键点？':'把这段拆成 3 个我能记住的关键点。')}>提炼重点</button><button disabled={busy} onClick={()=>setQuestion('如果我不相信这段话，应该先验证什么？')}>检查依据</button></div>
             <ThinkingAssist mode={context.mode} material={context.text} disabled={busy} onUseQuestion={setQuestion} request={requestAssistance}/><label className="zw-consent"><input type="checkbox" checked={consent} disabled={busy} onChange={event=>setConsent(event.target.checked)}/><span>将上方文字发送至玩乎生成服务，我会核对生成的讲解与原文。</span></label>
             <button className="zw-primary" disabled={busy||!consent||!context.text.trim()||!question.trim()} onClick={()=>void generate()}>{busy?'正在读原文、构建互动…':'生成这段的互动演示 ↗'}</button>
-            {busy&&<p className="zw-hint" role="status">通常需要 20–50 秒，可继续读文章。请保持在当前页面。</p>}
+            {busy&&<div className="zw-waiting" role="status"><strong>正在制作演示 · 已等待 {elapsed} 秒</strong><p>可以继续读原文，完成后会自动插入。</p><button className="zw-copy" onClick={()=>{generationId.current++;setBusy(false);pending.current=false;setNotice('已停止等待，材料和问题已保留。');}}>停止等待，保留选段</button></div>}
           </>}
           {generation===false&&<p className="zw-service">生成服务暂时不可用，请稍后重新打开侧边栏。已保存的演示仍可体验。</p>}
         </>:<>
@@ -262,8 +269,8 @@ function App() {
         </>}
         {error&&<p className="zw-error" role="alert">{error}</p>}
         {notice&&<p className="zw-notice" role="status">{notice}</p>}
-        {current&&<section className="zw-result" aria-label="生成结果"><span className="zw-result-label">{demoLabel(current)} / {experimentNames[current.lesson.experiment.type]}</span><h2>{current.lesson.title}</h2><p>{current.lesson.goal}</p>{tab==='saved'&&<ThinkingAssist mode={detectedMode} material={current.lesson.sources.map(source=>source.excerpt).join('\n\n')||current.lesson.intro} request={requestAssistance}/>}<button className="zw-primary" onClick={()=>embed(current)}>插入正文，开始互动 ↓</button><small className="zw-hint">这一步只是在当前知乎页面预览，原文不会被改写。</small><button className="zw-secondary" onClick={()=>void openWorkshop()}>{(context?.mode??detectedMode)==='teach'?'到工坊修改讲解与演示 ↗':'到网页继续理解 ↗'}</button>{share&&<><label className="zw-label" htmlFor="zw-share">发布到知乎文章</label><input id="zw-share" readOnly value={share} onFocus={event=>event.target.select()}/><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(share).then(()=>setNotice('分享链接已复制。请在知乎编辑器中作为普通链接粘贴；安装玩乎的读者会自动展开演示。')).catch(()=>setError('复制受限，请选中上方链接手动复制。'))}>复制分享链接 ↗</button><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(`[${current.lesson.title}](${share})`).then(()=>setNotice('带标题链接已复制，可直接粘贴到支持 Markdown 的编辑器。')).catch(()=>setError('复制受限，请手动复制上方链接。'))}>复制带标题链接</button><small className="zw-hint">要让读者看到，请把上方分享链接贴进知乎文章。未安装插件的读者仍可点击链接打开完整网页。</small></>}</section>}
-        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><small>插件版本 0.4.2 · <a href={__BACKEND_URL__+"/extension"} target="_blank" rel="noreferrer">更新与安装说明 ↗</a></small><p>作者在写作时生成互动演示，把分享链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
+        {current&&<section className="zw-result" aria-label="生成结果" ref={resultPanel} tabIndex={-1}><span className="zw-result-label">{demoLabel(current)} / {experimentNames[current.lesson.experiment.type]}</span><h2>{current.lesson.title}</h2><p>{current.lesson.goal}</p>{tab==='saved'&&<ThinkingAssist mode={detectedMode} material={current.lesson.sources.map(source=>source.excerpt).join('\n\n')||current.lesson.intro} request={requestAssistance}/>}<button className="zw-primary" onClick={()=>embed(current)}>{inlineRoots.get(current.id)?.host.isConnected?'查看正文中的演示 ↓':'插入正文，开始互动 ↓'}</button><small className="zw-hint">{inlineRoots.get(current.id)?.host.isConnected?'已放在原文旁边，点击即可回到演示。':'在当前页面预览，知乎原文保持原样。'}</small><button className="zw-copy" onClick={()=>{setTab('create');setNotice('在原文选另一段，或修改当前问题，继续生成。');}}>继续选段生成</button><button className="zw-secondary" onClick={()=>void openWorkshop()}>{(context?.mode??detectedMode)==='teach'?'到工坊修改讲解与演示 ↗':'到网页继续理解 ↗'}</button>{share&&<><label className="zw-label" htmlFor="zw-share">{(context?.mode??detectedMode)==='teach'?'分享给文章读者':'分享这次理解'}</label><input id="zw-share" readOnly value={share} onFocus={event=>event.target.select()}/><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(share).then(()=>setNotice((context?.mode??detectedMode)==='teach'?'分享链接已复制，粘贴到知乎文章里，读者就能打开。':'链接已复制。朋友无需安装插件，也能打开网页互动。')).catch(()=>setError('复制受限，请选中上方链接手动复制。'))}>复制分享链接 ↗</button><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(`[${current.lesson.title}](${share})`).then(()=>setNotice('带标题链接已复制，可直接粘贴到支持 Markdown 的编辑器。')).catch(()=>setError('复制受限，请手动复制上方链接。'))}>复制带标题链接</button><small className="zw-hint">要让读者看到，请把上方分享链接贴进知乎文章。未安装插件的读者仍可点击链接打开完整网页。</small></>}</section>}
+        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><small>插件版本 0.4.3 · <a href={__BACKEND_URL__+"/extension"} target="_blank" rel="noreferrer">更新与安装说明 ↗</a></small><p>作者在写作时生成互动演示，把分享链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
       </div>
     </aside>}
   </div>;

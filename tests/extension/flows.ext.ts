@@ -81,7 +81,7 @@ test('reader selects, reviews, generates, embeds, interacts and restores saved c
   await expect(page.getByRole('region',{name:'生成结果'})).toContainText(articleLesson.title);
   expect(requests).toHaveLength(1);expect(requests[0].material).toBe(articleText.split('\n\n')[0]);
   expect(JSON.stringify(requests[0])).not.toContain('隐藏材料');
-  await page.getByRole('button',{name:'插入正文，开始互动 ↓'}).click();
+  await page.getByRole('button',{name:/查看正文中的演示 ↓|插入正文，开始互动 ↓/}).click();
   await expect(page.locator('#p1 + [data-wanhu-host="inline"]')).toBeVisible();
   await page.getByRole('button',{name:'关闭玩乎',exact:true}).click();
   await page.getByRole('button',{name:'A 先列出三个要点'}).click();
@@ -90,7 +90,7 @@ test('reader selects, reviews, generates, embeds, interacts and restores saved c
   await page.reload();await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
   await page.getByRole('button',{name:/本页演示/}).click();
   await page.locator('.zw-saved').first().click();
-  await page.getByRole('button',{name:'插入正文，开始互动 ↓'}).click();
+  await page.getByRole('button',{name:/查看正文中的演示 ↓|插入正文，开始互动 ↓/}).click();
   await expect(page.locator('#p1 + [data-wanhu-host="inline"]')).toBeVisible();
   await page.screenshot({path:path.join(output,'reader-panel.png')});
   await page.close();
@@ -107,7 +107,7 @@ test('creator preview stays outside the editor and sends only the selected text;
   await expect(page.getByRole('alert')).toContainText('上游暂时不可用');
   await expect(page.getByLabel('将用于生成的文字')).toHaveValue(articleText.split('\n\n')[0]);
   fail=false;await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
-  await page.getByRole('button',{name:'插入正文，开始互动 ↓'}).click();
+  await page.getByRole('button',{name:/查看正文中的演示 ↓|插入正文，开始互动 ↓/}).click();
   await expect(page.locator('.DraftEditor-root + [data-wanhu-host="inline"]')).toBeVisible();
   expect(await page.locator('[contenteditable]').innerHTML()).toBe(before);
   expect(requests[1].mode).toBe('teach');

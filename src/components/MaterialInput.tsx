@@ -1,6 +1,6 @@
 "use client";
 import { ThinkingAssist } from "./ThinkingAssist";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   LessonSchema,
   SourceSchema,
@@ -63,6 +63,9 @@ export function MaterialInput({
   const [generating, setGenerating] = useState(false),
     [error, setError] = useState("");
   const [elapsed, setElapsed] = useState(0);
+  const operation = useRef<AbortController|null>(null);
+  const [stopped, setStopped] = useState(false);
+  useEffect(()=>()=>operation.current?.abort(),[]);
   const [starterNotice, setStarterNotice] = useState("");
   function useStarter(type: keyof typeof starters) {
     const starter = starters[type];
@@ -127,7 +130,9 @@ export function MaterialInput({
     );
   }
   async function generate() {
+    if(operation.current)return;
     setError("");
+    setStopped(false);
     if (material.length > 20000) {
       setError("材料超过 20,000 字符，请选取关键段落后再生成。");
       return;
@@ -164,6 +169,8 @@ export function MaterialInput({
       return;
     }
     const generationRevision = onGenerationStart();
+    const controller=new AbortController();operation.current=controller;
+    const timeout=setTimeout(()=>controller.abort(),50000);
     setGenerating(true);
     try {
       const response = await fetch("/api/generate", {
@@ -180,9 +187,10 @@ export function MaterialInput({
           ),
           standardModel: consent,
         }),
-        signal: AbortSignal.timeout(50000),
+        signal: controller.signal,
       });
       const data = await response.json();
+      if(operation.current!==controller||controller.signal.aborted)return;
       if (!response.ok) throw new Error(data.error || "生成失败，请稍后重试");
       if (data.unsupported) {
         setError(data.reason || "材料还不足以支持互动讲解，请补充具体段落。");
@@ -196,9 +204,10 @@ export function MaterialInput({
         generationRevision,
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : "生成失败，材料已保留");
+      if(operation.current===controller)setError(controller.signal.aborted?"这次等待超时，材料已保留，可以重试。":e instanceof Error ? e.message : "生成失败，材料已保留");
     } finally {
-      setGenerating(false);
+      clearTimeout(timeout);
+      if(operation.current===controller){operation.current=null;setGenerating(false);}
     }
   }
   return (
@@ -214,6 +223,7 @@ export function MaterialInput({
             : "把不理解的地方告诉我们，带着问题动手试一试。"}
         </p>
       </div>
+      <div className="material-step-label"><b>01</b><span>准备一段材料<small>导入链接，或直接粘贴文字</small></span></div>
       <ArticleImport value={value} onChange={onChange} disabled={generating} mode={mode} />
         <div className="form-field">
           <label htmlFor={`${id}-material`}>
@@ -253,10 +263,9 @@ export function MaterialInput({
               ))}
             </div>
           )}
-      <div className="quick-start-hint"><span className="live-dot" /><div><strong>最省力的用法</strong><p>先从上面导入知乎文章，或直接粘贴一段文字；下面的问题只需要写一句你真正想弄懂的事。</p></div></div>
-      <ThinkingAssist mode={mode} material={material || sources.map(source=>source.excerpt).join('\n\n')} disabled={generating} onUseQuestion={question=>setField('question',question)} />
+      <div className="material-step-label"><b>02</b><span>{mode==='teach'?'选一个想讲清楚的点':'说说你卡在哪里'}<small>一句话就够，不需要写提示词</small></span></div>
       <fieldset className="generation-fields" disabled={generating}>
-        <details className="topic-starters">
+        <details className="topic-starters" hidden={!!material.trim()}>
           <summary>或从一个标准模型问题开始</summary>
           <div>
             {(Object.keys(starters) as (keyof typeof starters)[]).map(
@@ -298,6 +307,7 @@ export function MaterialInput({
             onChange={(e) => setField("question", e.target.value)}
           />
         </div>
+        <ThinkingAssist mode={mode} material={material || sources.map(source=>source.excerpt).join('\n\n')} disabled={generating} onUseQuestion={question=>setField('question',question)} />
         <details className="advanced-material">
           <summary>检索知乎与补充出处 <span>可选</span></summary>
         <div className="search-block">
@@ -459,21 +469,16 @@ export function MaterialInput({
         <p className="field-note">
           点击生成会将所选材料发送给配置的模型服务，结果仍需核对。
         </p>
-        {generating && (
-          <div className="generation-progress">
-            <span className="generation-spinner" aria-hidden="true" />
-            <div>
-              <strong>正在提炼要点、组织互动与核对引句</strong>
-              <p>已等待 {elapsed} 秒。通常需要十几秒，材料会一直保留。</p>
-            </div>
-          </div>
-        )}
         {error && (
           <p className="error-message" role="alert">
             {error}
           </p>
         )}
       </fieldset>
+      {generating && <div className="generation-progress" role="status">
+        <span className="generation-spinner" aria-hidden="true"/><div><strong>正在把这段材料做成演示 · {elapsed} 秒</strong><p>{elapsed>=25?'还在等待模型返回，材料已保留。':'可以继续阅读原文，完成后会带你看结果。'}</p><button type="button" className="text-button" onClick={()=>{operation.current?.abort();operation.current=null;setGenerating(false);setStopped(true);}}>停止等待，保留材料</button></div>
+      </div>}
+      {stopped&&<p className="notice" role="status">已停止等待，材料和问题都还在，可修改后重新生成。</p>}
       <div className="template-start">
         <span className="eyebrow">OR START WITH AN EXAMPLE</span>
         <p>先改一份示例，看看作品怎么长出来。</p>
