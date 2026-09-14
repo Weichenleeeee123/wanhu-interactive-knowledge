@@ -8,6 +8,8 @@ import {
   type Lesson,
 } from "./lesson";
 import { readDraft } from "./drafts";
+import { InteractiveModelShape } from './interactive-model';
+import { SceneAnimationSchema, BranchingPathSchema } from './visual-experiences';
 
 const PREFIX = "wanhu.work.v1.";
 const RECOVERY_PREFIX = "wanhu.recovery.v1.";
@@ -55,6 +57,15 @@ const DraftLessonSchema = z
     explanation: z.string().max(800),
     challenge: z.string().max(800),
     experiment: z.discriminatedUnion("type", [
+      InteractiveModelShape,
+      SceneAnimationSchema.safeExtend({
+        rationale: z.string().max(240), assumptions: z.string().max(600),
+        frames: SceneAnimationSchema.shape.frames.element.extend({title:z.string().max(40),caption:z.string().max(400)}).array().min(2).max(8),
+      }),
+      BranchingPathSchema.safeExtend({
+        rationale: z.string().max(240), assumptions: z.string().max(600),
+        nodes: BranchingPathSchema.shape.nodes.element.extend({title:z.string().max(24),body:z.string().max(500)}).array().min(3).max(10),
+      }),
       ArticleExplorationSchema.extend({
         cards: ReadingCardSchema.extend({
           concept: z.string().max(80),
@@ -105,7 +116,7 @@ const WorkSchema = z
     updatedAt: z.string().datetime(),
     mode: z.enum(["teach", "learn"]),
     material: MaterialSchema,
-    lesson: z.any().nullable(),
+    lesson: DraftLessonSchema.nullable(),
   })
   .strict();
 export type Work = z.infer<typeof WorkSchema>;

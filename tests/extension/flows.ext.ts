@@ -5,6 +5,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {articleLesson,articleText} from '../article-fixture';
 import {encodeLesson} from '../../src/lib/share';
+import {showcase} from '../../src/lib/showcase';
 
 let browser:BrowserContext,server:Server;
 let requests:Record<string,unknown>[]=[];
@@ -21,6 +22,28 @@ async function open(page:Page,url='https://www.zhihu.com/question/1/answer/2',ht
 async function select(page:Page,selector='#p1'){
   await page.locator(selector).evaluate(element=>{const range=document.createRange();range.selectNodeContents(element);const selection=window.getSelection()!;selection.removeAllRanges();selection.addRange(range);});
 }
+test('ten real article identities auto-embed prebuilt demos without generation or author changes',async()=>{
+  for(const item of showcase){
+    const page=await browser.newPage();
+    const quoted=`${item.source.excerpt}，这是用于测试 DOM 锚点的文字，不是原文全文。`;
+    const body=item.id==='tcp-handshake'||item.id==='notes-workflow'?`<div class="RichText"><div class="RichText"><ul><li>${quoted}</li></ul></div></div>`:`<div class="RichText"><p>${quoted}</p></div>`;
+    const html=`<!doctype html><html><meta charset="utf-8"><body><h1>扩展结构测试页 · 非真实文章</h1><article><span class="AuthorInfo-name">结构测试作者</span>${body}</article></body></html>`;
+    await open(page,item.source.url,html);
+    const card=page.getByRole('region',{name:'玩乎正文演示',exact:true});
+    await expect(card).toContainText('玩乎为本文制作的演示 · 预制示例');
+    await expect(card.locator('.curated')).toBeVisible();
+    await expect(card.locator('.curated-source')).toContainText(item.source.author);
+    await expect(page.locator('.AuthorInfo-name')).toHaveText('结构测试作者');
+    await expect(page.locator('ul > [data-wanhu-host]')).toHaveCount(0);
+    await page.evaluate(()=>document.body.append(document.createElement('hr')));
+    await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(1);
+    await card.getByRole('button',{name:'移出页面',exact:true}).click();
+    await page.evaluate(()=>document.body.append(document.createElement('hr')));
+    await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(0);
+    expect(requests).toHaveLength(0);
+    await page.close();
+  }
+});
 test.beforeAll(async()=>{
   execFileSync(process.execPath,['scripts/build-extension.mjs'],{env:{...process.env,WANHU_BACKEND_URL:'http://localhost:3014',EXTENSION_OUT_DIR:'.artifacts/extension-test-build'}});
   await mkdir(output,{recursive:true});

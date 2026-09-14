@@ -1,5 +1,6 @@
 "use client";
 import { LessonSchema, type Lesson } from "@/lib/lesson";
+import { VisualEditor } from "./VisualEditor";
 import { AddSource } from "./AddSource";
 import { ReadingCardsEditor } from "./ReadingCardsEditor";
 export function LessonEditor({
@@ -80,7 +81,7 @@ export function LessonEditor({
             : "实验的初始状态"}
         </h3>
       </div>
-      {lesson.experiment.type === "article-exploration" ? (
+      {lesson.experiment.type === "scene-animation" || lesson.experiment.type === "branching-path" ? <VisualEditor lesson={lesson} onChange={onChange}/> : lesson.experiment.type === "article-exploration" ? (
         <ReadingCardsEditor lesson={lesson} onChange={onChange} />
       ) : lesson.experiment.type === "gradient-descent" ? (
         <div className="two-fields">
@@ -222,13 +223,13 @@ export function LessonEditor({
           <button
             className="text-button source-remove"
             disabled={
-              lesson.experiment.type === "article-exploration" &&
+              ("evidence" in lesson.experiment && lesson.experiment.evidence.sourceId === source.id) || lesson.experiment.type === "article-exploration" &&
               lesson.experiment.cards.some(
                 (card) => card.evidence.sourceId === source.id,
               )
             }
             title={
-              lesson.experiment.type === "article-exploration" &&
+              ("evidence" in lesson.experiment && lesson.experiment.evidence.sourceId === source.id) || lesson.experiment.type === "article-exploration" &&
               lesson.experiment.cards.some(
                 (card) => card.evidence.sourceId === source.id,
               )

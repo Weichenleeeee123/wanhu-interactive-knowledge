@@ -1,0 +1,17 @@
+import { build } from 'esbuild';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+const temp=path.resolve('.artifacts/showcase-export-'+Date.now()+'.mjs');
+await mkdir(path.dirname(temp),{recursive:true});
+await build({entryPoints:['src/lib/showcase.ts'],outfile:temp,bundle:true,platform:'node',format:'esm'});
+const {showcase}=await import(pathToFileURL(temp).href);
+await mkdir('public/showcase',{recursive:true});
+for(const item of showcase)await writeFile(`public/showcase/${item.id}.json`,JSON.stringify(item.lesson,null,2)+'\n');
+const names={'scene-animation':'SVG 分镜动画','branching-path':'分支路径探索','interactive-model':'可调参数模拟'};
+const intro=`# 玩乎：10 篇真实知乎内容体验指南\n\n这是一组由玩乎直接写代码、逐篇设计画面与交互的演示作品，不调用产品内置生成模型，用来展示知识内容与不同互动形式的适配；不计作现场 AI 生成，也不代表原作者参与或认可。\n\n## 怎么体验\n\n1. 安装玩乎 0.4.0 或更高版本插件，重新加载扩展并刷新知乎页面。\n2. 打开下表的知乎原文。正文加载后，插件会自动加入“玩乎为本文制作的演示 · 预制示例”。不必选段或点击生成，不会额外调用模型。\n3. 也可以从 [集中体验页](https://wanhu.asia/showcase) 进入。知乎要求登录或安全验证时，先使用网页演示。\n4. 要验证实时 AI 能力，请另选非预制文章：选段 → 生成。模型可自行选择 SVG 分镜、分支流程、参数模型、现有专用实验；预制识别与实时生成是两条明确区分的路径。\n\n**版本状态：**本轮包含十篇手作演示与 0.4.0 插件；正式入口：https://wanhu.asia/showcase。实际发布版本及线上验收见 [部署记录](../docs/deployment-2026-09-14.md)。\n\n## 建议体验顺序\n\n先体验 01 三次握手（亲手发报文），再体验 07 咖啡（制备过程），最后体验 02 热榜衰减（数值）。三篇合计约 3 分钟，可看出不同文章如何选择不同表达方式。其余用于扩展评审与自主探索。\n\n## 十篇清单\n\n| # | 知乎原文 | 互动形式 | 网页入口 |\n|---|---|---|---|\n`;
+const rows=showcase.map((e,i)=>`| ${String(i+1).padStart(2,'0')} | [${e.source.title}](${e.source.url}) | ${e.id==='heat-decay'?'热度曲线对照':e.id==='merge-sort'?'可操作归并':e.id==='coffee-process'?'咖啡制备场景':e.id==='opportunity-cost'?'取舍计算桌':e.id==='notes-workflow'?'可检索笔记桌':e.id==='active-reading'?'翻页转述练习':e.id==='causal-evidence'?'因果干预沙盘':'专用 SVG 场景'} | [直接体验](https://wanhu.asia/view?example=showcase-${e.id}) |`).join('\n');
+const details=showcase.map((e,i)=>`\n### ${i+1}. ${e.takeaway}\n\n- 原文：[${e.source.title}](${e.source.url})\n- 作者：${e.source.author || '搜索结果未可靠提供，不补造昵称；以知乎原文显示为准。'}\n- 操作：${e.steps}\n- 与原文的连接：围绕“${e.source.excerpt}”这个短句所描述的机制展开。\n- 简化边界：${e.lesson.experiment.assumptions}\n- 专用演示截图：\n\n![${e.takeaway}](../public/submission-assets/current/curated-${e.id}.png)\n\n- 可下载作品：[${e.id}.json](../public/showcase/${e.id}.json)（新版应用可识别并展示手作界面；编辑底层内容后转为通用结构渲染）\n`).join('\n');
+const limitations=`\n## 来源与验证说明\n\n- 2026-09-14 通过公开索引核对标题、链接与上述短引句；包括八篇专栏文章与两篇回答。并未获得作者授权或身份认证，不更改网页作者头像、昵称或正文内容。\n- 预制作品由项目方围绕原文单个机制原创，不搬运全文或原文插图；引用是节选，不能代表文章全部观点。热榜示例采用指数衰减公式，明确纠正原文“与时间成反比”的不准确表述；不代表知乎实际排名算法。生物示意不按化学计量或真实空间比例绘制。\n- 自动嵌入只匹配指定文章/回答 ID，支持专栏与知乎移动阅读 URL；写作编辑器、问题列表、其他文章不匹配。先找包含引用的可见段落，没有时只在唯一已加载正文中放置，找不到正文就不插。\n- 结构测试覆盖 10 个 URL 的自动嵌入、避免重复、移出后不重现、不调用生成接口、不修改原作者昵称。此测试使用明确标注的 DOM 测试页，不能当成十篇真实线上页面均已验收。\n- 2026-09-14 本机 Chromium 加载本地插件，逐一访问清单中的真实移动阅读 URL：10/10 返回正文、10/10 自动嵌入。作者昵称与来源已按页面显示核对；这不保证未来访问状态。\n- 知乎直接访问可能出现 403、超时、安全验证或登录要求；本项目不绕过这些限制。页面未加载时，网页入口能直接播放同一份预制作品。\n- 对照体验时请展开原文，确认卡片位置与当前文章一致；网络状态与知乎页面结构可能变化。\n`;
+await writeFile('submission/real-article-demos.md',intro+rows+'\n'+details+limitations);
+console.log('Exported 10 validated demonstration JSON files and submission/real-article-demos.md');

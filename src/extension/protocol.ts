@@ -17,7 +17,7 @@ export const PageContextSchema=z.object({
   selection:z.boolean(),
 }).strict();
 export type PageContext=z.infer<typeof PageContextSchema>;
-export const SavedDemoSchema=z.object({id:z.string().uuid(),pageUrl:z.string().max(2048).refine(isZhihuPage),lesson:LessonSchema,createdAt:z.string().datetime(),mode:z.enum(['teach','learn']).optional(),origin:z.enum(['personal','article','imported']).optional(),anchorText:z.string().max(2000).optional(),anchorSourceUrl:z.string().max(2048).refine(isZhihuPage).optional()}).strict();
+export const SavedDemoSchema=z.object({id:z.string().uuid(),pageUrl:z.string().max(2048).refine(isZhihuPage),lesson:LessonSchema,createdAt:z.string().datetime(),mode:z.enum(['teach','learn']).optional(),origin:z.enum(['personal','article','imported','showcase']).optional(),anchorText:z.string().max(2000).optional(),anchorSourceUrl:z.string().max(2048).refine(isZhihuPage).optional()}).strict();
 export type SavedDemo=z.infer<typeof SavedDemoSchema>;
 export const ExtensionMessageSchema=z.discriminatedUnion('type',[
   z.object({type:z.literal('status')}).strict(),

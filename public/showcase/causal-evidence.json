@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "title": "看到一起变化，下一步该查什么？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "看到一起变化，下一步该查什么？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "选择时间先后或共同原因两条调查路径，比较为什么仅有相关仍不足以判定因果。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "branching-path",
+    "rationale": "把材料中的区别变成可比较的行动路径。读者可以返回换条件，无需回答标准答案。",
+    "assumptions": "玩乎编写的教学情境，聚焦原文一个要点；路径不是原作者提供的判断工具，也不代表适用于所有人。",
+    "evidence": {
+      "quote": "A和B是由同一个原因造成的",
+      "sourceId": "showcase-causal-evidence"
+    },
+    "start": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "title": "A 和 B 经常一起出现",
+        "body": "仅观察到共同出现，还不能确定原因。本流程是查证路径，不是因果判定器。",
+        "choices": [
+          {
+            "label": "先检查时间顺序",
+            "target": "order"
+          },
+          {
+            "label": "寻找共同原因 C",
+            "target": "common"
+          }
+        ]
+      },
+      {
+        "id": "order",
+        "title": "A 总在 B 之前？",
+        "body": "先发生不自动等于造成后发生。时间顺序可以提供线索，但不能替代机制证据。",
+        "choices": [
+          {
+            "label": "继续寻找其他解释",
+            "target": "common"
+          },
+          {
+            "label": "尚无更多证据",
+            "target": "unknown"
+          }
+        ]
+      },
+      {
+        "id": "common",
+        "title": "C 可能同时影响 A、B",
+        "body": "原文提出 C→A 且 C→B 的结构。在这个结构里，A、B 可以相关，却没有 A→B。",
+        "choices": [
+          {
+            "label": "发现了可能的 C",
+            "target": "test"
+          },
+          {
+            "label": "暂时找不到 C",
+            "target": "unknown"
+          }
+        ]
+      },
+      {
+        "id": "test",
+        "title": "设计进一步查证",
+        "body": "比较条件，检查测量与机制，必要时设计合适的实验。找到候选解释仍不等于已经证明它。",
+        "choices": []
+      },
+      {
+        "id": "unknown",
+        "title": "暂时只能描述相关",
+        "body": "明确还缺哪些证据，保留多种解释。返回起点试另一条查证路径。",
+        "choices": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-causal-evidence",
+      "title": "相关性与因果有什么联系与区别？",
+      "author": "人民邮电出版社",
+      "url": "https://www.zhihu.com/tardis/bd/ans/2319205611",
+      "excerpt": "A和B是由同一个原因造成的",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-causal-evidence"
+  ]
+}

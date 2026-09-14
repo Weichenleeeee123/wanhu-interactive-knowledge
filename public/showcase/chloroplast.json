@@ -1,0 +1,277 @@
+{
+  "version": 1,
+  "title": "叶绿体里的能量接力",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "叶绿体里的能量接力",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "播放光能到化学能再到有机物的示意，点图形查看对象；不把它当完整生化反应。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "scene-animation",
+    "rationale": "用图形的位置、显隐和方向呈现原文的过程，允许逐帧观察与回放。",
+    "assumptions": "玩乎原创示意图，形状、距离、速度不按真实比例，仅展示原文中选定的机制，不复刻原文图片。",
+    "evidence": {
+      "quote": "将光能转换为化学能",
+      "sourceId": "showcase-chloroplast"
+    },
+    "objects": [
+      {
+        "id": "light",
+        "shape": "circle",
+        "label": "光能",
+        "color": "orange",
+        "detail": "光反应利用光能。光图形的消失表示能量转换，不表示光被运送到碳同化反应中。"
+      },
+      {
+        "id": "membrane",
+        "shape": "rect",
+        "label": "类囊体",
+        "color": "green",
+        "detail": "类囊体膜是光反应的重要场所；本图不展示膜内电子传递的细节。"
+      },
+      {
+        "id": "energy",
+        "shape": "rect",
+        "label": "ATP / NADPH",
+        "color": "purple",
+        "detail": "ATP 和 NADPH 为碳同化提供能量与还原力。合并为一个标记，不表示它们是同一种物质。"
+      },
+      {
+        "id": "carbon",
+        "shape": "rect",
+        "label": "碳同化",
+        "color": "blue",
+        "detail": "碳同化利用 ATP 和 NADPH 等，把无机碳转入有机物。"
+      },
+      {
+        "id": "sugar",
+        "shape": "circle",
+        "label": "有机物",
+        "color": "green",
+        "detail": "有机产物的示意标记，不对应一个特定糖分子或实际产率。"
+      }
+    ],
+    "frames": [
+      {
+        "title": "光能进入",
+        "caption": "以光反应和碳同化两个环节示意能量转换，省略具体分子反应。",
+        "poses": [
+          {
+            "id": "light",
+            "x": 90,
+            "y": 200,
+            "width": 55,
+            "height": 55,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "membrane",
+            "x": 280,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "energy",
+            "x": 280,
+            "y": 220,
+            "width": 100,
+            "height": 45,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "carbon",
+            "x": 490,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sugar",
+            "x": 530,
+            "y": 230,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "光反应转换能量",
+        "caption": "光反应利用光能生成 ATP 和 NADPH 等分子；这里省略电子传递和水分解细节。",
+        "poses": [
+          {
+            "id": "light",
+            "x": 280,
+            "y": 200,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "membrane",
+            "x": 280,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "energy",
+            "x": 280,
+            "y": 220,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "carbon",
+            "x": 490,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sugar",
+            "x": 530,
+            "y": 230,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "连接碳同化",
+        "caption": "ATP 和 NADPH 为后续碳同化提供支持。图形移动表示功能联系，不是实际运动轨迹。",
+        "poses": [
+          {
+            "id": "light",
+            "x": 280,
+            "y": 200,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "membrane",
+            "x": 280,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "energy",
+            "x": 490,
+            "y": 220,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "carbon",
+            "x": 490,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sugar",
+            "x": 530,
+            "y": 230,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "有机物形成",
+        "caption": "两阶段相互联系。本示意没有表达反应计量，不能从图形数量推断产率。",
+        "poses": [
+          {
+            "id": "light",
+            "x": 280,
+            "y": 200,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "membrane",
+            "x": 280,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "energy",
+            "x": 400,
+            "y": 220,
+            "width": 100,
+            "height": 45,
+            "opacity": 0.3,
+            "rotation": 0
+          },
+          {
+            "id": "carbon",
+            "x": 490,
+            "y": 120,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sugar",
+            "x": 550,
+            "y": 230,
+            "width": 55,
+            "height": 55,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-chloroplast",
+      "title": "高等植物和藻类的能量转换器：叶绿体",
+      "author": "卧龙05学长国涛",
+      "url": "https://www.zhihu.com/tardis/bd/art/597424073",
+      "excerpt": "将光能转换为化学能",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-chloroplast"
+  ]
+}

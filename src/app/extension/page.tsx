@@ -11,10 +11,10 @@ export default function ExtensionPage() {
           <h1>把玩乎带进知乎。</h1>
           <p>作者在编辑器里选段生成互动演示，读者打开文章就能在原文旁边直接试。安装一次，侧边栏、正文卡片和工坊会连成一条体验。</p>
           <div className="extension-actions">
-            <a className="button primary large" href="/downloads/wanhu-extension.zip?v=0.3.0" download>下载玩乎插件 ↓</a>
+            <a className="button primary large" href="/downloads/wanhu-extension.zip?v=0.4.0" download>下载玩乎插件 ↓</a>
             <Link className="text-link" href="/create">先在网页工坊体验 →</Link>
           </div>
-          <p className="extension-meta">支持 Chrome / Edge · 当前为开发者模式安装包 · 版本 0.3.0</p>
+          <p className="extension-meta">支持 Chrome / Edge · 当前为开发者模式安装包 · 版本 0.4.0</p>
         </div>
         <div className="extension-preview" aria-label="插件使用预览">
           <div className="extension-preview-bar"><span className="live-dot" /> 知乎文章 · 玩乎已准备好</div>

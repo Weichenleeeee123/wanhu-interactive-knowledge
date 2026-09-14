@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "title": "热榜上的旧内容，怎样逐渐降温？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "热榜上的旧内容，怎样逐渐降温？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "固定一条衰减曲线作对照，改变衰减系数，逐小时观察同一起始分数的变化。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "interactive-model",
+    "duration": 24,
+    "stepLabel": "小时",
+    "rules": "每小时：新分数=上一小时分数×exp(−衰减系数)。这是指数衰减，不是与时间成反比。",
+    "assumptions": "仅采用原文的指数衰减公式，不沿用其中“与时间成反比”的不准确说法。初始100分、k=0.1均为教学设定；忽略新增点赞与其他权重，不代表知乎真实热榜算法或实际热度。",
+    "evidence": {
+      "quote": "较小的k值导致热度冷却得较慢",
+      "sourceId": "showcase-heat-decay"
+    },
+    "controls": [
+      {
+        "id": "initial",
+        "label": "初始分数",
+        "unit": "分",
+        "min": 10,
+        "max": 200,
+        "step": 10,
+        "value": 100
+      },
+      {
+        "id": "decay",
+        "label": "衰减系数",
+        "unit": "/小时",
+        "min": 0,
+        "max": 0.5,
+        "step": 0.01,
+        "value": 0.1
+      }
+    ],
+    "stocks": [
+      {
+        "id": "heat",
+        "label": "剩余分数",
+        "unit": "分",
+        "initial": "initial",
+        "next": "heat*exp(-decay)"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-heat-decay",
+      "title": "牛顿冷却定律在热度排行榜中的实践：保持内容新鲜的科学方法",
+      "author": "南山",
+      "url": "https://www.zhihu.com/tardis/zm/art/656807488",
+      "excerpt": "较小的k值导致热度冷却得较慢",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-heat-decay"
+  ]
+}

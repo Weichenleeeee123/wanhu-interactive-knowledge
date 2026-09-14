@@ -41,8 +41,9 @@ export function PredictionCard({
         )}
       </div>
     );
+  if (experiment.type === 'scene-animation' || experiment.type === 'branching-path' || experiment.type === 'interactive-model') return <p className="field-note">直接开始探索，也可以先想想：改变一个条件，过程会有什么不同？</p>;
   const monty = experiment.type === "monty-hall";
-  const model = experiment.type === "interactive-model";
+  const model = false;
   const options = model ? ["会逐步增加", "会保持不变", "会先增后减"] : monty ? ["换门胜率 1/3", "换门胜率 1/2", "换门胜率 2/3"] : ["会靠近谷底", "会原地震荡", "会越走越远", ...(experiment.type === "gradient-descent" && experiment.initialX === 0 ? ["会停在谷底"] : [])];
   return (
     <div className="prediction-card">
@@ -83,6 +84,7 @@ export function LearningRecap({
   session: LearningSession;
 }) {
   const { prediction, activity, verified } = session;
+  if (lesson.experiment.type === 'scene-animation' || lesson.experiment.type === 'branching-path' || lesson.experiment.type === 'interactive-model') return <section className="learning-recap" aria-label="我的探索记录"><h2>我的探索记录</h2><p>{activity || '播放演示、调整条件或探索不同路径，这里会记录本次操作。'}</p><p className="small muted">操作记录只保留在当前页面，不对你的理解评分。</p></section>;
   const reading = lesson.experiment.type === "article-exploration";
   const complete = prediction !== null && !!activity && verified === true;
   function download() {

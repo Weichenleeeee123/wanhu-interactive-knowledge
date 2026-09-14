@@ -1,0 +1,277 @@
+{
+  "version": 1,
+  "title": "三次握手：三个报文往哪走？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "三次握手：三个报文往哪走？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "播放三次报文传递，再拖动进度回看每次发送与接收。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "scene-animation",
+    "rationale": "用图形的位置、显隐和方向呈现原文的过程，允许逐帧观察与回放。",
+    "assumptions": "玩乎原创示意图，形状、距离、速度不按真实比例，仅展示原文中选定的机制，不复刻原文图片。",
+    "evidence": {
+      "quote": "同步双方的初始化序列号",
+      "sourceId": "showcase-tcp-handshake"
+    },
+    "objects": [
+      {
+        "id": "client",
+        "shape": "rect",
+        "label": "客户端",
+        "color": "blue",
+        "detail": "连接发起方。发出 SYN，收到 SYN + ACK 后发送最终确认。"
+      },
+      {
+        "id": "server",
+        "shape": "rect",
+        "label": "服务端",
+        "color": "green",
+        "detail": "接收连接请求的一方。响应 SYN + ACK，并等待客户端的最终 ACK。"
+      },
+      {
+        "id": "syn",
+        "shape": "arrow",
+        "label": "SYN",
+        "color": "orange",
+        "detail": "客户端发往服务端的连接请求。SYN 用于同步初始化序列号。"
+      },
+      {
+        "id": "synack",
+        "shape": "arrow",
+        "label": "SYN + ACK",
+        "color": "purple",
+        "detail": "服务端同时发送自己的 SYN，并确认客户端的 SYN，因此沿反方向传回。"
+      },
+      {
+        "id": "ack",
+        "shape": "arrow",
+        "label": "ACK",
+        "color": "blue",
+        "detail": "客户端确认服务端的 SYN。该报文到达后，本图所展示的成功握手完成。"
+      }
+    ],
+    "frames": [
+      {
+        "title": "准备发起连接",
+        "caption": "客户端准备发送 SYN；这幅图仅展示成功建立连接时的三个报文方向。",
+        "poses": [
+          {
+            "id": "client",
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "server",
+            "x": 540,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "syn",
+            "x": 100,
+            "y": 175,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "synack",
+            "x": 540,
+            "y": 230,
+            "width": 110,
+            "height": 24,
+            "opacity": 0,
+            "rotation": 180
+          },
+          {
+            "id": "ack",
+            "x": 100,
+            "y": 280,
+            "width": 90,
+            "height": 24,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "SYN 到达服务端",
+        "caption": "服务端收到客户端的连接请求。此时开始准备 SYN + ACK。",
+        "poses": [
+          {
+            "id": "client",
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "server",
+            "x": 540,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "syn",
+            "x": 540,
+            "y": 175,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "synack",
+            "x": 540,
+            "y": 230,
+            "width": 110,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 180
+          },
+          {
+            "id": "ack",
+            "x": 100,
+            "y": 280,
+            "width": 90,
+            "height": 24,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "SYN + ACK 返回",
+        "caption": "服务端的响应抵达客户端。客户端准备发送最终确认。",
+        "poses": [
+          {
+            "id": "client",
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "server",
+            "x": 540,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "syn",
+            "x": 540,
+            "y": 175,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "synack",
+            "x": 100,
+            "y": 230,
+            "width": 110,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 180
+          },
+          {
+            "id": "ack",
+            "x": 100,
+            "y": 280,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "ACK 到达服务端",
+        "caption": "最终确认抵达服务端。示意省略序列号、状态机与重传；完整规则请对照原文。",
+        "poses": [
+          {
+            "id": "client",
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "server",
+            "x": 540,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "syn",
+            "x": 540,
+            "y": 175,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "synack",
+            "x": 100,
+            "y": 230,
+            "width": 110,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 180
+          },
+          {
+            "id": "ack",
+            "x": 540,
+            "y": 280,
+            "width": 90,
+            "height": 24,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-tcp-handshake",
+      "title": "十年码农内功：TCP篇",
+      "author": "科英",
+      "url": "https://www.zhihu.com/tardis/bd/art/612982114",
+      "excerpt": "同步双方的初始化序列号",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-tcp-handshake"
+  ]
+}

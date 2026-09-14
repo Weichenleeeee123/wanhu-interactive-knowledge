@@ -7,6 +7,7 @@ import { type Lesson, experimentNames } from '../lib/lesson';
 import { decodeLesson, encodeLesson } from '../lib/share';
 import { contextFromPage, findAnchor, outsideEditor, pageMode } from './page-context';
 import { extensionRequest, pageIdentity, type PageContext, type SavedDemo } from './protocol';
+import { showcaseForUrl } from '../lib/showcase';
 
 const host=document.createElement('div');
 host.setAttribute('data-wanhu-host','workspace');
@@ -16,6 +17,7 @@ const style=document.createElement('style');style.textContent=__EXTENSION_CSS__;
 const mount=document.createElement('div');shadow.append(mount);
 
 function demoLabel(demo:SavedDemo) {
+  if(demo.origin==='showcase')return '玩乎为本文制作的演示 · 预制示例';
   if(demo.origin==='article')return '作者附带的互动演示';
   if(demo.origin==='personal')return demo.mode==='teach'?'我的演示 · 本页预览':'我生成的互动解释';
   return demo.origin==='imported'?'从分享链接导入的演示':'已保存的互动演示';
@@ -31,7 +33,7 @@ function InlineDemo({demo,onHide}:{demo:SavedDemo;onHide:()=>void}) {
 }
 const inlineRoots=new Map<string,{host:HTMLElement;dispose:()=>void}>();
 function collapseAllInline(){inlineRoots.forEach(item=>item.host.shadowRoot?.querySelector<HTMLButtonElement>('button[aria-expanded=true]')?.click());}
-function insertDemo(demo:SavedDemo,anchor:Element|null) {
+function insertDemo(demo:SavedDemo,anchor:Element|null,scroll=true) {
   if(pageIdentity(location.href)!==pageIdentity(demo.pageUrl))throw new Error('页面已经变化，请回到原文章后打开演示');
   const existing=inlineRoots.get(demo.id);
   if(existing?.host.isConnected){existing.host.scrollIntoView({block:'start',behavior:'smooth'});return;}
@@ -46,12 +48,35 @@ function insertDemo(demo:SavedDemo,anchor:Element|null) {
   const dispose=()=>{reactRoot.unmount();card.remove();inlineRoots.delete(demo.id);};
   inlineRoots.set(demo.id,{host:card,dispose});
   anchor.after(card);
-  reactRoot.render(<InlineDemo demo={demo} onHide={dispose}/>);
-  card.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  reactRoot.render(<InlineDemo demo={demo} onHide={()=>{if(demo.origin==='showcase')dismissedShowcases.add(pageIdentity(demo.pageUrl));dispose();}}/>);
+  if(scroll)card.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+}
+const mountedShowcases = new Map<string,string>();
+const dismissedShowcases = new Set<string>();
+function hydrateShowcase() {
+  if(pageMode()==='teach')return;
+  const item=showcaseForUrl(location.href);if(!item)return;
+  const key=pageIdentity(location.href);
+  if(dismissedShowcases.has(key))return;
+  const existingId=mountedShowcases.get(key);
+  if(existingId&&inlineRoots.get(existingId)?.host.isConnected)return;
+  const candidates=Array.from(document.querySelectorAll<HTMLElement>('.Post-RichText,.RichContent-inner .RichText,article .RichText')).filter(b=>b.getClientRects().length&&!b.closest('[contenteditable=true]'));
+  const bodies=candidates.filter(b=>!candidates.some(other=>other!==b&&b.contains(other)));
+  const paragraphs=bodies.flatMap(b=>Array.from(b.querySelectorAll<HTMLElement>('p,li,blockquote'))).filter(p=>p.getClientRects().length&&p.innerText.trim().length>10);
+  const matching=paragraphs.find(p=>p.innerText.includes(item.source.excerpt));
+  // On a permalink, use the single loaded article body if the excerpt is farther below.
+  const anchor=matching ?? (bodies.length===1 ? paragraphs[0] : null);
+  if(!anchor)return;
+  const demo:SavedDemo={id:crypto.randomUUID(),pageUrl:key,lesson:item.lesson,createdAt:new Date().toISOString(),origin:'showcase',mode:'learn',anchorText:anchor.innerText.slice(0,2000),anchorSourceUrl:key};
+  mountedShowcases.set(key,demo.id);
+  // Keep the injected div outside lists: a list's direct children must remain li elements.
+  insertDemo(demo,anchor.closest('ul,ol')??anchor,false);
+
 }
 async function requestAssistance(input:AssistInput){return extensionRequest<{answer:string}>({type:'assist',pageUrl:pageIdentity(location.href),input});}
 function errorText(error:unknown){return error instanceof Error?error.message:'暂时无法完成，请重试';}
 async function hydrateArticleEmbeds() {
+  hydrateShowcase();
   const origin = new URL(__BACKEND_URL__).origin;
   for (const link of Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))) {
     if (link.closest('[data-wanhu-host], [contenteditable=true]') || link.dataset.wanhuHydrated) continue;

@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "title": "选了一件事，究竟放弃了什么？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "选了一件事，究竟放弃了什么？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "在同一个周末选择不同安排，观察被放弃的最佳替代项，而非累加全部选项。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "branching-path",
+    "rationale": "把材料中的区别变成可比较的行动路径。读者可以返回换条件，无需回答标准答案。",
+    "assumptions": "玩乎编写的教学情境，聚焦原文一个要点；路径不是原作者提供的判断工具，也不代表适用于所有人。",
+    "evidence": {
+      "quote": "放弃的其他用途中所能得到的最高收益",
+      "sourceId": "showcase-opportunity-cost"
+    },
+    "start": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "title": "周末只有一段可用时间",
+        "body": "教学情境：你可以写文章、参加活动或休息。价值排序由你判断，不换算成收入。",
+        "choices": [
+          {
+            "label": "选择写文章",
+            "target": "write"
+          },
+          {
+            "label": "选择参加活动",
+            "target": "event"
+          },
+          {
+            "label": "选择休息",
+            "target": "rest"
+          }
+        ]
+      },
+      {
+        "id": "write",
+        "title": "写文章的替代项",
+        "body": "被放弃的是活动与休息，其中对你更有价值的那一个构成机会成本。",
+        "choices": [
+          {
+            "label": "活动更有价值",
+            "target": "social"
+          },
+          {
+            "label": "休息更有价值",
+            "target": "recovery"
+          }
+        ]
+      },
+      {
+        "id": "event",
+        "title": "参加活动的替代项",
+        "body": "比较写文章和休息，取你认为更有价值的替代项；不能把两者全部相加。",
+        "choices": [
+          {
+            "label": "写文章更有价值",
+            "target": "creation"
+          },
+          {
+            "label": "休息更有价值",
+            "target": "recovery"
+          }
+        ]
+      },
+      {
+        "id": "rest",
+        "title": "休息的替代项",
+        "body": "比较写文章和活动。这不是说休息没有价值，而是帮助看清取舍。",
+        "choices": [
+          {
+            "label": "写文章更有价值",
+            "target": "creation"
+          },
+          {
+            "label": "活动更有价值",
+            "target": "social"
+          }
+        ]
+      },
+      {
+        "id": "creation",
+        "title": "最佳替代项：创作",
+        "body": "这条路径把被放弃的创作机会作为机会成本。",
+        "choices": []
+      },
+      {
+        "id": "social",
+        "title": "最佳替代项：活动",
+        "body": "这条路径把被放弃的活动机会作为机会成本。",
+        "choices": []
+      },
+      {
+        "id": "recovery",
+        "title": "最佳替代项：休息",
+        "body": "这条路径把被放弃的休息机会作为机会成本。",
+        "choices": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-opportunity-cost",
+      "title": "机会成本",
+      "author": "Violetta San",
+      "url": "https://www.zhihu.com/tardis/bd/art/4416452409",
+      "excerpt": "放弃的其他用途中所能得到的最高收益",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-opportunity-cost"
+  ]
+}

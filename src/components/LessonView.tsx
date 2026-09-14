@@ -4,7 +4,9 @@ import { type Lesson, experimentNames } from "@/lib/lesson";
 import { GradientExperiment } from "./GradientExperiment";
 import { MontyExperiment } from "./MontyExperiment";
 import { ArticleExploration } from "./ArticleExploration";
+import { SceneAnimation, BranchingPath } from "./VisualExperiences";
 import { InteractiveModel } from './InteractiveModel';
+import { CuratedExperience, curatedEntry } from './CuratedExperience';
 import {
   LearningRecap,
   PredictionCard,
@@ -45,6 +47,7 @@ function LessonExperience({
     (value: boolean | null) => setSession((s) => ({ ...s, verified: value })),
     [],
   );
+  if (curatedEntry(lesson)) return <CuratedExperience lesson={lesson} onActivity={activity}/>;
   return (
     <article className={`lesson ${preview ? "lesson-preview" : ""}`}>
       <div className="lesson-label">
@@ -86,7 +89,7 @@ function LessonExperience({
           <span>02</span>现在，动手试一试
         </div>
         <p className="observation-note">{lesson.observation}</p>
-        {lesson.experiment.type === "interactive-model" ? <InteractiveModel model={lesson.experiment} onActivity={activity} /> : lesson.experiment.type === "article-exploration" ? (
+        {lesson.experiment.type === "scene-animation" ? <SceneAnimation scene={lesson.experiment} onActivity={activity}/> : lesson.experiment.type === "branching-path" ? <BranchingPath graph={lesson.experiment} onActivity={activity}/> : lesson.experiment.type === "interactive-model" ? <InteractiveModel model={lesson.experiment} onActivity={activity} /> : lesson.experiment.type === "article-exploration" ? (
           <ArticleExploration
             experiment={lesson.experiment}
             sources={lesson.sources}
@@ -114,7 +117,7 @@ function LessonExperience({
         </div>
         <p>{lesson.explanation}</p>
         <p className="small muted">
-          {lesson.experiment.type === "article-exploration"
+          {["scene-animation", "branching-path", "interactive-model"].includes(lesson.experiment.type) ? "演示说明：图示与参数是帮助理解的模型，请结合原文和演示假设核对。" : lesson.experiment.type === "article-exploration"
             ? "阅读说明：情境题用于理解本次材料的表达。引句可核对，生成的解释仍需作者审阅。"
             : lesson.experiment.type === "gradient-descent"
               ? "模型说明：本实验固定采用 f(x) = x²，不代表所有损失函数。"

@@ -1,7 +1,8 @@
 import { LessonSchema, type Lesson, type ExperimentType } from "./lesson";
+import { showcase } from './showcase';
 
 export const examples: Record<
-  Exclude<ExperimentType, "article-exploration" | "interactive-model">,
+  "gradient-descent" | "monty-hall",
   Lesson
 > = {
   "gradient-descent": LessonSchema.parse({
@@ -62,6 +63,8 @@ export const examples: Record<
   }),
 };
 export function getExample(type: string | null): Lesson | null {
+  const preset = showcase.find(item=>`showcase-${item.id}` === type);
+  if (preset) return structuredClone(preset.lesson);
   return type === "gradient-descent" || type === "monty-hall"
     ? structuredClone(examples[type])
     : null;

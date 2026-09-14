@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "title": "从“读过了”走到“能说清楚”",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "从“读过了”走到“能说清楚”",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "选择自己的阅读状态，探索主动回忆、回到原文与输出之间的路径。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "branching-path",
+    "rationale": "把材料中的区别变成可比较的行动路径。读者可以返回换条件，无需回答标准答案。",
+    "assumptions": "玩乎编写的教学情境，聚焦原文一个要点；路径不是原作者提供的判断工具，也不代表适用于所有人。",
+    "evidence": {
+      "quote": "带着问题阅读",
+      "sourceId": "showcase-active-reading"
+    },
+    "start": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "title": "读完这一段之后",
+        "body": "暂停看原文，试着用自己的话讲一遍。这里只提供练习路径，不评定学习能力。",
+        "choices": [
+          {
+            "label": "能够独立讲出核心意思",
+            "target": "apply"
+          },
+          {
+            "label": "说不清关键关系",
+            "target": "return"
+          }
+        ]
+      },
+      {
+        "id": "return",
+        "title": "带着具体问题重读",
+        "body": "找出卡住的概念或前提，再回原文定位依据。",
+        "choices": [
+          {
+            "label": "定位到不懂的部分",
+            "target": "retell"
+          }
+        ]
+      },
+      {
+        "id": "retell",
+        "title": "重新组织一遍表达",
+        "body": "用短句转述，并保留原文的重要条件。",
+        "choices": [
+          {
+            "label": "尝试举一个新例子",
+            "target": "apply"
+          },
+          {
+            "label": "仍有疑问，记录待查",
+            "target": "question"
+          }
+        ]
+      },
+      {
+        "id": "apply",
+        "title": "换个例子检查理解",
+        "body": "把概念放进新的情境，检查是否仍说得通。这是一次输出练习，不保证长期记忆。",
+        "choices": []
+      },
+      {
+        "id": "question",
+        "title": "保留一个可追问的问题",
+        "body": "下次带着它继续阅读或检索，避免把模糊熟悉感当作理解。",
+        "choices": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-active-reading",
+      "title": "告别无效努力：这八本书将彻底颠覆你的阅读与学习方式",
+      "author": "咩小漫",
+      "url": "https://www.zhihu.com/tardis/bd/art/1961531467042633609",
+      "excerpt": "带着问题阅读",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-active-reading"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "title": "笔记该记什么，才能再次用起来？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "笔记该记什么，才能再次用起来？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "选择“找内容”或“共享笔记”，分别走一遍笔记使用路径，再返回比较。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "branching-path",
+    "rationale": "把材料中的区别变成可比较的行动路径。读者可以返回换条件，无需回答标准答案。",
+    "assumptions": "玩乎编写的教学情境，聚焦原文一个要点；路径不是原作者提供的判断工具，也不代表适用于所有人。",
+    "evidence": {
+      "quote": "能迅速查找到所需内容",
+      "sourceId": "showcase-notes-workflow"
+    },
+    "start": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "title": "现在要用笔记做什么？",
+        "body": "围绕原回答的记录、检索和共享，选择当前任务。",
+        "choices": [
+          {
+            "label": "找回过去的内容",
+            "target": "find"
+          },
+          {
+            "label": "与同伴共享笔记",
+            "target": "share"
+          }
+        ]
+      },
+      {
+        "id": "find",
+        "title": "留下可检索的线索",
+        "body": "用主题、关键词和背景帮助未来找到它。这是检索路径的起点。",
+        "choices": [
+          {
+            "label": "已经找到所需内容",
+            "target": "reuse"
+          },
+          {
+            "label": "线索仍不够清楚",
+            "target": "context"
+          }
+        ]
+      },
+      {
+        "id": "share",
+        "title": "记录任务上下文",
+        "body": "为同伴补充主题、背景与关键问题，使共享内容可以被读懂。这是玩乎编写的应用情境。",
+        "choices": [
+          {
+            "label": "补齐共享信息",
+            "target": "reuse"
+          }
+        ]
+      },
+      {
+        "id": "context",
+        "title": "补充背景与关联",
+        "body": "本次可回到原材料查证。下次记录时，把检索需要的线索一起留下。",
+        "choices": []
+      },
+      {
+        "id": "reuse",
+        "title": "让记录进入实际工作",
+        "body": "找到、读懂并使用这条记录。返回起点比较另一类用途。",
+        "choices": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-notes-workflow",
+      "title": "如何构建个人资料库与个人知识库？",
+      "author": "白馥芮",
+      "url": "https://www.zhihu.com/tardis/bd/ans/1310435050",
+      "excerpt": "能迅速查找到所需内容",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-notes-workflow"
+  ]
+}

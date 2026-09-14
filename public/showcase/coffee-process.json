@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "title": "冷萃与冰美式，差别发生在哪一步？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "冷萃与冰美式，差别发生在哪一步？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "沿两种制备路径探索，区分萃取时的温度和最终饮用温度。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "branching-path",
+    "rationale": "把材料中的区别变成可比较的行动路径。读者可以返回换条件，无需回答标准答案。",
+    "assumptions": "玩乎编写的教学情境，聚焦原文一个要点；路径不是原作者提供的判断工具，也不代表适用于所有人。",
+    "evidence": {
+      "quote": "冷萃则是冷水萃取咖啡",
+      "sourceId": "showcase-coffee-process"
+    },
+    "start": "start",
+    "nodes": [
+      {
+        "id": "start",
+        "title": "最终都是一杯冷咖啡",
+        "body": "从萃取环节开始比较，而不是只看杯中有没有冰。",
+        "choices": [
+          {
+            "label": "走冷萃路径",
+            "target": "cold"
+          },
+          {
+            "label": "走冰美式路径",
+            "target": "hot"
+          }
+        ]
+      },
+      {
+        "id": "cold",
+        "title": "用冷水萃取",
+        "body": "以低温和较长接触时间提取咖啡成分，具体条件依配方而变。",
+        "choices": [
+          {
+            "label": "继续观察成品",
+            "target": "coldend"
+          }
+        ]
+      },
+      {
+        "id": "hot",
+        "title": "热水萃取浓缩",
+        "body": "先制成浓缩咖啡，再通过加水和冰降温。",
+        "choices": [
+          {
+            "label": "加水与冰",
+            "target": "iceend"
+          }
+        ]
+      },
+      {
+        "id": "coldend",
+        "title": "低温发生在萃取阶段",
+        "body": "冷萃是过程特征。返回比较热萃后再降温的路径。",
+        "choices": []
+      },
+      {
+        "id": "iceend",
+        "title": "低温发生在成品阶段",
+        "body": "杯中变冷，不等于之前用冷水萃取。这是两条路径的关键差别。",
+        "choices": []
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-coffee-process",
+      "title": "冷萃咖啡和冰美式比有什么区别？",
+      "author": "知乎知物咖啡",
+      "url": "https://www.zhihu.com/tardis/bd/art/632439891",
+      "excerpt": "冷萃则是冷水萃取咖啡",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-coffee-process"
+  ]
+}

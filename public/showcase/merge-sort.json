@@ -1,0 +1,276 @@
+{
+  "version": 1,
+  "title": "归并的一步：两排数字怎样合成一排？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "归并的一步：两排数字怎样合成一排？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "从 [1,4] 和 [2,3] 开始，逐幕比较两边尚未取出的首项。观察它并不是机械地左右交替。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "scene-animation",
+    "rationale": "用图形的位置、显隐和方向呈现原文的过程，允许逐帧观察与回放。",
+    "assumptions": "玩乎原创示意图，形状、距离、速度不按真实比例，仅展示原文中选定的机制，不复刻原文图片。",
+    "evidence": {
+      "quote": "将已有序的子序列合并",
+      "sourceId": "showcase-merge-sort"
+    },
+    "objects": [
+      {
+        "id": "one",
+        "shape": "rect",
+        "label": "1",
+        "color": "blue",
+        "detail": "蓝色有序序列 [1,4] 的首项。因为 1 小于另一序列首项 2，所以先进入输出区。"
+      },
+      {
+        "id": "four",
+        "shape": "rect",
+        "label": "4",
+        "color": "blue",
+        "detail": "蓝色序列的第二项。取出 1 后，4 依次与 2、3 比较，最后才被取出。"
+      },
+      {
+        "id": "two",
+        "shape": "rect",
+        "label": "2",
+        "color": "orange",
+        "detail": "橙色有序序列 [2,3] 的首项。取出蓝色 1 后，2 小于剩余的 4。"
+      },
+      {
+        "id": "three",
+        "shape": "rect",
+        "label": "3",
+        "color": "orange",
+        "detail": "橙色序列第二项。3 仍小于 4，因此会紧随橙色 2 进入输出区。"
+      }
+    ],
+    "frames": [
+      {
+        "title": "两边已经有序",
+        "caption": "蓝色 [1,4]，橙色 [2,3]。下面空出的行是输出区；只演示合并步骤，不展开递归拆分。",
+        "poses": [
+          {
+            "id": "one",
+            "x": 130,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "four",
+            "x": 260,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "two",
+            "x": 400,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "three",
+            "x": 530,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "比较 1 和 2，取 1",
+        "caption": "从蓝色序列取出 1；蓝色下一项变成 4，橙色仍从 2 开始。",
+        "poses": [
+          {
+            "id": "one",
+            "x": 100,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "four",
+            "x": 260,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "two",
+            "x": 400,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "three",
+            "x": 530,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "比较 4 和 2，取 2",
+        "caption": "较小的 2 放进输出区。每次只比较两边剩余序列的第一项。",
+        "poses": [
+          {
+            "id": "one",
+            "x": 100,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "four",
+            "x": 260,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "two",
+            "x": 240,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "three",
+            "x": 530,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "比较 4 和 3，取 3",
+        "caption": "连续从橙色序列取出 2、3，说明归并不是机械交替。",
+        "poses": [
+          {
+            "id": "one",
+            "x": 100,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "four",
+            "x": 260,
+            "y": 100,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "two",
+            "x": 240,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "three",
+            "x": 380,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "橙色取空，补上 4",
+        "caption": "最终从左到右为 [1,2,3,4]。颜色保留来源，位置表示输出顺序。",
+        "poses": [
+          {
+            "id": "one",
+            "x": 100,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "four",
+            "x": 520,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "two",
+            "x": 240,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "three",
+            "x": 380,
+            "y": 250,
+            "width": 100,
+            "height": 45,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-merge-sort",
+      "title": "经典排序算法汇总",
+      "author": "AItimeHub",
+      "url": "https://www.zhihu.com/tardis/bd/art/430367415",
+      "excerpt": "将已有序的子序列合并",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-merge-sort"
+  ]
+}

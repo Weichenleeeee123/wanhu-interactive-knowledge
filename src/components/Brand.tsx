@@ -16,7 +16,7 @@ export function Header({ workshop = false }: { workshop?: boolean }) {
     <header className="site-header">
       <Brand />
       <nav aria-label="主导航">
-        <Link href="/#examples">示例作品</Link>
+        <Link href="/showcase">真实文章演示</Link>
         <Link href="/extension">安装插件</Link>
         <Link href="/library">我的作品</Link>
         <Link className="nav-cta" href={workshop ? "/" : "/create"}>

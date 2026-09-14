@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "title": "C4 途径：碳如何跨细胞转移？",
+  "intro": "玩乎为这篇真实知乎内容预先制作的互动讲解。先体验，再回到原文核对。",
+  "goal": "C4 途径：碳如何跨细胞转移？",
+  "prediction": "先想想：改变其中一个条件，过程会发生什么变化？",
+  "observation": "拖动分镜，观察固定、运输和释放三个环节；回原文核对教材对具体场所的表述。",
+  "explanation": "这份演示聚焦原文中的一个机制。图示情境和参数由玩乎编写，不能替代完整文章，也不表示原作者参与或认可。",
+  "challenge": "把演示观察与原文的适用条件联系起来，区分图示简化与现实情况。",
+  "origin": "manual",
+  "experiment": {
+    "type": "scene-animation",
+    "rationale": "用图形的位置、显隐和方向呈现原文的过程，允许逐帧观察与回放。",
+    "assumptions": "玩乎原创示意图，形状、距离、速度不按真实比例，仅展示原文中选定的机制，不复刻原文图片。",
+    "evidence": {
+      "quote": "四碳酸被运送到维管束鞘细胞中",
+      "sourceId": "showcase-c4-transfer"
+    },
+    "objects": [
+      {
+        "id": "mesophyll",
+        "shape": "rect",
+        "label": "叶肉细胞",
+        "color": "green",
+        "detail": "C4 植物中，初步固定无机碳的叶肉细胞。这里仅呈现细胞层面，不画亚细胞反应位置。"
+      },
+      {
+        "id": "sheath",
+        "shape": "rect",
+        "label": "维管束鞘细胞",
+        "color": "blue",
+        "detail": "接收四碳酸的维管束鞘细胞。四碳酸在这里释放 CO₂，供后续同化。"
+      },
+      {
+        "id": "co2",
+        "shape": "circle",
+        "label": "CO₂",
+        "color": "gray",
+        "detail": "用一个圆形代表无机碳进入与释放环节，并不表示真实分子数量。"
+      },
+      {
+        "id": "acid",
+        "shape": "circle",
+        "label": "四碳酸",
+        "color": "orange",
+        "detail": "携带碳的四碳有机酸，从叶肉细胞转运至维管束鞘细胞。本图省略返回和再生步骤。"
+      }
+    ],
+    "frames": [
+      {
+        "title": "进入叶肉细胞",
+        "caption": "只讨论细胞层面的联系，不断言原文讨论的亚细胞场所争议。",
+        "poses": [
+          {
+            "id": "mesophyll",
+            "x": 160,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sheath",
+            "x": 490,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "co2",
+            "x": 80,
+            "y": 235,
+            "width": 55,
+            "height": 55,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "acid",
+            "x": 160,
+            "y": 235,
+            "width": 60,
+            "height": 60,
+            "opacity": 0,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "形成四碳化合物",
+        "caption": "用一个图形代表形成四碳有机酸的环节，省略反应计量。",
+        "poses": [
+          {
+            "id": "mesophyll",
+            "x": 160,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sheath",
+            "x": 490,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "co2",
+            "x": 160,
+            "y": 235,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "acid",
+            "x": 160,
+            "y": 235,
+            "width": 60,
+            "height": 60,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "运输到另一类细胞",
+        "caption": "四碳酸的移动用来示意跨细胞运输。",
+        "poses": [
+          {
+            "id": "mesophyll",
+            "x": 160,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sheath",
+            "x": 490,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "co2",
+            "x": 490,
+            "y": 235,
+            "width": 55,
+            "height": 55,
+            "opacity": 0,
+            "rotation": 0
+          },
+          {
+            "id": "acid",
+            "x": 490,
+            "y": 235,
+            "width": 60,
+            "height": 60,
+            "opacity": 1,
+            "rotation": 0
+          }
+        ]
+      },
+      {
+        "title": "释放 CO₂",
+        "caption": "四碳酸释放 CO₂，供后续同化使用。完整循环还包括返回与再生，本图未展开。",
+        "poses": [
+          {
+            "id": "mesophyll",
+            "x": 160,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "sheath",
+            "x": 490,
+            "y": 120,
+            "width": 145,
+            "height": 80,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "co2",
+            "x": 550,
+            "y": 235,
+            "width": 55,
+            "height": 55,
+            "opacity": 1,
+            "rotation": 0
+          },
+          {
+            "id": "acid",
+            "x": 400,
+            "y": 235,
+            "width": 60,
+            "height": 60,
+            "opacity": 0.25,
+            "rotation": 0
+          }
+        ]
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "showcase-c4-transfer",
+      "title": "C4植物的C4途径",
+      "author": "高中生物",
+      "url": "https://www.zhihu.com/tardis/zm/art/682891737",
+      "excerpt": "四碳酸被运送到维管束鞘细胞中",
+      "provenance": "user",
+      "contentScope": "search-excerpt"
+    }
+  ],
+  "sourceIds": [
+    "showcase-c4-transfer"
+  ]
+}
