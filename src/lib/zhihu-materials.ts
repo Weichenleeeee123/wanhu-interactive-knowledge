@@ -81,7 +81,7 @@ export function parseZhihuLink(value: string): {
       };
     if (
       (match = url.pathname.match(
-        /^\/(?:answer|tardis\/bd\/ans)\/(\d{1,25})\/?$/,
+        /^\/(?:answer|tardis\/(?:bd|zm|jm)\/ans)\/(\d{1,25})\/?$/,
       ))
     )
       return {
@@ -89,7 +89,7 @@ export function parseZhihuLink(value: string): {
         id: match[1],
         url: `https://www.zhihu.com/answer/${match[1]}`,
       };
-    if ((match = url.pathname.match(/^\/tardis\/jm\/art\/(\d{1,25})\/?$/)))
+    if ((match = url.pathname.match(/^\/tardis\/(?:bd|zm|jm)\/art\/(\d{1,25})\/?$/)))
       return {
         type: "article",
         id: match[1],

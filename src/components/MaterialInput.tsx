@@ -214,7 +214,7 @@ export function MaterialInput({
             : "把不理解的地方告诉我们，带着问题动手试一试。"}
         </p>
       </div>
-      <ArticleImport value={value} onChange={onChange} disabled={generating} />
+      <ArticleImport value={value} onChange={onChange} disabled={generating} mode={mode} />
         <div className="form-field">
           <label htmlFor={`${id}-material`}>
             补充你的讲解材料<span>{material.length}/20000</span>

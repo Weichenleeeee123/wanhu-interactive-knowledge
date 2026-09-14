@@ -7,15 +7,18 @@ import {
   type KnowledgeItem,
 } from "@/lib/zhihu-materials";
 import type { Material } from "@/lib/works";
+import { showcaseForUrl } from "@/lib/showcase";
 
 export function ArticleImport({
   value,
   onChange,
   disabled,
+  mode = "teach",
 }: {
   value: Material;
   onChange: (value: Material) => void;
   disabled: boolean;
+  mode?: "teach" | "learn";
 }) {
   const id = useId();
   const [url, setUrl] = useState(""),
@@ -56,6 +59,11 @@ export function ArticleImport({
         setItems(list);
       } else {
         const material = ArticleMaterialSchema.parse(data.material);
+        const known = showcaseForUrl(material.source.url);
+        if (known && material.coverage === "link-only") {
+          material.source.title = known.source.title;
+          material.source.author = known.source.author;
+        }
         setPreview(material);
         setItems(null);
         const sections = material.text
@@ -123,7 +131,7 @@ export function ArticleImport({
         value.question ||
         (preview.coverage === "link-only"
           ? ""
-          : `我想弄懂《${source.title}》中的核心观点与使用条件。`.slice(
+          : `${mode === "teach" ? "我想讲清楚" : "我想弄懂"}《${source.title}》中的核心观点与使用条件。`.slice(
               0,
               200,
             )),
@@ -176,6 +184,7 @@ export function ArticleImport({
       <p className="field-note">
         普通链接仅导入接口可提供的摘要；需要全文时，可补充你能阅读的段落。
       </p>
+      {showcaseForUrl(url) && <p className="field-note">本文已有玩乎制作的预制演示。<a href={`/view?example=showcase-${showcaseForUrl(url)!.id}`} target="_blank" rel="noreferrer">直接体验演示 ↗</a>，也可以继续导入材料，围绕自己的问题生成。</p>}
       <button
         className="text-button"
         disabled={disabled || !!busy}
