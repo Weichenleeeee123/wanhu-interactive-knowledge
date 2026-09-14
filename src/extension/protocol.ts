@@ -9,6 +9,21 @@ export function pageIdentity(value:string) {
   const url=new URL(value);url.search='';url.hash='';url.hostname=url.hostname==='zhihu.com'?'www.zhihu.com':url.hostname;
   return url.toString();
 }
+// Zhihu wraps outbound article links in its own redirect URL after publishing.
+// Decode that one known wrapper without requesting or following arbitrary URLs.
+export function articleSharePayload(value:string,backend:string):string|null {
+  try {
+    let url=new URL(value);
+    if(url.origin==='https://link.zhihu.com'&&!url.username&&!url.password&&url.pathname==='/') {
+      const target=url.searchParams.get('target');
+      if(!target)return null;
+      url=new URL(target);
+    }
+    if(url.origin!==new URL(backend).origin||url.username||url.password||!/^\/view\/?$/.test(url.pathname))return null;
+    const payload=url.hash.slice(1);
+    return /^v1\.[A-Za-z0-9_-]+$/.test(payload)&&payload.length<=12000?payload:null;
+  }catch{return null;}
+}
 export const PageContextSchema=z.object({
   pageUrl:z.string().max(2048).refine(isZhihuPage),
   source:SourceSchema.refine(source=>isZhihuPage(source.url)),

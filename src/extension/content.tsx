@@ -6,7 +6,7 @@ import { InlineExperience } from './InlineExperience';
 import { type Lesson, experimentNames } from '../lib/lesson';
 import { decodeLesson, encodeLesson } from '../lib/share';
 import { contextFromPage, findAnchor, outsideEditor, pageMode } from './page-context';
-import { extensionRequest, pageIdentity, type PageContext, type SavedDemo } from './protocol';
+import { articleSharePayload, extensionRequest, pageIdentity, type PageContext, type SavedDemo } from './protocol';
 import { showcaseForUrl } from '../lib/showcase';
 
 const host=document.createElement('div');
@@ -31,7 +31,7 @@ function InlineDemo({demo,onHide}:{demo:SavedDemo;onHide:()=>void}) {
     <div hidden={collapsed}><InlineExperience lesson={demo.lesson}/></div>
   </section>;
 }
-const inlineRoots=new Map<string,{host:HTMLElement;dispose:()=>void}>();
+const inlineRoots=new Map<string,{host:HTMLElement;demo:SavedDemo;dispose:()=>void}>();
 function collapseAllInline(){inlineRoots.forEach(item=>item.host.shadowRoot?.querySelector<HTMLButtonElement>('button[aria-expanded=true]')?.click());}
 function insertDemo(demo:SavedDemo,anchor:Element|null,scroll=true) {
   if(pageIdentity(location.href)!==pageIdentity(demo.pageUrl))throw new Error('页面已经变化，请回到原文章后打开演示');
@@ -46,7 +46,7 @@ function insertDemo(demo:SavedDemo,anchor:Element|null,scroll=true) {
   const node=document.createElement('div');root.append(node);
   const reactRoot=createRoot(node);
   const dispose=()=>{reactRoot.unmount();card.remove();inlineRoots.delete(demo.id);};
-  inlineRoots.set(demo.id,{host:card,dispose});
+  inlineRoots.set(demo.id,{host:card,demo,dispose});
   anchor.after(card);
   reactRoot.render(<InlineDemo demo={demo} onHide={()=>{if(demo.origin==='showcase')dismissedShowcases.add(pageIdentity(demo.pageUrl));dispose();}}/>);
   if(scroll)card.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
@@ -77,17 +77,16 @@ async function requestAssistance(input:AssistInput){return extensionRequest<{ans
 function errorText(error:unknown){return error instanceof Error?error.message:'暂时无法完成，请重试';}
 async function hydrateArticleEmbeds() {
   hydrateShowcase();
-  const origin = new URL(__BACKEND_URL__).origin;
   for (const link of Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))) {
     if (link.closest('[data-wanhu-host], [contenteditable=true]') || link.dataset.wanhuHydrated) continue;
-    let url: URL; try { url = new URL(link.href); } catch { continue; }
     if (!link.closest('.RichText, .Post-RichText, article')) continue;
-    if (url.origin !== origin || !/^\/view\/?$/.test(url.pathname) || !/^v1\.[A-Za-z0-9_-]+$/.test(url.hash.slice(1))) continue;
+    const payload=articleSharePayload(link.href,__BACKEND_URL__);
+    if(!payload)continue;
     link.dataset.wanhuHydrated = 'pending';
     try {
-      const lesson = await decodeLesson(url.hash.slice(1));
+      const lesson = await decodeLesson(payload);
       const demo: SavedDemo = { origin: 'article', mode: 'learn', id: crypto.randomUUID(), pageUrl: pageIdentity(location.href), lesson, createdAt: new Date().toISOString(), anchorText: link.innerText.trim().slice(0, 2000), anchorSourceUrl: pageIdentity(location.href) };
-      insertDemo(demo, link); link.dataset.wanhuHydrated = 'done';
+      insertDemo(demo, link.closest('ul,ol,p,blockquote')??link, false); link.dataset.wanhuHydrated = 'done';
     } catch { delete link.dataset.wanhuHydrated; }
   }
 }
@@ -102,6 +101,10 @@ function App() {
   const [share,setShare]=useState(''),[incoming,setIncoming]=useState('');
   const [generation,setGeneration]=useState<boolean|null>(null);
   const [embeddedCount,setEmbeddedCount]=useState(0);
+  const pageDemos=[...new Map([
+    ...demos.map(demo=>[demo.id,demo] as const),
+    ...Array.from(inlineRoots.values()).filter(item=>item.host.isConnected).map(item=>[item.demo.id,item.demo] as const),
+  ]).values()];
   const anchor=useRef<Element|null>(null),page=useRef(pageIdentity(location.href));
   const generatedAnchors=useRef(new Map<string,Element|null>());
   const pending=useRef(false),panel=useRef<HTMLElement>(null),launcher=useRef<HTMLButtonElement>(null);
@@ -216,9 +219,9 @@ function App() {
   async function importLink() {
     setError('');
     try {
-      const url=new URL(incoming.trim());
-      if(url.origin!==new URL(__BACKEND_URL__).origin||!/^\/view\/?$/.test(url.pathname)||!/^v1\.[A-Za-z0-9_-]+$/.test(url.hash.slice(1)))throw new Error('请使用玩乎工坊生成的阅读链接（格式为 /view#v1…）');
-      const lesson=await decodeLesson(url.hash.slice(1));
+      const payload=articleSharePayload(incoming.trim(),__BACKEND_URL__);
+      if(!payload)throw new Error('请使用玩乎工坊生成的阅读链接（格式为 /view#v1…）');
+      const lesson=await decodeLesson(payload);
       await save({id:crypto.randomUUID(),origin:'imported',mode:detectedMode,pageUrl:page.current,lesson,createdAt:new Date().toISOString()});
       setIncoming('');
     }catch(error){setError(errorText(error));}
@@ -227,11 +230,11 @@ function App() {
     <button ref={launcher} className="zw-launcher" onMouseDown={event=>event.preventDefault()} onClick={toggle} aria-label="打开玩乎" aria-expanded={open}><img className="zw-launcher-icon zw-launcher-mascot" src={__MASCOT_ICON__} alt="刘看山" width={40} height={40}/><span>玩乎</span><i>{embeddedCount?`本页 ${embeddedCount} 个演示`:'把知识试明白'}</i></button>
     {open&&<aside className="zw-panel" ref={panel} tabIndex={-1} aria-label="玩乎工作区" onKeyDown={event=>{if(event.key==='Escape'){setOpen(false);launcher.current?.focus();}}}>
       <header className="zw-header"><div className="zw-brand"><span className="zw-monogram"><img src={__BRAND_ICON__} alt="玩乎" width={42} height={42}/></span><div><strong>知识，就在这里发生</strong><small>WANHU · FOR ZHIHU</small></div></div><button className="zw-close" onClick={()=>{setOpen(false);launcher.current?.focus();}} aria-label="关闭玩乎">×</button></header>
-      <nav className="zw-tabs" aria-label="插件功能"><button className={tab==='create'?'active':''} onClick={()=>setTab('create')}>围绕这段，动手理解</button><button className={tab==='saved'?'active':''} onClick={()=>{setTab('saved');void load();}}>本页演示 <span>{demos.length}</span></button></nav>
+      <nav className="zw-tabs" aria-label="插件功能"><button className={tab==='create'?'active':''} onClick={()=>setTab('create')}>围绕这段，动手理解</button><button className={tab==='saved'?'active':''} onClick={()=>{setTab('saved');void load();}}>本页演示 <span>{pageDemos.length}</span></button></nav>
       <div className="zw-scroll">
         {tab==='create'?<>
           <div className="zw-step"><span>{(context?.mode??detectedMode)==='teach'?'作者模式 · 01 / 选取材料':'读者模式 · 01 / 选取材料'}</span><button disabled={busy} onMouseDown={event=>event.preventDefault()} onClick={capture}>重新读取选段 ↻</button></div>
-          {context?<div className="zw-source"><div><span className="zw-dot"/>{context.mode==='teach'?'写作中的草稿':'正在读的文章'} · {context.selection?'所选段落':'可见正文'}</div><strong>{context.source.title}</strong><small>{context.source.author||'作者信息未识别'} · <a href={context.source.url} target="_blank" rel="noreferrer">知乎来源 ↗</a></small></div>:<div className="zw-empty"><strong>从不理解的那一段开始</strong><p>在知乎文章、回答或写作编辑器中选取文字，然后点击「重新读取选段」。</p></div>}
+          {context?<div className="zw-source"><div><span className="zw-dot"/>{context.mode==='teach'?'写作中的草稿':'正在读的文章'} · {context.selection?'所选段落':'可见正文'}</div><strong>{context.source.title}</strong><small>{context.source.author||'作者信息未识别'} · <a href={context.source.url} target="_blank" rel="noreferrer">知乎来源 ↗</a></small></div>:<div className="zw-empty"><strong>从不理解的那一段开始</strong><p>在正文中划选一段文字，材料会自动更新到这里；不用关闭侧边栏。</p></div>}
           {context&&<>
             <label className="zw-label" htmlFor="zw-material">将用于生成的文字 <span>{context.text.length.toLocaleString()} / 20,000</span></label>
             <textarea id="zw-material" rows={7} value={context.text} maxLength={20000} disabled={busy} onChange={event=>{setContext({...context,text:event.target.value});setConsent(false);}}/>
@@ -241,17 +244,17 @@ function App() {
             <button className="zw-primary" disabled={busy||!consent||!context.text.trim()||!question.trim()} onClick={()=>void generate()}>{busy?'正在读原文、构建互动…':'生成这段的互动演示 ↗'}</button>
             {busy&&<p className="zw-hint" role="status">通常需要 20–50 秒，可继续读文章。请保持在当前页面。</p>}
           </>}
-          {generation===false&&<p className="zw-service">生成服务暂未连接。请保持本地工坊运行；已保存的演示仍可打开。</p>}
+          {generation===false&&<p className="zw-service">生成服务暂时不可用，请稍后重新打开侧边栏。已保存的演示仍可体验。</p>}
         </>:<>
-          <div className="zw-step"><span>本页作者附带与我的演示 · {demos.length} 份</span><div><button onClick={collapseAllInline}>收起正文</button><button onClick={()=>void load()}>刷新 ↻</button></div></div>
-          {!demos.length&&<div className="zw-empty"><strong>这里会出现文章附带的演示</strong><p>作者把玩乎分享链接贴进知乎后，安装插件的读者会在原文旁边看到互动卡片。你也可以选中任何段落，生成自己的理解。</p><button className="zw-secondary" onClick={()=>{setTab('create');capture();}}>从当前文章开始理解 ↗</button></div>}
-          {demos.map(demo=><button className={'zw-saved '+(demo.id===current?.id?'active':'')} key={demo.id} onClick={()=>{setCurrent(demo);setNotice('');setError('');}}><span>{demoLabel(demo)} · {experimentNames[demo.lesson.experiment.type]}</span><strong>{demo.lesson.title}</strong><small>{new Date(demo.createdAt).toLocaleString('zh-CN')} · 打开 →</small></button>)}
+          <div className="zw-step"><span>本页全部演示 · {pageDemos.length} 份</span><div><button onClick={collapseAllInline}>收起正文</button><button onClick={()=>void load()}>刷新 ↻</button></div></div>
+          {!pageDemos.length&&<div className="zw-empty"><strong>这里会出现文章附带的演示</strong><p>作者把玩乎分享链接贴进知乎后，安装插件的读者会在原文旁边看到互动卡片。你也可以选中任何段落，生成自己的理解。</p><button className="zw-secondary" onClick={()=>{setTab('create');capture();}}>从当前文章开始理解 ↗</button></div>}
+          {pageDemos.map(demo=><button className={'zw-saved '+(demo.id===current?.id?'active':'')} key={demo.id} onClick={()=>{setCurrent(demo);setNotice('');setError('');}}><span>{demoLabel(demo)} · {experimentNames[demo.lesson.experiment.type]}</span><strong>{demo.lesson.title}</strong><small>{new Date(demo.createdAt).toLocaleString('zh-CN')} · 打开 →</small></button>)}
           <label className="zw-label" htmlFor="zw-incoming">打开作者分享的演示</label><textarea id="zw-incoming" rows={3} value={incoming} onChange={event=>setIncoming(event.target.value)} placeholder="粘贴玩乎阅读链接" maxLength={14000}/><button className="zw-secondary" disabled={!incoming.trim()||busy} onClick={()=>void importLink()}>载入分享演示</button>
         </>}
         {error&&<p className="zw-error" role="alert">{error}</p>}
         {notice&&<p className="zw-notice" role="status">{notice}</p>}
         {current&&<section className="zw-result" aria-label="生成结果"><span className="zw-result-label">{demoLabel(current)} / {experimentNames[current.lesson.experiment.type]}</span><h2>{current.lesson.title}</h2><p>{current.lesson.goal}</p>{tab==='saved'&&<ThinkingAssist mode={detectedMode} material={current.lesson.sources.map(source=>source.excerpt).join('\n\n')||current.lesson.intro} request={requestAssistance}/>}<button className="zw-primary" onClick={()=>embed(current)}>插入正文，开始互动 ↓</button><small className="zw-hint">这一步只是在当前知乎页面预览，原文不会被改写。</small><button className="zw-secondary" onClick={()=>void openWorkshop()}>{(context?.mode??detectedMode)==='teach'?'到工坊修改讲解与演示 ↗':'到网页继续理解 ↗'}</button>{share&&<><label className="zw-label" htmlFor="zw-share">发布到知乎文章</label><input id="zw-share" readOnly value={share} onFocus={event=>event.target.select()}/><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(share).then(()=>setNotice('分享链接已复制。请在知乎编辑器中作为普通链接粘贴；安装玩乎的读者会自动展开演示。')).catch(()=>setError('复制受限，请选中上方链接手动复制。'))}>复制分享链接 ↗</button><button className="zw-copy" onClick={()=>void navigator.clipboard.writeText(`[${current.lesson.title}](${share})`).then(()=>setNotice('带标题链接已复制，可直接粘贴到支持 Markdown 的编辑器。')).catch(()=>setError('复制受限，请手动复制上方链接。'))}>复制带标题链接</button><small className="zw-hint">要让读者看到，请把上方分享链接贴进知乎文章。未安装插件的读者仍可点击链接打开完整网页。</small></>}</section>}
-        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><p>作者在写作时生成互动演示，把普通链接作为普通链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
+        <footer className="zw-footer"><strong>玩乎如何融入知乎</strong><small>插件版本 0.4.1 · <a href={__BACKEND_URL__+"/extension"} target="_blank" rel="noreferrer">更新与安装说明 ↗</a></small><p>作者在写作时生成互动演示，把分享链接贴进文章；读者打开文章后，玩乎会在链接附近自动展开。正文、作者署名和知乎来源始终保留。</p><small>卡片标注“作者附带”时，表示它来自文章中的玩乎分享链接；读者自己生成的解释只保存在自己的浏览器中。</small></footer>
       </div>
     </aside>}
   </div>;
