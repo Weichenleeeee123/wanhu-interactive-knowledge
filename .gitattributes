@@ -1,0 +1,2 @@
+# Linux deployment scripts must stay executable after git archive on Windows.
+*.sh text eol=lf
