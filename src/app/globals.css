@@ -2138,6 +2138,13 @@ body {
 .workspace-toolbar { border-radius: 14px; background: rgba(255,255,255,.9); box-shadow: 0 8px 24px #315f950d; padding: 10px 14px; }
 .workspace-grid { gap: 22px; }
 .input-panel, .preview-panel { border-radius: 18px; border-color: var(--line); box-shadow: 0 12px 32px #315f950c; }
+.author-thinking-tools { margin: 16px 0 8px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: #f8fbff; }
+.author-thinking-tools summary { cursor: pointer; font-weight: 650; color: var(--ink); }
+.author-thinking-tools summary span { margin-left: 6px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.author-thinking-tools p { margin: 10px 0; }
+.thinking-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.thinking-chips button { border: 1px solid #cfe0f5; border-radius: 999px; background: #fff; color: var(--ink); padding: 7px 10px; cursor: pointer; }
+.thinking-chips button:hover { border-color: var(--brand); color: var(--brand); }
 .preview-heading { background: linear-gradient(180deg,#fff,#f7fbff); }
 .mobile-preview-tabs button.active, .workspace-tabs button.active { color: var(--brand); border-color: var(--brand); }
 @media (max-width: 760px) {

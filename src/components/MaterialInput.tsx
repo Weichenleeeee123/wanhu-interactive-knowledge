@@ -215,6 +215,17 @@ export function MaterialInput({
       </div>
       <ArticleImport value={value} onChange={onChange} disabled={generating} />
       <div className="quick-start-hint"><span className="live-dot" /><div><strong>最省力的用法</strong><p>先从上面导入知乎文章，或直接粘贴一段文字；下面的问题只需要写一句你真正想弄懂的事。</p></div></div>
+      {mode === "teach" && (
+        <details className="author-thinking-tools">
+          <summary>先用玩乎帮你构思一下 <span>可选 · 不会生成作品</span></summary>
+          <p className="small muted">把写作辅助放在生成之前：选一个切口，玩乎会把它带进后面的互动草稿。</p>
+          <div className="thinking-chips">
+            <button type="button" onClick={() => setField("question", "读者需要哪些前置知识？这段论证跳过了哪一步？")}>检查前置与跳步</button>
+            <button type="button" onClick={() => setField("question", "怎样用一个生活中的类比，把这段观点讲得更直观？")}>找一个类比</button>
+            <button type="button" onClick={() => setField("question", "这段内容最适合做成哪种互动：步骤推演、条件分支还是方案对比？")}>挑互动切口</button>
+          </div>
+        </details>
+      )}
       <fieldset className="generation-fields" disabled={generating}>
         <details className="topic-starters">
           <summary>或从一个标准模型问题开始</summary>
