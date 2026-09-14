@@ -37,3 +37,15 @@
 ## 回退方式
 
 将本次保留的 `wanhu.service.<发布目录名>.backup` 复制覆盖 `/etc/systemd/system/wanhu.service`，执行 `systemctl daemon-reload` 和 `systemctl restart wanhu`。旧版本目录始终保留；回退后重新检查域名页面与服务状态。
+
+
+## 提交前四条流程修正发布（0.4.2）
+
+- 当前应用构建：`4b431b1294682a77c12e583fe1e795db089a0611`，发布目录 `/opt/wanhu/releases/20260914-210149-4b431b1`，GitHub master 已推送。
+- 修复自动选段与侧栏焦点冲突、知乎跳转分享链接识别、正文演示列表接续、读者角色丢失、真实链接导入、SVG 播放崩溃及窄屏工具栏遮挡；首页加入十篇成品入口。
+- 当前测试累计：107 项单元、47 项完整网页测试、15 项 MV3 插件测试；本次正式域名的 6 项流程回归全部通过。前一发布的十篇专用交互 8 项线上验收见上文。
+- 真实知乎 TCP 原文 + 线上模型已完成选段、修改问题、生成、自动嵌入与网页读者接续；联网首轮未生成成品，重试成功，记录保留在 [四条流程验收](journey-audit-2026-09-14.md)。
+- Linux 构建通过，23 页生成，服务 active。六个正式页面/接口 HTTP 200；分享图片使用正式域名。
+- 下载 `/downloads/wanhu-extension.zip?v=0.4.2` 为 1,414,129 字节，SHA-256 `c984245f46d9bdde8eadaa01ea9ec11b28ed15ce8c080db29ee8efbf7a2fde5e`，与本地发布包一致。
+- 本地线上服务插件目录 `D:/Projects/zhihu/dist/extension-public` 已更新；需在扩展管理页重新加载，并刷新知乎，确认底部版本 0.4.2。
+- 原始线上结果：`.artifacts/journey-production-check-20260914.json`。文档后续提交与应用构建版本分别记录。
