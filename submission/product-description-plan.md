@@ -197,6 +197,10 @@ flowchart LR
 
 *图 1：线上首页，展示“在知乎使用”和“在网页使用”两个同级入口，并保留可操作实验作为黑客松作品展示。*
 
+![线上创作工坊](../public/submission-assets/current/create.png)
+
+*图 2：线上创作工坊，作者可以导入知乎材料、生成草稿、编辑互动并预览读者体验。*
+
 ## 六、核心功能与作品形式
 
 ### 6.1 原文互动阅读
@@ -240,11 +244,15 @@ flowchart LR
 
 ![线上互动实验页](../public/submission-assets/current/experiment.png)
 
-*图 2：线上互动实验页，读者先预测，再进行参数操作或情境选择。*
+*图 3：线上互动实验页，读者先预测，再进行参数操作或情境选择。*
 
 ![线上作品集](../public/submission-assets/current/library.png)
 
-*图 3：作品集保存创作草稿和学习副本，支持继续编辑、复制和备份。*
+*图 4：作品集保存创作草稿和学习副本，支持继续编辑、复制和备份。*
+
+![线上插件安装页](../public/submission-assets/current/extension.png)
+
+*图 5：插件安装页，说明如何把玩乎带进知乎文章和写作编辑器。*
 
 ## 七、技术方案
 

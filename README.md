@@ -64,6 +64,8 @@
 
 ![线上作品集](public/submission-assets/current/library.png)
 
+![插件安装页](public/submission-assets/current/extension.png)
+
 ### 两类互动协议
 
 **原文互动阅读**适合具体观点、方法和步骤。作品把文章中的要点改写成贴近日常的情境题，每个选项都有针对性反馈，并保留可核对的原句和知乎来源。
