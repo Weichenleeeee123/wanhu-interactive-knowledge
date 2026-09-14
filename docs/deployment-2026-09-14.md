@@ -23,7 +23,16 @@
 
 ## 本次执行
 
-正在发布；提交编号、远端目录、线上功能检查及下载包校验结果将在发布完成后补记。
+- 状态：2026-09-14 已推送 GitHub `master` 并部署成功。
+- 功能提交：`41c50205ad8a2c348abd782ecff17dae8b639e69`；部署构建提交：`5364228d9ccd07f473769b3322323c687d69b431`（增加 shell 脚本 LF 换行规则）。后续验收记录提交只更新本文。
+- 生产版本目录：`/opt/wanhu/releases/20260914-193336-5364228`，目录内 `REVISION` 与上述构建提交相符；systemd 状态 `active`。
+- 旧版本保留：`/opt/wanhu/releases/20260913-221231`。服务备份：`/opt/wanhu/shared/wanhu.service.20260914-193336-5364228.backup`。
+- Linux 上 `npm ci`、Next.js 生产编译、TypeScript 检查、23 个页面生成完成后切换服务。
+- 正式 HTTPS 域名检查：首页、`/create`、`/showcase`、`/extension`、`/view?example=showcase-tcp-handshake`、`/api/capabilities` 均为 HTTP 200。能力接口返回搜索与生成已配置；这项检查不代替真实模型生成质量评测。
+- 面向正式域名执行 `TEST_BASE_URL=https://wanhu.asia npx playwright test tests/curated-experiences.spec.ts`：**8/8 通过（42.6 秒）**。覆盖全部十个专用组件、390px 宽度、TCP 状态、归并操作、咖啡切换、机会成本、因果干预、笔记检索、私有转述、植物演示以及分享还原；预制体验不请求生成接口。
+- Cloudflare 下插件下载 `?v=0.4.0`：HTTP 200，1,413,810 字节，与本地发布包 SHA-256 一致：`8e98ac95370f3c0ded1f188f2c64ef9b9f4be53850b4534a701a4670e9e17f03`。
+- 本地原始线上检查记录保存在 `.artifacts/production-check-20260914.json`；其中无访问密钥。测试与截图旧文件保留在本地，未混入正式发布内容。
+- 首次部署脚本预检发现 Windows `git archive` 的 CRLF 换行问题，尚未切换服务便停止；加入 `.gitattributes` 后以新提交重新打包成功。未删除任何文件。
 
 ## 回退方式
 
