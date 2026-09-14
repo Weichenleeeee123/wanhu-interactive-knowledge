@@ -36,7 +36,8 @@ chrome.runtime.onMessage.addListener((raw,sender,reply)=>{
     }
     if(message.type==='open-workshop') {
       await decodeLesson(message.payload);
-      await chrome.tabs.create({url:__BACKEND_URL__+'/create#'+message.payload});return {};
+      const mode=message.mode==='teach'?'teach':'learn';
+      await chrome.tabs.create({url:__BACKEND_URL__+'/create?mode='+mode+'#'+message.payload});return {};
     }
     const target=message.type==='load'?message.pageUrl:message.demo.pageUrl;
     if(pageIdentity(target)!==currentPage)throw new Error('只能操作当前知乎页面的演示');

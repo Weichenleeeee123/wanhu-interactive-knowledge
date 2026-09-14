@@ -23,7 +23,7 @@ export const ExtensionMessageSchema=z.discriminatedUnion('type',[
   z.object({type:z.literal('generate'),context:PageContextSchema,question:z.string().trim().min(1).max(200),consent:z.literal(true)}).strict(),
   z.object({type:z.literal('load'),pageUrl:z.string().max(2048).refine(isZhihuPage)}).strict(),
   z.object({type:z.literal('save'),demo:SavedDemoSchema}).strict(),
-  z.object({type:z.literal('open-workshop'),payload:z.string().regex(/^v1\.[A-Za-z0-9_-]+$/).max(12000)}).strict(),
+  z.object({type:z.literal('open-workshop'),payload:z.string().regex(/^v1\.[A-Za-z0-9_-]+$/).max(12000),mode:z.enum(['teach','learn']).optional()}).strict(),
 ]);
 export async function extensionRequest<T>(message:unknown):Promise<T> {
   const result=await chrome.runtime.sendMessage(message) as {ok?:boolean;data?:T;error?:string};

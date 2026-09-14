@@ -69,7 +69,13 @@ function App() {
   const anchor=useRef<Element|null>(null),page=useRef(pageIdentity(location.href));
   const generatedAnchors=useRef(new Map<string,Element|null>());
   const pending=useRef(false),panel=useRef<HTMLElement>(null),launcher=useRef<HTMLButtonElement>(null);
-  useEffect(()=>{ void hydrateArticleEmbeds(); const countTimer=setInterval(()=>setEmbeddedCount(inlineRoots.size),500); const observer=new MutationObserver(()=>void hydrateArticleEmbeds()); observer.observe(document.body,{childList:true,subtree:true}); return()=>{observer.disconnect();clearInterval(countTimer);}; },[]);
+  useEffect(()=>{ void hydrateArticleEmbeds(); const countTimer=setInterval(()=>setEmbeddedCount(inlineRoots.size),500); const observer=new MutationObserver(()=>void hydrateArticleEmbeds()); observer.observe(document.body,{childList:true,subtree:true});
+    // Keep the panel in sync with the user's latest selection. Ignore selections made inside our UI.
+    let timer:number|undefined;
+    const onSelection=()=>{ if(!open||busy)return; const selectedNode=window.getSelection()?.anchorNode; if(selectedNode && host.contains(selectedNode))return; window.clearTimeout(timer); timer=window.setTimeout(()=>{try { const next=contextFromPage(true); if(next.context.selection){anchor.current=next.anchor;setContext(prev=>prev&&prev.text===next.context.text?prev:next.context);setQuestion(prev=>prev|| (next.context.mode==='teach'?'怎样用互动演示，把这段内容讲清楚？':'这段话是什么意思？用具体情境帮我理解。'));setConsent(false);setError('');}}catch{/* selection may be outside a supported article */}},120); };
+    document.addEventListener('selectionchange',onSelection);
+    return()=>{observer.disconnect();clearInterval(countTimer);document.removeEventListener('selectionchange',onSelection);if(timer)window.clearTimeout(timer);};
+  },[open,busy]);
 
   function capture() {
     try {
@@ -127,8 +133,12 @@ function App() {
     try {
       const {lesson}=await extensionRequest<{lesson:Lesson}>({type:'generate',context:snapshot,question,consent:true});
       if(pageIdentity(location.href)!==requestPage)throw new Error('生成期间页面发生了变化，请回到原文章重新生成');
-      const id=crypto.randomUUID();generatedAnchors.current.set(id,anchor.current);
-      await save({id,pageUrl:requestPage,lesson,createdAt:new Date().toISOString(),anchorText,anchorSourceUrl:snapshot.source.url});
+      const demo={id:crypto.randomUUID(),pageUrl:requestPage,lesson,createdAt:new Date().toISOString(),anchorText,anchorSourceUrl:snapshot.source.url};
+      generatedAnchors.current.set(demo.id,anchor.current);
+      await save(demo);
+      // Generation is the author's primary action: place the preview immediately.
+      try { insertDemo(demo,anchor.current); setNotice('互动演示已生成，并已自动插入所选段落之后。'); }
+      catch { setNotice('互动演示已生成，暂未找到可插入位置，可在结果区手动插入。'); }
     }catch(error){setError(errorText(error));}
     finally {setBusy(false);pending.current=false;}
   }
@@ -142,7 +152,7 @@ function App() {
   }
   async function openWorkshop() {
     if(!current)return;
-    try {await extensionRequest({type:'open-workshop',payload:await encodeLesson(current.lesson)});}
+    try {await extensionRequest({type:'open-workshop',payload:await encodeLesson(current.lesson),mode:context?.mode??'learn'});}
     catch(error){setError(errorText(error));}
   }
   async function importLink() {
@@ -156,7 +166,7 @@ function App() {
     }catch(error){setError(errorText(error));}
   }
   return <div className="zw-shell">
-    <button ref={launcher} className="zw-launcher" onMouseDown={event=>event.preventDefault()} onClick={toggle} aria-label="打开玩乎" aria-expanded={open}><img className="zw-launcher-icon" src={__BRAND_ICON__} alt="" width={32} height={32}/><span>玩乎</span><i>{embeddedCount?`本页 ${embeddedCount} 个演示`:'把知识试明白'}</i></button>
+    <button ref={launcher} className="zw-launcher" onMouseDown={event=>event.preventDefault()} onClick={toggle} aria-label="打开玩乎" aria-expanded={open}><img className="zw-launcher-icon zw-launcher-mascot" src={__BACKEND_URL__+'/mascot/liu-kanshan-wave.gif'} alt="刘看山" width={40} height={40}/><span>玩乎</span><i>{embeddedCount?`本页 ${embeddedCount} 个演示`:'把知识试明白'}</i></button>
     {open&&<aside className="zw-panel" ref={panel} tabIndex={-1} aria-label="玩乎工作区" onKeyDown={event=>{if(event.key==='Escape'){setOpen(false);launcher.current?.focus();}}}>
       <header className="zw-header"><div className="zw-brand"><span className="zw-monogram"><img src={__BRAND_ICON__} alt="玩乎" width={42} height={42}/></span><div><strong>知识，就在这里发生</strong><small>WANHU · FOR ZHIHU</small></div></div><button className="zw-close" onClick={()=>{setOpen(false);launcher.current?.focus();}} aria-label="关闭玩乎">×</button></header>
       <nav className="zw-tabs" aria-label="插件功能"><button className={tab==='create'?'active':''} onClick={()=>setTab('create')}>围绕这段，动手理解</button><button className={tab==='saved'?'active':''} onClick={()=>{setTab('saved');void load();}}>本页演示 <span>{demos.length}</span></button></nav>
