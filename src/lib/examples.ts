@@ -1,7 +1,7 @@
 import { LessonSchema, type Lesson, type ExperimentType } from "./lesson";
 
 export const examples: Record<
-  Exclude<ExperimentType, "article-exploration">,
+  Exclude<ExperimentType, "article-exploration" | "interactive-model">,
   Lesson
 > = {
   "gradient-descent": LessonSchema.parse({

@@ -42,20 +42,12 @@ export function PredictionCard({
       </div>
     );
   const monty = experiment.type === "monty-hall";
-  const options = monty
-    ? ["换门胜率 1/3", "换门胜率 1/2", "换门胜率 2/3"]
-    : [
-        "会靠近谷底",
-        "会原地震荡",
-        "会越走越远",
-        ...(experiment.initialX === 0 ? ["会停在谷底"] : []),
-      ];
+  const model = experiment.type === "interactive-model";
+  const options = model ? ["会逐步增加", "会保持不变", "会先增后减"] : monty ? ["换门胜率 1/3", "换门胜率 1/2", "换门胜率 2/3"] : ["会靠近谷底", "会原地震荡", "会越走越远", ...(experiment.type === "gradient-descent" && experiment.initialX === 0 ? ["会停在谷底"] : [])];
   return (
     <div className="prediction-card">
       <h3>
-        {monty
-          ? "只剩两扇门，你猜换门的胜率是？"
-          : `按当前初始参数：x = ${experiment.initialX}，学习率 ${experiment.learningRate}，你猜会怎样？`}
+        {monty ? "只剩两扇门，你猜换门的胜率是？" : model ? "改变参数后，结果会怎样变化？" : `按当前初始参数：x = ${(experiment as {initialX:number}).initialX}，学习率 ${(experiment as {learningRate:number}).learningRate}，你猜会怎样？`}
       </h3>
       <p className="small muted">先留下直觉。此刻不判对错，带着它去做实验。</p>
       <div className="prediction-options">

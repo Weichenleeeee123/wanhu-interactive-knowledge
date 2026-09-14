@@ -3,6 +3,7 @@ import {
   ArticleExplorationSchema,
   ReadingCardSchema,
   LessonSchema,
+  ExperimentSchema,
   SourceSchema,
   SourceMaterialsSchema,
   type Lesson,
@@ -54,47 +55,7 @@ const DraftLessonSchema = z
     observation: z.string().max(800),
     explanation: z.string().max(800),
     challenge: z.string().max(800),
-    experiment: z.discriminatedUnion("type", [
-      ArticleExplorationSchema.extend({
-        cards: ReadingCardSchema.extend({
-          concept: z.string().max(80),
-          explanation: z.string().max(500),
-          question: z.string().max(300),
-          options: z
-            .array(
-              z
-                .object({
-                  label: z.string().max(180),
-                  feedback: z.string().max(360),
-                })
-                .strict(),
-            )
-            .length(3),
-          evidence: z
-            .object({
-              quote: z.string().max(160),
-              sourceId: z.string().max(100),
-            })
-            .strict(),
-        })
-          .array()
-          .min(2)
-          .max(4),
-      }),
-      z
-        .object({
-          type: z.literal("gradient-descent"),
-          initialX: z.number(),
-          learningRate: z.number(),
-        })
-        .strict(),
-      z
-        .object({
-          type: z.literal("monty-hall"),
-          trials: z.union([z.literal(100), z.literal(1000)]),
-        })
-        .strict(),
-    ]),
+    experiment: ExperimentSchema,
   })
   .strict();
 const WorkSchema = z

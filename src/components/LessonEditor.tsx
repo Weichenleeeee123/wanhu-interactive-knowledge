@@ -137,7 +137,7 @@ export function LessonEditor({
             />
           </div>
         </div>
-      ) : (
+      ) : lesson.experiment.type === "monty-hall" ? (
         <div className="form-field">
           <label htmlFor="edit-trials">默认模拟次数</label>
           <select
@@ -158,6 +158,8 @@ export function LessonEditor({
             <option value="1000">1000 次</option>
           </select>
         </div>
+      ) : (
+        <p className="small muted">该互动模型的参数在生成时已设置，可直接在右侧预览中操作。</p>
       )}
       <p className="small muted">
         {lesson.experiment.type === "article-exploration"

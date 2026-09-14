@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { InteractiveModelSchema } from './interactive-model';
 
 const text = (max: number) =>
   z.string().trim().min(1, "请填写内容").max(max, `最多 ${max} 个字符`);
@@ -58,6 +59,7 @@ export const ArticleExplorationSchema = z
   })
   .strict();
 export const ExperimentSchema = z.discriminatedUnion("type", [
+  InteractiveModelSchema,
   ArticleExplorationSchema,
   z
     .object({
@@ -125,6 +127,8 @@ export const LessonSchema = z
           });
       }
     }
+    if (lesson.experiment.type === 'interactive-model' && lesson.experiment.evidence.sourceId !== 'material' && !ids.has(lesson.experiment.evidence.sourceId))
+      ctx.addIssue({ code: 'custom', path: ['experiment', 'evidence', 'sourceId'], message: '模型原句引用了不存在的来源' });
   });
 export type Lesson = z.infer<typeof LessonSchema>;
 export function lessonError(value: unknown): string | null {
@@ -134,6 +138,7 @@ export function lessonError(value: unknown): string | null {
     : parsed.error.issues.map((i) => i.message).join("；");
 }
 export const experimentNames: Record<ExperimentType, string> = {
+  'interactive-model': '可调参数模拟器',
   "article-exploration": "原文互动阅读",
   "gradient-descent": "梯度下降",
   "monty-hall": "三门问题",

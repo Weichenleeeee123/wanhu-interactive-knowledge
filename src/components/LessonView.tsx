@@ -4,6 +4,7 @@ import { type Lesson, experimentNames } from "@/lib/lesson";
 import { GradientExperiment } from "./GradientExperiment";
 import { MontyExperiment } from "./MontyExperiment";
 import { ArticleExploration } from "./ArticleExploration";
+import { InteractiveModel } from './InteractiveModel';
 import {
   LearningRecap,
   PredictionCard,
@@ -85,7 +86,7 @@ function LessonExperience({
           <span>02</span>现在，动手试一试
         </div>
         <p className="observation-note">{lesson.observation}</p>
-        {lesson.experiment.type === "article-exploration" ? (
+        {lesson.experiment.type === "interactive-model" ? <InteractiveModel model={lesson.experiment} onActivity={activity} /> : lesson.experiment.type === "article-exploration" ? (
           <ArticleExploration
             experiment={lesson.experiment}
             sources={lesson.sources}
