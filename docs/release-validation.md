@@ -88,4 +88,4 @@
 | 扩展打包 | `npm run build:extension`：通过，生成 `dist/extension` |
 | 真实知乎烟测 | `node scripts/smoke-extension.mjs`：Tardis 页面 200 且可见正文；普通回答页 403，未绕过限制 |
 
-扩展目前是本地可加载验证版，尚未上传浏览器商店或部署线上服务。
+扩展目前提供开发者模式安装包，尚未上传浏览器商店；线上服务已部署到 https://wanhu.asia，线上版插件构建命令为 npm run build:extension:public。
