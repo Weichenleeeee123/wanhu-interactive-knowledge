@@ -5,6 +5,7 @@ import type { Lesson } from "@/lib/lesson";
 import { getExample } from "@/lib/examples";
 import { decodeLesson, parseLessonFile } from "@/lib/share";
 import { LessonView } from "./LessonView";
+import { ThinkingAssist } from "./ThinkingAssist";
 import { Header } from "./Brand";
 import { createWork, saveWork } from "@/lib/works";
 export function Reader() {
@@ -81,17 +82,17 @@ export function Reader() {
         ) : lesson ? (
           <>
             <div className="reader-topline">
-              <Link href="/#examples">← 返回示例作品</Link>
+              {lesson.sources[0]?<a href={lesson.sources[0].url} target="_blank" rel="noreferrer">← 返回原文</a>:<Link href="/#examples">← 返回示例作品</Link>}
               {savedCopy?.lesson === lesson ? (
                 <Link
                   className="text-button"
                   href={`/create?work=${savedCopy.id}`}
                 >
-                  已保存 · 继续编辑 ↗
+                  已保存 · 继续理解 ↗
                 </Link>
               ) : (
                 <button className="text-button" onClick={keep}>
-                  ＋ 保存到我的作品
+                  ＋ 保存这份阅读
                 </button>
               )}
             </div>
@@ -100,11 +101,14 @@ export function Reader() {
                 {saveError}
               </p>
             )}
+            <div className="reader-guide"><strong>先想一想 → 动手试一试 → 回到原文核对</strong><p>三个区域按顺序展开理解。不确定的地方，可以在下方直接提问。</p></div>
             <LessonView lesson={lesson} />
+            <ThinkingAssist key={JSON.stringify(lesson)} mode="learn" material={lesson.sources.map(source=>source.excerpt).filter(Boolean).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
+
             <div className="reader-bottom">
-              <span>你也有想讲清楚的问题？</span>
-              <Link className="button primary" href="/create">
-                制作我的互动作品 →
+              <span>试过之后，回到原文看看是否有新的理解。</span>
+              <Link className="button primary" href="/create?mode=learn">
+                理解另一段 →
               </Link>
             </div>
           </>

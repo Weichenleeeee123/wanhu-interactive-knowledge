@@ -10,6 +10,7 @@ try {
     const page=await context.newPage();
     try {
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:25000});
+      if(response?.ok())await page.getByRole('button',{name:'打开玩乎',exact:true}).waitFor({timeout:8000});
       const result={url:page.url(),status:response?.status(),title:await page.title(),launcher:await page.locator('[data-wanhu-host="workspace"]').count(),bodyCount:await page.locator('.RichText,.Post-RichText').count(),snippet:(await page.locator('body').innerText()).slice(0,200)};
       results.push(result);await page.screenshot({path:path.join(out,'page-'+results.length+'.png')});
     }catch(error){results.push({url,error:error.message});}

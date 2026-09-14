@@ -63,8 +63,9 @@ export function useWorkSession() {
     if (initialized.current) return;
     initialized.current = true;
     if (window.location.hash.startsWith('#v1.')) {
+      const mode = new URLSearchParams(window.location.search).get('mode') === 'learn' ? 'learn' : 'teach';
       void decodeLesson(window.location.hash.slice(1)).then(lesson => {
-        const imported = persist(createWork({lesson,mode:'teach'}));
+        const imported = persist(createWork({lesson,mode}));
         history.current = newHistory(imported.lesson);
         setHistoryState(history.current);
         if (!unsaved.current) {

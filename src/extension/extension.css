@@ -45,3 +45,8 @@
 
 .zw-monogram { background: transparent; overflow: hidden; border-radius: 10px; }
 .zw-monogram img, .zw-launcher-icon { display: block; object-fit: contain; flex-shrink: 0; border-radius: 8px; }
+
+.zw-launcher{padding:6px 17px 6px 6px;gap:8px;border:1px solid #bcd8ee;background:#f7fcff;color:var(--ink);box-shadow:0 5px 24px #214f7026}
+.zw-launcher:hover{background:#eaf6ff}.zw-launcher i{color:var(--muted);letter-spacing:0}
+.zw-launcher .zw-launcher-mascot{width:68px;height:68px;object-fit:contain;border-radius:0}
+.zw-panel .thinking-assist{padding:12px;margin:16px 0;background:var(--white)}

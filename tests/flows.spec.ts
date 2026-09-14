@@ -25,8 +25,8 @@ test("creator edits a snapshot that opens in a fresh browser context", async ({
 }) => {
   await page.goto("/create?example=gradient-descent&mode=teach");
   await page.getByLabel("作品标题").fill("我的学习率实验");
-  await page.getByRole("button", { name: "生成分享链接", exact: true }).click();
-  const url = await page.getByLabel("作品分享链接").inputValue();
+  await page.getByRole("button", { name: "发布到知乎文章", exact: true }).click();
+  const url = await page.getByLabel("发布到知乎文章的分享链接").inputValue();
   expect(url).toContain("/view#v1.");
   const context = await browser.newContext();
   const reader = await context.newPage();
@@ -47,7 +47,7 @@ test("invalid payload is recoverable and mobile page fits", async ({
     page.getByRole("heading", { name: "这份作品暂时打不开" }),
   ).toBeVisible();
   await page.goto("/");
-  await expect(page.getByRole("link", { name: "开始创作" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /在网页使用玩乎/ })).toBeVisible();
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth,
   );

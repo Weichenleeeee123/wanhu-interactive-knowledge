@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Header } from "./Brand";
+import { ThinkingAssist } from "./ThinkingAssist";
 import { MaterialInput } from "./MaterialInput";
 import { LessonEditor } from "./LessonEditor";
 import { LessonView } from "./LessonView";
@@ -177,9 +178,9 @@ export function Workshop() {
         <div className="journey-strip" aria-label="创作进度">
           <div className={tab === "material" ? "journey-step active" : "journey-step done"}><span>01</span><div><strong>{mode === "teach" ? "准备写作素材" : "准备阅读材料"}</strong><small>导入知乎文章或粘贴关键段落</small></div></div>
           <div className="journey-arrow" aria-hidden="true">→</div>
-          <div className={tab === "editor" ? "journey-step active" : "journey-step"}><span>02</span><div><strong>编辑互动</strong><small>把讲解变成可操作的体验</small></div></div>
+          <div className={tab === "editor" ? "journey-step active" : "journey-step"}><span>02</span><div><strong>{mode==='teach'?'调整演示':'动手理解'}</strong><small>{mode==='teach'?'核对讲解，按需调整':'预测、操作，再核对解释'}</small></div></div>
           <div className="journey-arrow" aria-hidden="true">→</div>
-          <div className={valid ? "journey-step ready" : "journey-step"}><span>03</span><div><strong>预览分享</strong><small>{valid ? "打开读者视角并生成链接" : "完成作品后解锁"}</small></div></div>
+          <div className={valid ? "journey-step ready" : "journey-step"}><span>03</span><div><strong>{mode==='teach'?'预览分享':'回到原文'}</strong><small>{valid ? "打开读者视角并生成链接" : "完成作品后解锁"}</small></div></div>
         </div>
         <div className="work-identity">
           <div>
@@ -220,7 +221,7 @@ export function Workshop() {
                 setMobilePreview(false);
               }}
             >
-              <span>02</span> 编辑作品
+              <span>02</span> {mode==='teach'?'调整讲解':'继续理解'}
             </button>
           </div>
           <div className="toolbar-actions">
@@ -284,7 +285,7 @@ export function Workshop() {
                 if (valid) setSharing(valid);
               }}
             >
-              发布到知乎文章
+              {mode==='teach'?'发布到知乎文章':'分享阅读链接'}
             </button>
           </div>
         </div>
@@ -330,7 +331,7 @@ export function Workshop() {
           </button>
         </div>
         <div
-          className={`workspace-grid ${mobilePreview ? "show-mobile-preview" : ""}`}
+          className={`workspace-grid ${mode==='learn'?'reader-workspace':''} ${mobilePreview ? "show-mobile-preview" : ""}`}
         >
           <aside className="input-panel" ref={inputPanel}>
             <div hidden={tab !== "material"}>
@@ -363,8 +364,13 @@ export function Workshop() {
             </div>
             {lesson && tab === "editor" && (
               <>
-                <LessonEditor lesson={lesson} onChange={edit} />
-                <div className="editor-exports">
+                {mode==='teach'?<LessonEditor lesson={lesson} onChange={edit}/>:<div className="reader-context-panel">
+                  <span className="eyebrow">围绕原文继续理解</span><h2>{lesson.title}</h2>
+                  <p>先在右侧动手试一试。如果仍有疑问，可以直接围绕这段提问。</p>
+                  {lesson.sources.map(source=><blockquote key={source.id}><p>{source.excerpt}</p><a href={source.url} target="_blank" rel="noreferrer">返回《{source.title}》 ↗</a></blockquote>)}
+                  <ThinkingAssist key={work.id} mode="learn" material={work.material.material || lesson.sources.map(source=>source.excerpt).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
+                </div>}
+                <div className="editor-exports" hidden={mode==='learn'}>
                   <button
                     className="button"
                     disabled={!valid}
@@ -386,9 +392,9 @@ export function Workshop() {
           <section className="preview-panel" aria-label="作品预览">
             <div className="preview-heading">
               <span>
-                <span className="live-dot" /> 作品预览
+                <span className="live-dot" /> {mode==='teach'?'作品预览':'动手理解'}
               </span>
-              <span>{valid ? "你的读者会看到这里" : "等待一个好问题"}</span>
+              <span>{valid ? mode==='teach'?"你的读者会看到这里":"预测 → 操作 → 核对" : "等待一个好问题"}</span>
             </div>
             {valid ? (
               <LessonView lesson={valid} preview />

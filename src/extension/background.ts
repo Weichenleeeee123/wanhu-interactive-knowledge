@@ -11,7 +11,7 @@ function withPageQueue<T>(key:string,action:()=>Promise<T>):Promise<T> {
   return next;
 }
 
-async function backend(path:'/api/capabilities'|'/api/generate',body?:unknown) {
+async function backend(path:'/api/capabilities'|'/api/generate'|'/api/assist',body?:unknown) {
   const deadline=Date.now()+50000;
   const response=await fetch(__BACKEND_URL__+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,credentials:'omit',redirect:'error',signal:AbortSignal.timeout(50000)});
   const result=JSON.parse(await readBoundedText(response,128*1024,{deadline,now:Date.now}));
@@ -24,8 +24,15 @@ chrome.runtime.onMessage.addListener((raw,sender,reply)=>{
   if(!parsed.success){reply({ok:false,error:'请求内容无效，请重新选择材料'});return;}
   const message=parsed.data;
   void (async()=>{
-    const currentPage=pageIdentity(sender.url!);
+    // sender.url is the document's initial URL and can lag behind history.replaceState in Zhihu's editor.
+    const tab=await chrome.tabs.get(sender.tab!.id!);
+    if(!tab.url||!isZhihuPage(tab.url))throw new Error('请回到知乎页面后重试');
+    const currentPage=pageIdentity(tab.url);
     if(message.type==='status')return backend('/api/capabilities');
+    if(message.type==='assist') {
+      if(pageIdentity(message.pageUrl)!==currentPage)throw new Error('页面已经变化，请重新选取材料');
+      return backend('/api/assist',message.input);
+    }
     if(message.type==='generate') {
       if(pageIdentity(message.context.pageUrl)!==currentPage)throw new Error('页面已经变化，请重新选取材料');
       if(!message.context.text.trim())throw new Error('请先选取正文');

@@ -103,19 +103,22 @@ test("Zhihu paragraphs append to a draft, survive editing and produce an interac
   expect(generatedInput.sourceMaterials).toEqual([
     { sourceId: articleSource.id, text: articleText },
   ]);
+  await page.locator(".editor-field-section summary").filter({hasText:"调整互动内容与参数"}).click();
   await page.locator(".reading-edit-card summary").first().click();
   await page.getByLabel("核心要点 1", { exact: true }).fill("");
   await page.reload();
+  await page.locator(".editor-field-section summary").filter({hasText:"调整互动内容与参数"}).click();
   await page.locator(".reading-edit-card summary").first().click();
   await expect(page.getByLabel("核心要点 1", { exact: true })).toHaveValue("");
   await page.getByLabel("核心要点 1", { exact: true }).fill("把任务拆小");
+  await page.locator(".editor-field-section summary").filter({hasText:"核对材料与出处"}).click();
   await expect(
     page
       .locator(".editor-source")
       .getByRole("button", { name: "移出当前作品" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "生成分享链接", exact: true }).click();
-  const url = await page.getByLabel("作品分享链接").inputValue();
+  await page.getByRole("button", { name: "发布到知乎文章", exact: true }).click();
+  const url = await page.getByLabel("发布到知乎文章的分享链接").inputValue();
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
   });

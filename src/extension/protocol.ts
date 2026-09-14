@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { LessonSchema,SourceSchema } from '../lib/lesson';
+import { AssistInputSchema } from '../lib/assist';
 export function isZhihuPage(value:string) {
   try {const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password&&!url.port&&['www.zhihu.com','zhihu.com','zhuanlan.zhihu.com'].includes(url.hostname);}catch{return false;}
 }
@@ -16,10 +17,11 @@ export const PageContextSchema=z.object({
   selection:z.boolean(),
 }).strict();
 export type PageContext=z.infer<typeof PageContextSchema>;
-export const SavedDemoSchema=z.object({id:z.string().uuid(),pageUrl:z.string().max(2048).refine(isZhihuPage),lesson:LessonSchema,createdAt:z.string().datetime(),anchorText:z.string().max(2000).optional(),anchorSourceUrl:z.string().max(2048).refine(isZhihuPage).optional()}).strict();
+export const SavedDemoSchema=z.object({id:z.string().uuid(),pageUrl:z.string().max(2048).refine(isZhihuPage),lesson:LessonSchema,createdAt:z.string().datetime(),mode:z.enum(['teach','learn']).optional(),origin:z.enum(['personal','article','imported']).optional(),anchorText:z.string().max(2000).optional(),anchorSourceUrl:z.string().max(2048).refine(isZhihuPage).optional()}).strict();
 export type SavedDemo=z.infer<typeof SavedDemoSchema>;
 export const ExtensionMessageSchema=z.discriminatedUnion('type',[
   z.object({type:z.literal('status')}).strict(),
+  z.object({type:z.literal('assist'),pageUrl:z.string().max(2048).refine(isZhihuPage),input:AssistInputSchema}).strict(),
   z.object({type:z.literal('generate'),context:PageContextSchema,question:z.string().trim().min(1).max(200),consent:z.literal(true)}).strict(),
   z.object({type:z.literal('load'),pageUrl:z.string().max(2048).refine(isZhihuPage)}).strict(),
   z.object({type:z.literal('save'),demo:SavedDemoSchema}).strict(),

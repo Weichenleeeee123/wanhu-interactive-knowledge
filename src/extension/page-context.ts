@@ -2,6 +2,9 @@ import { isZhihuPage,pageIdentity,type PageContext } from './protocol';
 
 const BODY='.RichContent-inner .RichText, .Post-RichText, .Post-RichTextContainer, .AnswerItem .RichText, article .RichText';
 const EDITOR='[contenteditable="true"]';
+export function pageMode():PageContext['mode'] {
+  return /\/write(?:\/|$)|\/edit(?:\/|$)/.test(location.pathname) || Array.from(document.querySelectorAll(EDITOR)).some(item=>item.getClientRects().length>0&&item.closest('.WriteIndex, .AnswerForm, .PostEditor')) ? 'teach':'learn';
+}
 export function sourceUrlFor(element:Element|null):string {
   const container=element?.closest('.AnswerItem, article, .Post-Main');
   const links=Array.from(container?.querySelectorAll('a[href*="/answer/"]')??[]).filter(link=>!link.closest('.RichText, .Post-RichText, [contenteditable]'));
@@ -27,6 +30,7 @@ export function contextFromPage(preferSelection=true):{context:PageContext;ancho
   let selected=preferSelection?selection?.toString().trim()??'':'';
   let anchor=selected&&selection?.rangeCount?selection.getRangeAt(0).endContainer:null;
   let element=anchor instanceof Element?anchor:anchor?.parentElement??null;
+  if(element?.getRootNode() instanceof ShadowRoot)throw new Error('请在知乎正文中选取材料');
   if(element?.closest('[data-wanhu-host]')){element=null;selected='';}
   const editor=element?.closest(EDITOR)??(!selected?Array.from(document.querySelectorAll(EDITOR)).find(item=>item.getClientRects().length>0&&(item.closest('.WriteIndex, .AnswerForm, .PostEditor')||/\/write(?:\/|$)|\/edit(?:\/|$)/.test(location.pathname)))??null:null);
   let body:Element|null=element?.closest(BODY)??null;

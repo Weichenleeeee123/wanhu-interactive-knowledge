@@ -23,15 +23,6 @@ export function LessonEditor({
   }
   const validation = LessonSchema.safeParse(lesson);
   const issues = validation.success ? [] : validation.error.issues;
-  const chapters = {
-    title: ["01", "吸引读者进入", "先说明问题，给读者一个继续探索的理由。"],
-    goal: ["02", "组织探索过程", "明确目标，再安排预测和操作。"],
-    explanation: [
-      "03",
-      "留下理解与出处",
-      "说明结果为什么发生，再给读者一个能带走的问题。",
-    ],
-  } as const;
   return (
     <div className="lesson-editor">
       <div className="editor-heading">
@@ -39,28 +30,10 @@ export function LessonEditor({
         <h2>把它变成你的讲解。</h2>
         <p>调整讲解与参数，随时预览读者体验。</p>
       </div>
-      <nav className="editor-outline" aria-label="讲解结构">
-        {Object.entries(chapters).map(([key, [number, label]]) => (
-          <button
-            key={key}
-            onClick={() => document.getElementById(`edit-${key}`)?.focus()}
-          >
-            {number} {label}
-          </button>
-        ))}
-      </nav>
-      {fields.map(([key, label, max]) => (
-        <div key={key}>
-          {key in chapters && (
-            <div className="editor-chapter">
-              <span>{chapters[key as keyof typeof chapters][0]}</span>
-              <h3>
-                {chapters[key as keyof typeof chapters][1]}
-                <small>{chapters[key as keyof typeof chapters][2]}</small>
-              </h3>
-            </div>
-          )}
-          <div className="form-field">
+      <p className="editor-guidance">下面是已有演示中的讲解，不是需要重新填写的问卷。先核对标题与开场，其余按需调整；右侧会同步显示效果。</p>
+      {fields.map(([key, label, max]) => {
+        const field = <div className="form-field">
+
             <label htmlFor={`edit-${key}`}>
               {label}
               <span>
@@ -92,8 +65,13 @@ export function LessonEditor({
               </p>
             )}
           </div>
-        </div>
-      ))}
+        ;
+        return key==='title'||key==='intro'?<div key={key}>{field}</div>:<details className="editor-field-section" key={key}>
+          <summary>{label}<span>{lesson[key].trim()?lesson[key].slice(0,36)+'…':'待补充'}</span></summary>{field}
+        </details>;
+      })}
+      <details className="editor-field-section"><summary>调整互动内容与参数<span>已有默认设置，可直接体验</span></summary>
+
       <div className="editor-divider">
         <span className="eyebrow">EXPERIMENT SETTINGS</span>
         <h3>
@@ -186,6 +164,8 @@ export function LessonEditor({
           ? "可以修改每个情境、选项和反馈。修改引用后，请核对原句确实出自选中的材料。"
           : "计算与挑战判分采用标准规则，讲解和初始参数由你决定。"}
       </p>
+      </details>
+      <details className="editor-field-section"><summary>核对材料与出处<span>{lesson.sources.length} 个来源 · 分享前检查</span></summary>
       <div className="editor-divider">
         <span className="eyebrow">SOURCE NOTES</span>
         <h3>材料与引用</h3>
@@ -290,6 +270,7 @@ export function LessonEditor({
           })
         }
       />
+      </details>
     </div>
   );
 }

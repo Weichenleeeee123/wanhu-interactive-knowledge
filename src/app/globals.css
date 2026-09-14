@@ -2158,7 +2158,7 @@ body {
 
 /* Liu Kanshan + motion layer */
 .kanshan-assistant { animation: kanshan-float 4.8s ease-in-out infinite; }
-.kanshan-assistant img { width: 84px; height: 84px; }
+.kanshan-assistant img { width: 128px; height: 128px; }
 .kanshan-assistant span { animation: bubble-in .7s .35s both; }
 .hero-copy, .hero-lab { animation: rise-in .72s cubic-bezier(.2,.8,.2,1) both; }
 .hero-lab { animation-delay: .12s; }
@@ -2183,3 +2183,33 @@ body {
   .kanshan-assistant, .hero-copy, .hero-lab, .process-strip > div, .journey-strip::before { animation:none; }
   .example-card::after { display:none; }
 }
+
+/* Optional paragraph help: shared by the workshop and extension sidebar. */
+.thinking-assist{margin:20px 0;border:1px solid var(--line-strong);border-radius:12px;padding:14px 16px;background:var(--white);font-size:13px;line-height:1.8;text-align:left}
+.thinking-assist>summary{cursor:pointer;font-weight:650;color:var(--ink)}
+.thinking-assist>summary span{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-left:16px}
+.assist-note{display:block;font-size:12px;color:var(--muted);margin:12px 0;line-height:1.8}
+.assist-prompts,.assist-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.thinking-assist button{font:inherit;color:var(--brand);border:1px solid var(--line-strong);border-radius:8px;padding:6px 10px;background:var(--white);cursor:pointer}
+.thinking-assist button:hover:enabled{background:var(--brand-soft)}
+.thinking-assist button:disabled{opacity:.5;cursor:not-allowed}
+.assist-conversation article{padding:14px 0;border-top:1px solid var(--line)}
+.assist-conversation p{white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0;line-height:1.9}
+.assist-conversation article>strong{font-size:12px;color:var(--muted)}
+.assist-question{display:block;font-size:12px;font-weight:600}
+.assist-question textarea{display:block;width:100%;margin-top:7px;border:1px solid var(--line-strong);border-radius:8px;padding:10px;background:var(--white);color:var(--ink);font:inherit;resize:vertical}
+.assist-consent{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--muted);margin:10px 0}
+.assist-consent input{margin-top:5px;accent-color:var(--brand)}
+/* Scope webpage hierarchy to shells so inline Zhihu cards retain their styling. */
+.editor-guidance{padding:14px;border-left:3px solid var(--brand);background:var(--brand-soft);font-size:12px;line-height:1.9;margin:0 0 24px}
+.editor-field-section{border:1px solid var(--line-strong);border-radius:10px;padding:14px;margin:12px 0;background:var(--white)}
+.editor-field-section>summary{cursor:pointer;font-size:14px;font-weight:600;line-height:1.7}
+.editor-field-section>summary>span{display:block;font-size:11px;font-weight:400;color:var(--muted);margin:5px 0 0 16px;overflow-wrap:anywhere}
+.editor-field-section[open]>summary{padding-bottom:14px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.reader-guide{padding:20px 24px;margin:16px 0 24px;background:var(--brand-soft);border:1px solid var(--line-strong);border-radius:12px}
+.reader-guide p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.reader-shell .lesson-section,.reader-workspace .lesson-section{margin:24px 0;padding:26px;border:1px solid var(--line-strong);border-radius:14px;background:var(--white);box-shadow:0 4px 14px #103c7010}
+.reader-shell .lesson-section .step-kicker,.reader-workspace .lesson-section .step-kicker{padding-bottom:14px;border-bottom:1px solid var(--line)}
+.reader-context-panel{padding:24px}.reader-context-panel>p{font-size:13px;color:var(--muted);line-height:1.9}
+.reader-context-panel blockquote{margin:18px 0;padding:14px 16px;border-left:3px solid var(--brand);background:var(--brand-soft);font-size:13px;line-height:1.9}
+@media(max-width:620px){.kanshan-assistant img{width:92px;height:92px}.reader-shell .lesson-section,.reader-workspace .lesson-section{padding:18px}.reader-context-panel{padding:18px}}

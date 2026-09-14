@@ -39,6 +39,7 @@ test("authors add and remove citations without regenerating the lesson", async (
 }) => {
   await page.goto("/create?example=monty-hall");
   const title = await page.getByLabel("作品标题").inputValue();
+  await page.locator(".editor-field-section summary").filter({hasText:"核对材料与出处"}).click();
   await page.getByText("＋ 添加引用来源", { exact: true }).click();
   await page.getByLabel("引用来源标题").fill("作者补充的原始出处");
   await page
@@ -56,6 +57,7 @@ test("authors add and remove citations without regenerating the lesson", async (
   await page.getByRole("button", { name: "↶ 撤销", exact: true }).click();
   await expect(source.getByLabel(/来源作者/)).toHaveValue("原作者");
   await page.reload();
+  await page.locator(".editor-field-section summary").filter({hasText:"核对材料与出处"}).click();
   await expect(source.getByLabel(/来源作者/)).toHaveValue("原作者");
 });
 
@@ -107,7 +109,7 @@ test("unavailable storage keeps edits in memory, offers a backup and guards leav
   await page.getByRole("button", { name: "01 素材与问题" }).click();
   page.once("dialog", (dialog) => dialog.dismiss());
   await page.getByRole("button", { name: "梯度下降 →", exact: true }).click();
-  await page.getByRole("button", { name: "02 编辑作品" }).click();
+  await page.getByRole("button", { name: "02 调整讲解" }).click();
   await expect(page.getByLabel("作品标题")).toHaveValue("存储失败时的内容");
 });
 
@@ -139,6 +141,7 @@ test("materials and selected sources survive refresh, with multiple independent 
   await page
     .getByLabel("补充你的讲解材料")
     .fill("还没有生成的原始段落，也应该保存。");
+  await page.locator(".advanced-material summary").first().click();
   await page.getByLabel("知乎搜索关键词").fill("我的关键词");
   await page.getByRole("button", { name: "搜索", exact: true }).click();
   await page.getByRole("checkbox", { name: "一份知乎材料" }).check();
@@ -149,6 +152,7 @@ test("materials and selected sources survive refresh, with multiple independent 
   await expect(page.getByLabel("补充你的讲解材料")).toHaveValue(
     "还没有生成的原始段落，也应该保存。",
   );
+  await page.locator(".advanced-material summary").first().click();
   await expect(
     page.getByRole("button", { name: "一份知乎材料" }),
   ).toBeVisible();
@@ -184,7 +188,7 @@ test("undo, redo, incomplete draft recovery and independent copies", async ({
   await page.reload();
   await expect(page.getByLabel("作品标题")).toHaveValue("");
   await expect(
-    page.getByRole("button", { name: "生成分享链接", exact: true }),
+    page.getByRole("button", { name: "发布到知乎文章", exact: true }),
   ).toBeDisabled();
   await page.getByLabel("作品标题").fill("原作品");
   const original = page.url();
@@ -225,10 +229,11 @@ test("a reader can save a separate editable learning copy", async ({
 }) => {
   await page.goto("/view?example=gradient-descent");
   await page
-    .getByRole("button", { name: "＋ 保存到我的作品", exact: true })
+    .getByRole("button", { name: "＋ 保存这份阅读", exact: true })
     .click();
-  await page.getByRole("link", { name: "已保存 · 继续编辑 ↗" }).click();
-  await expect(page.getByLabel("作品标题")).toBeVisible();
+  await page.getByRole("link", { name: "已保存 · 继续理解 ↗" }).click();
+  await expect(page.getByLabel("作品标题")).toHaveCount(0);
+  await expect(page.getByRole("heading",{name:"从不理解的地方，开始探索。"})).toBeVisible();
   await page
     .getByRole("link", { name: "我的作品", exact: true })
     .first()

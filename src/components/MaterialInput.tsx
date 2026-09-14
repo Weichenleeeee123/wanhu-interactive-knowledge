@@ -1,4 +1,5 @@
 "use client";
+import { ThinkingAssist } from "./ThinkingAssist";
 import { useEffect, useId, useState } from "react";
 import {
   LessonSchema,
@@ -214,18 +215,46 @@ export function MaterialInput({
         </p>
       </div>
       <ArticleImport value={value} onChange={onChange} disabled={generating} />
+        <div className="form-field">
+          <label htmlFor={`${id}-material`}>
+            补充你的讲解材料<span>{material.length}/20000</span>
+          </label>
+          <textarea
+            id={`${id}-material`}
+            rows={6}
+            value={material}
+            disabled={generating}
+            maxLength={200000}
+            onChange={(e) => setField("material", e.target.value)}
+            placeholder="粘贴你想解释或理解的关键段落。若摘要缺少公式与条件，请在这里补充。"
+          />
+          {material.length > 20000 && (
+            <p className="error-message" role="alert">
+              材料超过 20,000 字符，请选取关键段落后再生成。
+            </p>
+          )}
+          <p className="field-note">
+            已导入的内容会出现在这里。优先保留与目标问题有关的段落，可以补充上下文。
+          </p>
+        </div>
+          {sources.length > 0 && (
+            <div className="selected-sources">
+              {sources.map((s) => (
+                <button
+                  key={s.id}
+                  className="source-chip"
+                  disabled={generating}
+                  onClick={() => select(s)}
+                  title="取消选择"
+                >
+                  {s.title}
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
+            </div>
+          )}
       <div className="quick-start-hint"><span className="live-dot" /><div><strong>最省力的用法</strong><p>先从上面导入知乎文章，或直接粘贴一段文字；下面的问题只需要写一句你真正想弄懂的事。</p></div></div>
-      {mode === "teach" && (
-        <details className="author-thinking-tools">
-          <summary>先用玩乎帮你构思一下 <span>可选 · 不会生成作品</span></summary>
-          <p className="small muted">把写作辅助放在生成之前：选一个切口，玩乎会把它带进后面的互动草稿。</p>
-          <div className="thinking-chips">
-            <button type="button" onClick={() => setField("question", "读者需要哪些前置知识？这段论证跳过了哪一步？")}>检查前置与跳步</button>
-            <button type="button" onClick={() => setField("question", "怎样用一个生活中的类比，把这段观点讲得更直观？")}>找一个类比</button>
-            <button type="button" onClick={() => setField("question", "这段内容最适合做成哪种互动：步骤推演、条件分支还是方案对比？")}>挑互动切口</button>
-          </div>
-        </details>
-      )}
+      <ThinkingAssist mode={mode} material={material || sources.map(source=>source.excerpt).join('\n\n')} disabled={generating} onUseQuestion={question=>setField('question',question)} />
       <fieldset className="generation-fields" disabled={generating}>
         <details className="topic-starters">
           <summary>或从一个标准模型问题开始</summary>
@@ -270,7 +299,7 @@ export function MaterialInput({
           />
         </div>
         <details className="advanced-material">
-          <summary>补充知乎来源与原文材料 <span>可选</span></summary>
+          <summary>检索知乎与补充出处 <span>可选</span></summary>
         <div className="search-block">
           <div className="section-line">
             <h3>从知乎找一点线索</h3>
@@ -357,42 +386,6 @@ export function MaterialInput({
               ))}
             </div>
           )}
-          {sources.length > 0 && (
-            <div className="selected-sources">
-              {sources.map((s) => (
-                <button
-                  key={s.id}
-                  className="source-chip"
-                  onClick={() => select(s)}
-                  title="取消选择"
-                >
-                  {s.title}
-                  <span aria-hidden="true">×</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="form-field">
-          <label htmlFor={`${id}-material`}>
-            补充你的讲解材料<span>{material.length}/20000</span>
-          </label>
-          <textarea
-            id={`${id}-material`}
-            rows={6}
-            value={material}
-            maxLength={200000}
-            onChange={(e) => setField("material", e.target.value)}
-            placeholder="粘贴你想解释或理解的关键段落。若摘要缺少公式与条件，请在这里补充。"
-          />
-          {material.length > 20000 && (
-            <p className="error-message" role="alert">
-              材料超过 20,000 字符，请选取关键段落后再生成。
-            </p>
-          )}
-          <p className="field-note">
-            已导入的内容会出现在这里。优先保留与目标问题有关的段落，可以补充上下文。
-          </p>
         </div>
         <details className="attribution-fields">
           <summary>为粘贴材料添加来源（可选）</summary>
