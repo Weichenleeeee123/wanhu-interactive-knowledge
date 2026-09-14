@@ -91,6 +91,7 @@ test('latest extension embeds the demo in the actual public Zhihu article',async
   await page.getByRole('button',{name:'本页演示 1',exact:true}).click();
   await expect(page.locator('.zw-saved')).toContainText('预制示例');
   await expect(page.locator('.zw-footer')).toContainText('0.4.1');
+  await expect(page.getByRole('alert')).toHaveCount(0);
   await page.screenshot({path:path.join(output,'real-zhihu-latest.png')});
   await page.close();
 });

@@ -153,7 +153,7 @@ function App() {
   function toggle(){if(!open&&!context)capture();setOpen(!open);}
   useEffect(()=>{
     const listener=(message:unknown)=>{if((message as {type?:string})?.type==='wanhu-toggle')toggle();};
-    const openFromEmbed=(event:Event)=>{const demo=(event as CustomEvent<{demo?:SavedDemo}>).detail?.demo;if(demo){setCurrent(demo);setTab('saved');setNotice('已打开这份演示，可继续理解；作者模式下可到工坊调整。');void extensionRequest({type:'save',demo}).then(()=>load()).catch(()=>undefined);}if(!open){if(!context)capture();setOpen(true);} else panel.current?.focus();};
+    const openFromEmbed=(event:Event)=>{const demo=(event as CustomEvent<{demo?:SavedDemo}>).detail?.demo;if(demo){setCurrent(demo);setTab('saved');setError('');setNotice('已打开这份演示，可继续理解；作者模式下可到工坊调整。');void extensionRequest({type:'save',demo}).then(()=>load()).catch(()=>undefined);}if(!open){if(!context&&!demo)capture();setOpen(true);} else panel.current?.focus();};
     chrome.runtime.onMessage.addListener(listener);
     window.addEventListener('wanhu-open-sidebar',openFromEmbed);
     return()=>{chrome.runtime.onMessage.removeListener(listener);window.removeEventListener('wanhu-open-sidebar',openFromEmbed);};
@@ -230,7 +230,7 @@ function App() {
     <button ref={launcher} className="zw-launcher" onMouseDown={event=>event.preventDefault()} onClick={toggle} aria-label="打开玩乎" aria-expanded={open}><img className="zw-launcher-icon zw-launcher-mascot" src={__MASCOT_ICON__} alt="刘看山" width={40} height={40}/><span>玩乎</span><i>{embeddedCount?`本页 ${embeddedCount} 个演示`:'把知识试明白'}</i></button>
     {open&&<aside className="zw-panel" ref={panel} tabIndex={-1} aria-label="玩乎工作区" onKeyDown={event=>{if(event.key==='Escape'){setOpen(false);launcher.current?.focus();}}}>
       <header className="zw-header"><div className="zw-brand"><span className="zw-monogram"><img src={__BRAND_ICON__} alt="玩乎" width={42} height={42}/></span><div><strong>知识，就在这里发生</strong><small>WANHU · FOR ZHIHU</small></div></div><button className="zw-close" onClick={()=>{setOpen(false);launcher.current?.focus();}} aria-label="关闭玩乎">×</button></header>
-      <nav className="zw-tabs" aria-label="插件功能"><button className={tab==='create'?'active':''} onClick={()=>setTab('create')}>围绕这段，动手理解</button><button className={tab==='saved'?'active':''} onClick={()=>{setTab('saved');void load();}}>本页演示 <span>{pageDemos.length}</span></button></nav>
+      <nav className="zw-tabs" aria-label="插件功能"><button className={tab==='create'?'active':''} onClick={()=>setTab('create')}>围绕这段，动手理解</button><button className={tab==='saved'?'active':''} onClick={()=>{setTab('saved');setError('');void load();}}>本页演示 <span>{pageDemos.length}</span></button></nav>
       <div className="zw-scroll">
         {tab==='create'?<>
           <div className="zw-step"><span>{(context?.mode??detectedMode)==='teach'?'作者模式 · 01 / 选取材料':'读者模式 · 01 / 选取材料'}</span><button disabled={busy} onMouseDown={event=>event.preventDefault()} onClick={capture}>重新读取选段 ↻</button></div>
