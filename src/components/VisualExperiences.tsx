@@ -26,14 +26,16 @@ export function SceneAnimation({
     [speed, setSpeed] = useState(1);
   const [selected, setSelected] = useState<string | null>(null);
   const last = scene.frames.length - 1,
-    index = Math.min(last, Math.floor(progress + 0.0001));
+    index = Math.max(0, Math.min(last, Math.floor(progress + 0.0001)));
   const frame = scene.frames[index];
   useEffect(() => {
     if (!playing) return;
     let previous = performance.now(),
       raf = 0;
     function tick(now: number) {
-      const dt = Math.min(100, now - previous);
+      // RAF uses the frame's start time, which can precede the click handler's
+      // performance.now(). Never let the first frame move progress below zero.
+      const dt = Math.max(0, Math.min(100, now - previous));
       previous = now;
       setProgress((p) => Math.min(last, p + (dt / 2400) * speed));
       raf = requestAnimationFrame(tick);
