@@ -367,8 +367,8 @@ export function Workshop() {
                 {mode==='teach'?<LessonEditor lesson={lesson} onChange={edit}/>:<div className="reader-context-panel">
                   <span className="eyebrow">围绕原文继续理解</span><h2>{lesson.title}</h2>
                   <p>先在右侧动手试一试。如果仍有疑问，可以直接围绕这段提问。</p>
-                  {lesson.sources.map(source=><blockquote key={source.id}><p>{source.excerpt}</p><a href={source.url} target="_blank" rel="noreferrer">返回《{source.title}》 ↗</a></blockquote>)}
-                  <ThinkingAssist key={work.id} mode="learn" material={work.material.material || lesson.sources.map(source=>source.excerpt).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
+                  {lesson.sources.map((source: any)=><blockquote key={source.id}><p>{source.excerpt}</p><a href={source.url} target="_blank" rel="noreferrer">返回《{source.title}》 ↗</a></blockquote>)}
+                  <ThinkingAssist key={work.id} mode="learn" material={work.material.material || lesson.sources.map((source: any)=>source.excerpt).join('\n\n') || lesson.intro+'\n'+lesson.explanation}/>
                 </div>}
                 <div className="editor-exports" hidden={mode==='learn'}>
                   <button
