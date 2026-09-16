@@ -7,6 +7,25 @@ async function mockGenerationAvailable(page: import("@playwright/test").Page) {
     }),
   );
 }
+
+test("HTML generation timeouts preserve the author draft and allow retry", async ({page}) => {
+  await mockGenerationAvailable(page);
+  let fail = true;
+  await page.route('**/api/generate', route => fail
+    ? route.fulfill({status:504,contentType:'text/html',body:'<!DOCTYPE html><h1>Gateway time-out</h1>'})
+    : route.fulfill({json:{lesson:{...examples['gradient-descent'],origin:'ai'},reason:''}}));
+  await page.goto('/create');
+  await page.getByLabel('想讲清楚的问题').fill('学习率为什么不能太大？');
+  const material='梯度下降按负梯度更新，学习率影响更新幅度。';
+  await page.getByLabel('补充你的讲解材料').fill(material);
+  await page.getByRole('checkbox',{name:/生成后由我核对/}).check();
+  await page.getByRole('button',{name:'生成我的互动草稿 ↗'}).click();
+  await expect(page.getByRole('alert').filter({hasText:'生成请求超时'})).toBeVisible();
+  await expect(page.getByLabel('补充你的讲解材料')).toHaveValue(material);
+  fail=false;
+  await page.getByRole('button',{name:'生成我的互动草稿 ↗'}).click();
+  await expect(page.getByLabel('作品标题')).toHaveValue(examples['gradient-descent'].title);
+});
 test("an old generation response cannot replace newer author edits", async ({
   page,
 }) => {

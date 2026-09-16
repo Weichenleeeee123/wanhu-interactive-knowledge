@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { readApiResponse } from '../lib/api-response';
 import { AssistResultSchema, type AssistInput, type AssistTurn } from '../lib/assist';
 
 function AnswerText({text}:{text:string}) {
@@ -8,7 +9,7 @@ function AnswerText({text}:{text:string}) {
 
 export async function requestAssist(input:AssistInput,signal?:AbortSignal):Promise<{answer:string}> {
   const response=await fetch('/api/assist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input),signal:signal??AbortSignal.timeout(50000)});
-  const body=await response.json();
+  const body=await readApiResponse(response);
   if(!response.ok)throw new Error(body.error||'暂时无法回答，请重试');
   return AssistResultSchema.parse(body);
 }

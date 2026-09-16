@@ -145,6 +145,8 @@ npm run build:extension:public
 
 复制 `.env.example`，真实值只放在服务端环境：
 
+当前默认模型为 `gemini-3-flash`。选型依据是真实互动任务的完整生成用时与内容检查，包含 Claude、DeepSeek、GLM、Qwen、豆包等服务别名的实测，详见[模型测试记录](docs/model-benchmark-2026-09-16.md)。插件 0.4.4 同时修复网关返回 HTML 时的错误提示，保留材料供重试。
+
 | 配置 | 作用 |
 | --- | --- |
 | `ZHIHU_ACCESS_SECRET` | 官方知乎搜索、知识库和可选知乎生成 |

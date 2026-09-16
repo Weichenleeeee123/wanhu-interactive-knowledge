@@ -1,5 +1,6 @@
 "use client";
 import { ThinkingAssist } from "./ThinkingAssist";
+import { readApiResponse } from "@/lib/api-response";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   LessonSchema,
@@ -189,7 +190,7 @@ export function MaterialInput({
         }),
         signal: controller.signal,
       });
-      const data = await response.json();
+      const data = await readApiResponse(response);
       if(operation.current!==controller||controller.signal.aborted)return;
       if (!response.ok) throw new Error(data.error || "生成失败，请稍后重试");
       if (data.unsupported) {

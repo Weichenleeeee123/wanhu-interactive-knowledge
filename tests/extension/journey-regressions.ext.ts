@@ -10,6 +10,7 @@ import {showcase} from '../../src/lib/showcase';
 let browser:BrowserContext,server:Server;
 let requests:Record<string,unknown>[]=[];
 let fail=false;
+let gatewayTimeout=false;
 let delay=0;
 let assistance:Record<string,unknown>[]=[];
 const output=path.resolve('.artifacts/journey-browser-'+Date.now());
@@ -36,6 +37,7 @@ test.beforeAll(async()=>{
       let raw='';for await(const chunk of req)raw+=chunk;
       const input=JSON.parse(raw);requests.push(input);
       if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
+      if(gatewayTimeout){res.statusCode=504;res.setHeader('Content-Type','text/html');res.end('<!DOCTYPE html><h1>Gateway time-out</h1>');return;}
       if(fail){res.statusCode=502;res.end(JSON.stringify({error:'测试：上游暂时不可用'}));return;}
       const lesson=structuredClone(articleLesson);lesson.sources=input.sources;lesson.sourceIds=[input.sources[0].id];
       if(lesson.experiment.type==='article-exploration')lesson.experiment.cards.forEach(card=>card.evidence.sourceId=input.sources[0].id);
@@ -47,7 +49,22 @@ test.beforeAll(async()=>{
   browser=await chromium.launchPersistentContext(path.join(output,'profile'),{channel:'chromium',executablePath:process.env.EXTENSION_CHROMIUM_PATH||path.join(process.env.LOCALAPPDATA!,'ms-playwright/chromium-1234/chrome-win64/chrome.exe'),headless:true,viewport:{width:1440,height:1000},args:[`--disable-extensions-except=${path.resolve('.artifacts/journey-test-build')}`,`--load-extension=${path.resolve('.artifacts/journey-test-build')}`]});
 });
 test.afterAll(async()=>{await browser?.close();await new Promise<void>(resolve=>server?.close(()=>resolve()));});
-test.beforeEach(()=>{requests=[];fail=false;delay=0;assistance=[];});
+test.beforeEach(()=>{requests=[];fail=false;gatewayTimeout=false;delay=0;assistance=[];});
+
+test('HTML gateway timeouts preserve material and allow a successful retry',async()=>{
+  const page=await browser.newPage();await open(page,'https://www.zhihu.com/question/61/answer/62');
+  await select(page);await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
+  await page.locator('.zw-consent input').check();gatewayTimeout=true;
+  await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
+  await expect(page.getByRole('alert')).toContainText('生成请求超时');
+  await expect(page.getByRole('alert')).not.toContainText('Unexpected token');
+  await expect(page.getByLabel('将用于生成的文字')).toHaveValue(articleText.split('\n\n')[0]);
+  gatewayTimeout=false;
+  await page.getByRole('button',{name:'生成这段的互动演示 ↗'}).click();
+  await expect(page.getByRole('region',{name:'生成结果'})).toBeVisible();
+  await expect(page.locator('[data-wanhu-host="inline"]')).toHaveCount(1);
+  await page.close();
+});
 
 test('moving focus to the sidebar during selection debounce preserves the chosen paragraph',async()=>{
   const page=await browser.newPage();await open(page);
@@ -140,7 +157,7 @@ test('latest extension embeds the demo in the actual public Zhihu article',async
   await page.getByRole('button',{name:'打开玩乎',exact:true}).click();
   await page.getByRole('button',{name:'本页演示 1',exact:true}).click();
   await expect(page.locator('.zw-saved')).toContainText('预制示例');
-  await expect(page.locator('.zw-footer')).toContainText('0.4.3');
+  await expect(page.locator('.zw-footer')).toContainText('0.4.4');
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.screenshot({path:path.join(output,'real-zhihu-latest.png')});
   await page.close();

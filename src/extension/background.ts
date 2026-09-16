@@ -1,6 +1,6 @@
 import { ExtensionMessageSchema,SavedDemoSchema,pageIdentity,isZhihuPage } from './protocol';
 import { LessonSchema } from '../lib/lesson';
-import { readBoundedText } from '../lib/server/bounded-response';
+import { readApiResponse } from '../lib/api-response';
 import { decodeLesson } from '../lib/share';
 
 const pageQueues=new Map<string,Promise<unknown>>();
@@ -14,9 +14,7 @@ function withPageQueue<T>(key:string,action:()=>Promise<T>):Promise<T> {
 async function backend(path:'/api/capabilities'|'/api/generate'|'/api/assist',body?:unknown) {
   const deadline=Date.now()+50000;
   const response=await fetch(__BACKEND_URL__+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,credentials:'omit',redirect:'error',signal:AbortSignal.timeout(50000)});
-  const result=JSON.parse(await readBoundedText(response,128*1024,{deadline,now:Date.now}));
-  if(!response.ok)throw new Error(result.error||'生成服务暂时不可用');
-  return result;
+  return readApiResponse(response,deadline);
 }
 chrome.runtime.onMessage.addListener((raw,sender,reply)=>{
   if(sender.id!==chrome.runtime.id||sender.frameId!==0||!sender.tab?.id||!sender.url||!isZhihuPage(sender.url))return;

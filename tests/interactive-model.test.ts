@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { LessonSchema } from '../src/lib/lesson';
 import { generateLesson } from '../src/lib/server/generate';
 import { encodeLesson, decodeLesson } from '../src/lib/share';
@@ -23,5 +23,14 @@ describe('generated interactive models', () => {
   });
   it('does not accept invented model evidence', async () => {
     await expect(generateLesson({ mode: 'teach', material: '没有对应原句', question: '', sources: [], standardModel: true }, { provider: async () => JSON.stringify(queueLesson) })).rejects.toThrow();
+  });
+  it('gives a repair the failed output and exact field path without weakening validation', async () => {
+    const wrong = { ...queueLesson, experiment: { ...queueModel, stocks: [{ ...queueModel.stocks[0], next: 'queue + missing_arrival' }] } };
+    const provider = vi.fn().mockResolvedValueOnce(JSON.stringify(wrong)).mockResolvedValueOnce(JSON.stringify(queueLesson));
+    await expect(generateLesson({mode:'learn',material:queueModel.evidence.quote,question:'',sources:[],standardModel:true},{provider})).resolves.toHaveProperty('lesson');
+    const repair = provider.mock.calls[1][0];
+    expect(repair.prompt).toContain('experiment.stocks.0.next');
+    expect(repair.prompt).toContain('queue + missing_arrival');
+    expect(repair.prompt).toContain('上次不可信输出');
   });
 });
